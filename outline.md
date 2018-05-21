@@ -57,6 +57,12 @@ if you do simple averaging in XCalibur
 
 ### Need for Noise Removal
 
-* RSD is way off
+* RSD is way off if they are included
+
+### Need for Normalization
+
+* RSD is still off
+* Median noise levels
+
 
 
