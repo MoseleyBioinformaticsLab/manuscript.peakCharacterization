@@ -16,7 +16,7 @@ raw_peakpicking <- function(zip_file, pkg_description){
 identity_correct_offset_function <- function(master_peak_list, multi_scan_peaklist, min_scan = 0.1){
 
   n_col <- ncol(master_peak_list$scan_mz)
-  n_min_scan <- correctly_round_numbers(n_col, min_scan)
+  n_min_scan <- SIRM.FTMS.peakCharacterization:::correctly_round_numbers(n_col, min_scan)
   correspond_peaks <- master_peak_list$count_notna() >= n_min_scan
 
   scan_indices <- master_peak_list$scan_indices

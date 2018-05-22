@@ -19,4 +19,4 @@ noise_and_offsets_plan <- drake_plan(
 
 full_plan <- rbind(peak_picking_plan, noise_and_offsets_plan)
 
-make(full_plan)
+make(full_plan, parallelism = "mclapply_staged", jobs = 10)
