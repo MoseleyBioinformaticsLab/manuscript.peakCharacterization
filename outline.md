@@ -38,7 +38,7 @@ narrative around it.
 ### Demonstration of the Problem ...
 
 * Need a result that shows the NAP ratio for something easily identifiable are way off
-if you do simple averaging in XCalibur
+if you do simple averaging in XCalibur (see #2)
 
 ### Peak Detection and Characterization
 
@@ -63,6 +63,12 @@ if you do simple averaging in XCalibur
 
 * RSD is still off
 * Median noise levels
+* Show that normalization is constant / not constant across M/Z (see #1)
+* What do the NAP ratios look like w/out normalization?
 
+### Final Result
+
+* NAP ratios now match expected, within some extremely tight tolerances, and M/Z matches rather well as well
+* Also note that this removes the HPD regions observed previously
 
 
