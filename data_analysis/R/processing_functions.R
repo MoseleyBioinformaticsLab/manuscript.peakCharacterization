@@ -1,12 +1,29 @@
+filter_scans <- function(raw_data){
+  scan_times <- data.frame(scan = raw_data$scan_range,
+                           time = raw_data$raw_data@scantime[raw_data$scan_range])
+  scan_times <- dplyr::mutate(scan_times, lag = time - lag(time), lead = lead(time) - time)
+  scan_times <- dplyr::filter(scan_times, lag >= 4, lead >= 4)
+
+  raw_data$set_scans(scan_range = scan_times$scan)
+  raw_data
+}
+
+
 raw_peakpicking <- function(zip_file, pkg_description){
   zip_data <- zip_ms(zip_file)
   zip_data$load_raw()
   zip_data$cleanup()
-  zip_data$peak_finder <- PeakFinder$new()
+  zip_data$peak_finder <- PeakFinder$new(raw_filter = filter_scans)
 
   zip_data$peak_finder$raw_data <- zip_data$raw_ms
 
+  zip_data$peak_finder$apply_raw_filter()
+  #self$create_multi_scan()
   zip_data$peak_finder$create_multi_scan_peaklist()
+  zip_data$peak_finder$filter_dr_models()
+
+  zip_data$peak_finder$create_multi_scan_peaklist()
+  zip_data$peak_finder$multi_scan_peaklist$calculate_average_mz_model()
   zip_data
 }
 
