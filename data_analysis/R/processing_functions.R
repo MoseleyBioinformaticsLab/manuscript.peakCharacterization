@@ -1,8 +1,11 @@
 filter_scans <- function(raw_data){
   scan_times <- data.frame(scan = raw_data$scan_range,
                            time = raw_data$raw_data@scantime[raw_data$scan_range])
-  scan_times <- dplyr::mutate(scan_times, lag = time - lag(time), lead = lead(time) - time)
-  scan_times <- dplyr::filter(scan_times, lag >= 4, lead >= 4)
+  scan_times <- dplyr::mutate(scan_times, lag = time - dplyr::lag(time), lead = dplyr::lead(time) - time)
+  na_keep <- (is.na(scan_times$lag) | is.na(scan_times$lead)) & ((scan_times$lag >= 4) | (scan_times$lead >= 4))
+  na_keep <- na_keep & !is.na(na_keep)
+  gt_4_keep <- (scan_times$lag >= 4) & (scan_times$lead >= 4)
+  scan_times <- scan_times[(na_keep | gt_4_keep), ]
 
   raw_data$set_scans(scan_range = scan_times$scan)
   raw_data
