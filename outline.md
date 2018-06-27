@@ -23,6 +23,11 @@ narrative around it.
 * Raw data conversion
 
 * Removing scans
+  * M/Z offset models
+    * Have to be non-zero points
+    * Have to use loess to fit
+  * Calculate average model using prediction on a set of points
+  * Use distribution statistics to find outliers
 
 * Peak Characterization
   * up-down
@@ -50,6 +55,11 @@ narrative around it.
 
 * Need a result that shows the NAP ratio for something easily identifiable are way off
 if you do simple averaging in XCalibur (see #2)
+
+### Removing Odd Scans
+
+* From lung cancer data, maybe go through and count the original number of
+scans acquired, and then how many scans on average get removed.
 
 ### Peak Detection and Characterization
 
