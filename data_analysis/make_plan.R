@@ -14,7 +14,7 @@ setup_100cpos <- drake_plan(
 )
 
 setup_ecf <- drake_plan(
-  mzml_ecf = file_in(file.path(project_root, 'data_analysis/data_intput/ecf_data/7_HsPlt_13Cglc_p5Uthrombin_160728_polar_ECF_2.mzML'))
+  mzml_ecf = file_in(file.path(project_root, 'data_analysis/data_intput/ecf_data/7_HsPlt_13Cglc_p5Uthrombin_160728_polar_ECF_2.mzML')),
   tiled_ecf = average_scans_tile_windows(mzml_ecf, peak_pkg_description)
 )
 
