@@ -24,14 +24,25 @@ narrative around it.
 
 * Removing scans
 
-* Peak detection and peak characterization
+* Peak Characterization
   * up-down
   * linear model on the log-intensities
 
-* Matching across scans
-  * error model based on digital resolution
-  * error model based on matching peaks
-  * offset model
+* Non-zero point densities
+  * Window based on M/Z difference model
+  * Sliding windows
+  * Tiled windows
+  * Remove < 99% for sliding windows (removes most of noise)
+  * Reduce remaining
+  * Find peaks in reduced
+  * Count overlap with tiles
+  * Split at zeros
+
+* Normalize
+  * Keep peaks > 0.7 log-ratio of max in a scan
+  * Find most equidistant scan
+  * Take median log-ratio to other scans
+  * Normalize based on this ratio
 
 ## Results
 
@@ -45,26 +56,25 @@ if you do simple averaging in XCalibur (see #2)
 * Plot of raw spectrum showing low base-line
 * Plot of center / intensity after doing peak characterization
 
-### Noise Peak Removal
+### Noise Point Removal
 
-* Plot of log10 intensity
+* Histogram of non-zero counts for sliding regions
 
-### Peak Matching Across Scans
+### Splitting Sub-Regions
 
-* Plot of digital resolution model
-* Plot of changes in error model
-* Plot of changes in offsets
+* Plot of a multiple peak region
+* Plot of counts in tiles
 
 ### Need for Noise Removal
 
-* RSD is way off if they are included
+* RSD is way off if they are not removed
+* # of SMIRFE assignments with / without noise
 
 ### Need for Normalization
 
 * RSD is still off
-* Median noise levels
-* Show that normalization is constant / not constant across M/Z (see #1)
-* What do the NAP ratios look like w/out normalization?
+* # of SMIRFE assignments with / without normalization
+* Show that normalization appears constant in a scan if use high log-ratio points
 
 ### Final Result
 
