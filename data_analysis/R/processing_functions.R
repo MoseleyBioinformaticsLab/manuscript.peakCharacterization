@@ -26,6 +26,7 @@ reduce_removing_zero <- function(regions, point_regions, min_value = 0){
 }
 
 split_with_noise <- function(in_char){
+  set_internal_map(furrr::future_map)
   out_char <- in_char$clone(deep = TRUE)
   out_char$peak_finder$peak_regions$peak_regions <-
     reduce_removing_zero(out_char$peak_finder$peak_regions$sliding_regions,
@@ -35,6 +36,7 @@ split_with_noise <- function(in_char){
 }
 
 split_without_noise <- function(in_char){
+  set_internal_map(furrr::future_map)
   out_char <- in_char$clone(deep = TRUE)
   out_char$peak_finder$reduce_sliding_regions()
   out_char$peak_dinfer$split_peak_regions()
@@ -42,6 +44,7 @@ split_without_noise <- function(in_char){
 }
 
 run_characterization <- function(in_char, normalize = FALSE){
+  set_internal_map(furrr::future_map)
   out_char <- in_char$clone(deep = TRUE)
   if (normalize) {
     out_char$peak_finder$normalize_data()
