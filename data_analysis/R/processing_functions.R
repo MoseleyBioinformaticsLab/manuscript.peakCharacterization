@@ -39,7 +39,7 @@ split_without_noise <- function(in_char){
   set_internal_map(furrr::future_map)
   out_char <- in_char$clone(deep = TRUE)
   out_char$peak_finder$reduce_sliding_regions()
-  out_char$peak_dinfer$split_peak_regions()
+  out_char$peak_finder$split_peak_regions()
   out_char
 }
 
