@@ -54,7 +54,7 @@ run_characterization <- function(in_char, normalize = FALSE){
   set_internal_map(furrr::future_map)
   out_char <- in_char$clone(deep = TRUE)
   if (normalize) {
-    out_char$peak_finder$normalize_data()
+    out_char$peak_finder$normalize_data("both")
   } else {
     out_char <- set_zero_normalization(out_char)
   }
