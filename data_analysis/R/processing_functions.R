@@ -43,11 +43,20 @@ split_without_noise <- function(in_char){
   out_char
 }
 
+set_zero_normalization <- function(out_char){
+  point_scans <- unique(out_char$peak_finder$peak_regions$mz_point_regions@elementMetadata$scan)
+  norm_factors <- data.frame(scan = point_scans, normalization = 0)
+  out_char$peak_finder$peak_regions$normalization_factors <- norm_factors
+  out_char
+}
+
 run_characterization <- function(in_char, normalize = FALSE){
   set_internal_map(furrr::future_map)
   out_char <- in_char$clone(deep = TRUE)
   if (normalize) {
     out_char$peak_finder$normalize_data()
+  } else {
+    out_char <- set_zero_normalization(out_char)
   }
   out_char$peak_finder$find_peaks_in_regions()
   out_char$peak_finder$add_offsets()
