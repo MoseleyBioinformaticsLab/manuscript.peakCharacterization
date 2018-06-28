@@ -23,7 +23,7 @@ setup_plan <- rbind(setup_100cpos, setup_ecf)
 
 # ---- Reduce and split the window regions with and without noise
 splitting_regions_hasnoise <- drake_plan(
-  hasnoise_100cpos = split_with_noise(tiled_100cops),
+  hasnoise_100cpos = split_with_noise(tiled_100cpos),
   hasnoise_ecf = split_with_noise(tiled_ecf)
 )
 
