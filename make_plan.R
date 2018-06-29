@@ -73,6 +73,25 @@ write_for_assignments <- drake_plan(
                                                             file_out("data_analysis/data_output/peaks_nonorm_nonoise_ecf.json")),
 )
 
+# save peak output for other analyses -------------------------------------
+write_for_other_analyses <- drake_plan(
+  rds_hasnorm_hasnoise_100cpos = saveRDS(hasnorm_hasnoise_100cpos,
+                                                              file_out("data_analysis/data_output/peaks_hasnorm_hasnoise_100cpos.rds")),
+  rds_hasnorm_nonoise_100cpos = saveRDS(hasnorm_nonoise_100cpos,
+                                                             file_out("data_analysis/data_output/peaks_hasnorm_nonoise_100cpos.rds")),
+  rds_nonorm_hasnoise_100cpos = saveRDS(nonorm_hasnoise_100cpos,
+                                                             file_out("data_analysis/data_output/peaks_nonorm_hasnoise_100cpos.rds")),
+  rds_nonorm_nonoise_100cpos = saveRDS(nonorm_nonoise_100cpos,
+                                                            file_out("data_analysis/data_output/peaks_nonorm_nonoise_100cpos.rds")),
+  rds_hasnorm_hasnoise_ecf = saveRDS(hasnorm_hasnoise_ecf,
+                                                          file_out("data_analysis/data_output/peaks_hasnorm_hasnoise_ecf.rds")),
+  rds_hasnorm_nonoise_ecf = saveRDS(hasnorm_nonoise_ecf,
+                                                         file_out("data_analysis/data_output/peaks_hasnorm_nonoise_ecf.rds")),
+  rds_nonorm_hasnoise_ecf = saveRDS(nonorm_hasnoise_ecf,
+                                                         file_out("data_analysis/data_output/peaks_nonorm_hasnoise_ecf.rds")),
+  rds_nonorm_nonoise_ecf = saveRDS(nonorm_nonoise_ecf,
+                                                        file_out("data_analysis/data_output/peaks_nonorm_nonoise_ecf.rds")),
+)
 
 # graph_results -----------------------------------------------------------
 
@@ -82,6 +101,7 @@ write_for_assignments <- drake_plan(
 full_plan <- rbind(setup_plan,
                    splitting_region_plan,
                    normalization_plan,
-                   write_for_assignments)
+                   write_for_assignments,
+                   write_for_other_analyses)
 
 make(full_plan)
