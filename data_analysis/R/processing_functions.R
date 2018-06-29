@@ -64,4 +64,7 @@ run_characterization <- function(in_char, normalize = FALSE){
   out_char$peak_finder$model_heightsd()
 }
 
-
+write_peaks_for_assignment <- function(in_regions, out_file){
+  peak_list <- in_regions$summarize_peaks()
+  cat(jsonlite::toJSON(peak_list, auto_unbox = TRUE, pretty = TRUE, digits = 8), file = out_file, sep = "\n")
+}
