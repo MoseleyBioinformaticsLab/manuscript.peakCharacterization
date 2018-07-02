@@ -8,6 +8,7 @@ library(furrr)
 plan(multiprocess)
 project_root <- find_root(is_rstudio_project)
 source("data_analysis/R/processing_functions.R")
+source("data_analysis/R/graph_generation.R")
 
 peak_pkg_description = utils::packageDescription('FTMS.peakCharacterization')
 
