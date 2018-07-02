@@ -1,6 +1,9 @@
 library(drake)
 library(FTMS.peakCharacterization)
 library(rprojroot)
+library(ggplot2)
+theme_set(cowplot::theme_cowplot())
+library(patchwork)
 library(furrr)
 plan(multiprocess)
 project_root <- find_root(is_rstudio_project)
@@ -94,7 +97,20 @@ write_for_other_analyses <- drake_plan(
 )
 
 # graph_results -----------------------------------------------------------
-
+graph_results <- drake_plan(
+  # raw spectrum graph
+  # location of characterized peak
+  # set of bad nap ratio peaks
+  # offset vs M/Z and fit
+  #
+  # show the sliding window counts and the 99th percentile cutoff to denote noise
+  sliding_regions_count_histogram = create_regions_count_histogram(tiled_100cpos,
+                                                                   file_out("data_analysis/figure_output/sliding_regions_count_histogram.png")),
+  # show a region after reduction that still has multiple peaks in it
+  multiple_peak_region = create_multiple_peak_figure(hasnorm_nonoise_100cpos,
+                                                     tiled_100cpos,
+                                                     file_out("data_analysis/figure_outputs/multiple_peak_region_tiles.png"))
+)
 
 
 # ---- Run it all!
@@ -102,6 +118,7 @@ full_plan <- rbind(setup_plan,
                    splitting_region_plan,
                    normalization_plan,
                    write_for_assignments,
-                   write_for_other_analyses)
+                   write_for_other_analyses,
+                   graph_results)
 
 make(full_plan)
