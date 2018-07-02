@@ -111,7 +111,7 @@ graph_results <- drake_plan(
   # show a region after reduction that still has multiple peaks in it
   multiple_peak_region = create_multiple_peak_figure(hasnorm_nonoise_100cpos,
                                                      tiled_100cpos,
-                                                     file_out("data_analysis/figure_outputs/multiple_peak_region_tiles.png"))
+                                                     file_out("data_analysis/figure_output/multiple_peak_region_tiles.png"))
 )
 
 
