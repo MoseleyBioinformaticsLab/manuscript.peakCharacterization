@@ -10,7 +10,7 @@ create_regions_count_histogram <- function(in_char, file_loc){
   base_file <- tools::file_path_sans_ext(file_loc)
   svg_file <- paste0(base_file, ".svg")
   Cairo::CairoSVG(file = svg_file, width = 8, height = 5)
-  p
+  print(p)
   dev.off()
   sys_call <- paste0("inkscape -z -d 300 -e ", file_loc, " ", svg_file)
   system(sys_call)
@@ -76,7 +76,7 @@ create_multiple_peak_figure <- function(characterized_sample, basic_sample, file
   base_file <- tools::file_path_sans_ext(file_loc)
   svg_file <- paste0(base_file, ".svg")
   Cairo::CairoSVG(file = svg_file, width = 16, height = 5)
-  out_plot
+  print(out_plot)
   dev.off()
   sys_call <- paste0("inkscape -z -d 300 -e ", file_loc, " ", svg_file)
   system(sys_call)
