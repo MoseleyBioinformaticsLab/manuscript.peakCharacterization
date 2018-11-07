@@ -23,11 +23,10 @@ narrative around it.
 * Raw data conversion
 
 * Removing scans
-  * M/Z offset models
-    * Have to be non-zero points
-    * Have to use loess to fit
-  * Calculate average model using prediction on a set of points
-  * Use distribution statistics to find outliers
+  * Probably based on TIC
+* Conversion to offset or frequency space
+  * tempting to use LOESS, but can't get a zero intercept
+  * instead use points that show consistent 0.5 difference in frequency space
 
 * Peak Characterization
   * up-down
