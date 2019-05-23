@@ -1,8 +1,9 @@
 # common setup stuff
 #
-# average the scans and generate the sliding and tiling windows
-average_scans_tile_windows <- function(in_file, pkg_description){
-  char_ms <- CharacterizeMSPeaks$new(in_file, peak_finder = PeakRegionFinder$new())
+# read in the scans and generate the sliding and tiling windows
+reading_scans_tile_windows <- function(in_file, pkg_description){
+  use_file = file.path('data_analysis', 'data_input', in_file)
+  char_ms <- CharacterizeMSPeaks$new(use_file, peak_finder = PeakRegionFinder$new())
   char_ms$load_file()
   set_internal_map(furrr::future_map)
   char_ms$filter_raw_scans()
@@ -11,8 +12,7 @@ average_scans_tile_windows <- function(in_file, pkg_description){
   char_ms$zip_ms$raw_ms <- NULL # we drop the raw data to save us some memory
   char_ms$zip_ms$peak_finder$sample_id <- char_ms$zip_ms$id
   char_ms$zip_ms$cleanup() # don't want to leave stuff in the tmp directory
-  char_ms$zip_ms$peak_finder$add_sliding_regions()
-  char_ms$zip_ms$peak_finder$add_tiled_regions()
+  char_ms$zip_ms$peak_finder$add_regions()
 
   char_ms
 }
@@ -32,6 +32,7 @@ split_with_noise <- function(in_char){
     reduce_removing_zero(out_char$peak_finder$peak_regions$sliding_regions,
                          out_char$peak_finder$peak_regions$mz_point_regions)
   out_char$peak_finder$split_peak_regions()
+  out_char$peak_finder$remove_double_peaks_in_scans()
   out_char
 }
 
@@ -40,6 +41,7 @@ split_without_noise <- function(in_char){
   out_char <- in_char$clone(deep = TRUE)
   out_char$peak_finder$reduce_sliding_regions()
   out_char$peak_finder$split_peak_regions()
+  out_char$peak_finder$remove_double_peaks_in_scans()
   out_char
 }
 
@@ -47,6 +49,7 @@ set_zero_normalization <- function(out_char){
   point_scans <- unique(out_char$peak_finder$peak_regions$mz_point_regions@elementMetadata$scan)
   norm_factors <- data.frame(scan = point_scans, normalization = 0)
   out_char$peak_finder$peak_regions$normalization_factors <- norm_factors
+  out_char$peak_finder$peak_regions$is_normalized <- "both"
   out_char
 }
 
