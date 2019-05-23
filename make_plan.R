@@ -14,16 +14,19 @@ source("data_analysis/R/graph_generation.R")
 
 peak_pkg_description = utils::packageDescription('FTMS.peakCharacterization')
 
+use_files = "49Cpos.mzML"
+
 # Get the data in, filter the scans, and add the windowed regions ----------
 read_mzml_data = drake_plan(
   pkg = utils::packageDescription('FTMS.peakCharacterization'),
   data = target(
     reading_scans_tile_windows(input),
-    transform = map(input = c('49Cpos.mzML'))))#, '97Cpos.mzML', '161212_unlabeledAAs_1_ECF.mzML', '161212_unlabeledAAs_2_ECF.mzML')))
+    transform = map(input = !!use_files)))#, '97Cpos.mzML', '161212_unlabeledAAs_1_ECF.mzML', '161212_unlabeledAAs_2_ECF.mzML')))
 #)
 
+data_name = "data_"
 run_single = drake_plan(
-  full_run = run_full(data)
+  full_run = run_full(data_49Cpos.mzML)
 )
 
 # setup_ecf <- drake_plan(
