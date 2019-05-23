@@ -5,7 +5,6 @@ reading_scans_tile_windows <- function(in_file, pkg_description){
   use_file = file.path('data_analysis', 'data_input', in_file)
   char_ms <- CharacterizeMSPeaks$new(use_file, peak_finder = PeakRegionFinder$new())
   char_ms$load_file()
-  set_internal_map(furrr::future_map)
   char_ms$filter_raw_scans()
   char_ms$zip_ms$peak_finder <- char_ms$peak_finder
   char_ms$zip_ms$peak_finder$add_data(char_ms$zip_ms$raw_ms)
@@ -15,6 +14,18 @@ reading_scans_tile_windows <- function(in_file, pkg_description){
   char_ms$zip_ms$peak_finder$add_regions()
 
   char_ms
+}
+
+run_full = function(in_char){
+  in_char$zip_ms$peak_finder$reduce_sliding_regions()
+  in_char$zip_ms$peak_finder$split_peak_regions()
+  in_char$zip_ms$peak_finder$remove_double_peaks_in_scans()
+  in_char$zip_ms$peak_finder$normalize_data()
+  in_char$zip_ms$peak_finder$find_peaks_in_regions()
+  in_char$zip_ms$peak_finder$remove_high_frequency_sd()
+  in_char$zip_ms$peak_finder$add_offset()
+  in_char$zip_ms$peak_finder$sort_ascending_mz()
+  in_char
 }
 
 reduce_removing_zero <- function(regions, point_regions, min_value = 0){

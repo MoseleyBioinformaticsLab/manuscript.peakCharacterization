@@ -7,6 +7,7 @@ library(patchwork)
 library(dplyr)
 library(furrr)
 plan(future.callr::callr)
+set_internal_map(furrr::future_map)
 project_root <- find_root(is_rstudio_project)
 source("data_analysis/R/processing_functions.R")
 source("data_analysis/R/graph_generation.R")
@@ -18,7 +19,11 @@ read_mzml_data = drake_plan(
   pkg = utils::packageDescription('FTMS.peakCharacterization'),
   data = target(
     reading_scans_tile_windows(input),
-    transform = map(input = c('49Cpos.mzML', '97Cpos.mzML', '161212_unlabeledAAs_1_ECF.mzML', '161212_unlabeledAAs_2_ECF.mzML')))
+    transform = map(input = c('49Cpos.mzML'))))#, '97Cpos.mzML', '161212_unlabeledAAs_1_ECF.mzML', '161212_unlabeledAAs_2_ECF.mzML')))
+#)
+
+run_single = drake_plan(
+  full_run = run_full(data)
 )
 
 # setup_ecf <- drake_plan(
@@ -125,5 +130,6 @@ read_mzml_data = drake_plan(
 #                    write_for_other_analyses,
 #                    graph_results)
 
-full_plan = read_mzml_data
+full_plan = bind_plans(read_mzml_data,
+                       run_single)
 make(full_plan)
