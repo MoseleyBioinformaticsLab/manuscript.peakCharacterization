@@ -25,6 +25,10 @@ analysis_plan = drake_plan(
   data = target(
     file_in(input) %>% reading_scans_tile_windows(),
     transform = map(input = !!use_files, .id = FALSE)
+  ),
+  final_method = target(
+    final_characterization(data),
+    transform = map(data)
   )
 )
 
