@@ -14,7 +14,7 @@ source("data_analysis/R/graph_generation.R")
 library(drake)
 peak_pkg_description =
 
-use_files = c("49Cpos.mzML", "97Cpos.mzML", "161212_unlabeledAAs_1_ECF.raw", "161212_unlabeledAAs_2_ECF.raw")
+use_files = dir("data_analysis/data_input", pattern = "mzML", full.names = TRUE)
 
 analysis_plan = drake_plan(
   # check the version of peak characterization we are using, so if it changes, we rerun
@@ -23,7 +23,7 @@ analysis_plan = drake_plan(
     trigger = trigger(change = utils::packageDescription('FTMS.peakCharacterization'))
   ),
   data = target(
-    reading_scans_tile_windows(input),
+    file_in(use_files) %>% reading_scans_tile_windows(),
     transform = map(input = !!use_files, .id = FALSE)
   )
 )
