@@ -23,11 +23,11 @@ analysis_plan = drake_plan(
     trigger = trigger(change = utils::packageDescription('FTMS.peakCharacterization'))
   ),
   data = target(
-    file_in(input) %>% reading_scans_tile_windows(),
+    file_in(input) %>% reading_scans_tile_windows(., pkg),
     transform = map(input = !!use_files, .id = FALSE)
   ),
   final_method = target(
-    final_characterization(data),
+    final_characterization(data, pkg),
     transform = map(data)
   )
 )

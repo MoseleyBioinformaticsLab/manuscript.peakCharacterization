@@ -1,7 +1,7 @@
 # common setup stuff
 #
 # read in the scans and generate the sliding and tiling windows
-reading_scans_tile_windows <- function(in_file){
+reading_scans_tile_windows <- function(in_file, pkg_desc){
   #use_file = file.path('data_analysis', 'data_input', in_file)
   use_file = in_file
   char_ms <- CharacterizeMSPeaks$new(use_file, peak_finder = PeakRegionFinder$new())
@@ -17,7 +17,7 @@ reading_scans_tile_windows <- function(in_file){
   char_ms
 }
 
-final_characterization = function(in_char){
+final_characterization = function(in_char, pkg_desc){
   in_char$zip_ms$peak_finder$reduce_sliding_regions()
   in_char$zip_ms$peak_finder$split_peak_regions()
   in_char$zip_ms$peak_finder$remove_double_peaks_in_scans()
