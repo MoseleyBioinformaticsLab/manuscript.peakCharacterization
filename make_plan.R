@@ -27,7 +27,7 @@ analysis_plan = drake_plan(
     transform = map(input = !!use_files, .id = FALSE)
   ),
   final_method = target(
-    final_characterization(data, pkg),
+    final_characterization(data),
     transform = map(data)
   )
 )

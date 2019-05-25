@@ -17,7 +17,7 @@ reading_scans_tile_windows <- function(in_file, pkg_desc){
   char_ms
 }
 
-final_characterization = function(in_char, pkg_desc){
+final_characterization = function(in_char){
   in_char$zip_ms$peak_finder$reduce_sliding_regions()
   in_char$zip_ms$peak_finder$split_peak_regions()
   in_char$zip_ms$peak_finder$remove_double_peaks_in_scans()
