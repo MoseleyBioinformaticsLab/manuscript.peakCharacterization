@@ -26,8 +26,28 @@ analysis_plan = drake_plan(
     file_in(input) %>% reading_scans_tile_windows(., pkg),
     transform = map(input = !!use_files, .id = FALSE)
   ),
-  final_method = target(
-    final_characterization(data),
+  group1_method = target(
+    group1_characterization(data),
+    transform = map(data)
+  ),
+  group2_method = target(
+    group2_characterization(data),
+    transform = map(data)
+  ),
+  group3_method = target(
+    group3_characterization(data),
+    transform = map(data)
+  ),
+  group4_method = target(
+    group4_characterization(data),
+    transform = map(data)
+  ),
+  group5_method = target(
+    group5_characterization(data),
+    transform = map(data)
+  ),
+  group6_method = target(
+    group6_characterization(data),
     transform = map(data)
   )
 )
