@@ -12,16 +12,13 @@ source("data_analysis/R/processing_functions.R")
 source("data_analysis/R/graph_generation.R")
 
 library(drake)
-peak_pkg_description =
+peak_pkg_description = utils::packageDescription('FTMS.peakCharacterization')
 
 use_files = dir("data_analysis/data_input", pattern = "mzML", full.names = TRUE)
 
 analysis_plan = drake_plan(
   # check the version of peak characterization we are using, so if it changes, we rerun
-  pkg = target(
-    # Triggers are always checked even though commands do not always run:
-    trigger = trigger(change = utils::packageDescription('FTMS.peakCharacterization'))
-  ),
+  pkg = peak_pkg_description,
   data = target(
     file_in(input) %>% reading_scans_tile_windows(., pkg),
     transform = map(input = !!use_files, .id = FALSE)
