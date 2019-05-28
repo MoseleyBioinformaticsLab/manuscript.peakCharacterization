@@ -14,10 +14,11 @@ reading_scans_tile_windows <- function(in_file, pkg_desc){
   char_ms$zip_ms$cleanup() # don't want to leave stuff in the tmp directory
   char_ms$zip_ms$peak_finder$add_regions()
 
-  char_ms
+  list(char_obj = char_ms, pkg = pkg_desc)
 }
 
-final_characterization = function(in_char){
+final_characterization = function(in_list){
+  in_char = in_list$char_obj
   in_char$zip_ms$peak_finder$reduce_sliding_regions()
   in_char$zip_ms$peak_finder$split_peak_regions()
   in_char$zip_ms$peak_finder$remove_double_peaks_in_scans()
