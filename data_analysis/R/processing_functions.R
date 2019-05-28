@@ -63,9 +63,9 @@ group1_characterization = function(in_list){
   in_char$zip_ms$peak_finder$peak_regions$peak_regions =
     reduce_removing_zero(in_char$peak_finder$peak_regions$sliding_regions,
                          in_char$peak_finder$peak_regions$frequency_point_regions)
-  in_char$zip_ms$peak_finder$peak_regions = zero_normalization(in_char$zip_ms$peak_finder$peak_regions)
   in_char$zip_ms$peak_finder$split_peak_regions()
   in_char$zip_ms$peak_finder$remove_double_peaks_in_scans()
+  in_char$zip_ms$peak_finder$peak_regions = zero_normalization(in_char$zip_ms$peak_finder$peak_regions)
   in_char$zip_ms$peak_finder$find_peaks_in_regions()
   in_char$zip_ms$peak_finder$add_offset()
   in_char$zip_ms$peak_finder$sort_ascending_mz()
@@ -77,8 +77,8 @@ group2_characterization = function(in_list){
 
   in_char$zip_ms$peak_finder$reduce_sliding_regions()
   in_char$zip_ms$peak_finder$split_peak_regions()
-  in_char$zip_ms$peak_finder$peak_regions = zero_normalization(in_char$zip_ms$peak_finder$peak_regions)
   in_char$zip_ms$peak_finder$remove_double_peaks_in_scans()
+  in_char$zip_ms$peak_finder$peak_regions = zero_normalization(in_char$zip_ms$peak_finder$peak_regions)
   in_char$zip_ms$peak_finder$find_peaks_in_regions()
   in_char$zip_ms$peak_finder$add_offset()
   in_char$zip_ms$peak_finder$sort_ascending_mz()
