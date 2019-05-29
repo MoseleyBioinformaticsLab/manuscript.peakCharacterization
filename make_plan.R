@@ -8,6 +8,8 @@ theme_set(cowplot::theme_cowplot())
 library(patchwork)
 library(dplyr)
 project_root <- find_root(is_rstudio_project)
+
+options(future.globals.maxSize = 2000 * 1024^2)
 source("data_analysis/R/processing_functions.R")
 source("data_analysis/R/graph_generation.R")
 
