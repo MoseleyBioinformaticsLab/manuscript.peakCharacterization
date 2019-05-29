@@ -31,16 +31,16 @@ zero_normalization = function(peak_regions){
   normalize_peaks = "both"
   scan_peaks <- peak_regions$scan_peaks
 
-  all_scans = unique(unlist(purrr::map(scan_peaks, "scan")))
-  normalization_factors <- data.frame(scan = all_scans, normalization = 0)
+  all_scans = unique(unlist(purrr::map(scan_peaks, ~ .x$scan)))
+  normalization_factors <- data.frame(scan = sort(all_scans), normalization = 0)
 
-  normed_peaks <- internal_map$map_function(scan_peaks, normalize_scan_peaks, normalization_factors)
+  normed_peaks <- FTMS.peakCharacterization:::internal_map$map_function(scan_peaks, FTMS.peakCharacterization:::normalize_scan_peaks, normalization_factors)
 
-  normed_scan_cor <- purrr::map_dbl(normed_peaks, intensity_scan_correlation)
+  normed_scan_cor <- purrr::map_dbl(normed_peaks, FTMS.peakCharacterization:::intensity_scan_correlation)
   normed_scan_cor[is.na(normed_scan_cor)] <- 0
   low_cor <- abs(normed_scan_cor) <= 0.5
 
-  normed_raw <- normalize_raw_points(peak_regions$frequency_point_regions, normalization_factors)
+  normed_raw <- FTMS.peakCharacterization:::normalize_raw_points(peak_regions$frequency_point_regions, normalization_factors)
 
   peak_regions$scan_peaks <- normed_peaks
   peak_regions$frequency_point_regions <- normed_raw
@@ -49,7 +49,7 @@ zero_normalization = function(peak_regions){
 
   normed_scan_cor <- data.frame(ScanCorrelation = normed_scan_cor,
                                 HighCor = !low_cor)
-  n_scans <- purrr::map_int(scan_peaks, calculate_number_of_scans)
+  n_scans <- purrr::map_int(scan_peaks, FTMS.peakCharacterization:::calculate_number_of_scans)
   normed_scan_cor$HighScan <- n_scans >= quantile(n_scans, 0.9)
   normed_scan_cor$Ignore <- normed_scan_cor$HighCor & normed_scan_cor$HighScan
   peak_regions$scan_correlation <- normed_scan_cor
@@ -98,16 +98,16 @@ group3_characterization = function(in_list){
     normalize_peaks = "both"
     scan_peaks <- peak_regions$scan_peaks
 
-    normalization_factors <- single_pass_normalization(scan_peaks, intensity_measure = intensity_measure, summary_function = summary_function,
+    normalization_factors <- FTMS.peakCharacterization:::single_pass_normalization(scan_peaks, intensity_measure = intensity_measure, summary_function = summary_function,
                                                        min_ratio = 0)
 
-    normed_peaks <- internal_map$map_function(scan_peaks, normalize_scan_peaks, normalization_factors)
+    normed_peaks <- FTMS.peakCharacterization:::internal_map$map_function(scan_peaks, FTMS.peakCharacterization:::normalize_scan_peaks, normalization_factors)
 
-    normed_scan_cor <- purrr::map_dbl(normed_peaks, intensity_scan_correlation)
+    normed_scan_cor <- purrr::map_dbl(normed_peaks, FTMS.peakCharacterization:::intensity_scan_correlation)
     normed_scan_cor[is.na(normed_scan_cor)] <- 0
     low_cor <- abs(normed_scan_cor) <= 0.5
 
-    normed_raw <- normalize_raw_points(peak_regions$frequency_point_regions, normalization_factors)
+    normed_raw <- FTMS.peakCharacterization:::normalize_raw_points(peak_regions$frequency_point_regions, normalization_factors)
 
     peak_regions$scan_peaks <- normed_peaks
     peak_regions$frequency_point_regions <- normed_raw
@@ -116,7 +116,7 @@ group3_characterization = function(in_list){
 
     normed_scan_cor <- data.frame(ScanCorrelation = normed_scan_cor,
                                   HighCor = !low_cor)
-    n_scans <- purrr::map_int(scan_peaks, calculate_number_of_scans)
+    n_scans <- purrr::map_int(scan_peaks, FTMS.peakCharacterization:::calculate_number_of_scans)
     normed_scan_cor$HighScan <- n_scans >= quantile(n_scans, 0.9)
     normed_scan_cor$Ignore <- normed_scan_cor$HighCor & normed_scan_cor$HighScan
     peak_regions$scan_correlation <- normed_scan_cor
@@ -143,16 +143,16 @@ group4_characterization = function(in_list){
     normalize_peaks = "both"
     scan_peaks <- peak_regions$scan_peaks
 
-    normalization_factors <- single_pass_normalization(scan_peaks, intensity_measure = intensity_measure, summary_function = summary_function,
+    normalization_factors <- FTMS.peakCharacterization:::single_pass_normalization(scan_peaks, intensity_measure = intensity_measure, summary_function = summary_function,
                                                        min_ratio = 0.7)
 
-    normed_peaks <- internal_map$map_function(scan_peaks, normalize_scan_peaks, normalization_factors)
+    normed_peaks <- FTMS.peakCharacterization:::internal_map$map_function(scan_peaks, FTMS.peakCharacterization:::normalize_scan_peaks, normalization_factors)
 
-    normed_scan_cor <- purrr::map_dbl(normed_peaks, intensity_scan_correlation)
+    normed_scan_cor <- purrr::map_dbl(normed_peaks, FTMS.peakCharacterization:::intensity_scan_correlation)
     normed_scan_cor[is.na(normed_scan_cor)] <- 0
     low_cor <- abs(normed_scan_cor) <= 0.5
 
-    normed_raw <- normalize_raw_points(peak_regions$frequency_point_regions, normalization_factors)
+    normed_raw <- FTMS.peakCharacterization:::normalize_raw_points(peak_regions$frequency_point_regions, normalization_factors)
 
     peak_regions$scan_peaks <- normed_peaks
     peak_regions$frequency_point_regions <- normed_raw
@@ -161,7 +161,7 @@ group4_characterization = function(in_list){
 
     normed_scan_cor <- data.frame(ScanCorrelation = normed_scan_cor,
                                   HighCor = !low_cor)
-    n_scans <- purrr::map_int(scan_peaks, calculate_number_of_scans)
+    n_scans <- purrr::map_int(scan_peaks, FTMS.peakCharacterization:::calculate_number_of_scans)
     normed_scan_cor$HighScan <- n_scans >= quantile(n_scans, 0.9)
     normed_scan_cor$Ignore <- normed_scan_cor$HighCor & normed_scan_cor$HighScan
     peak_regions$scan_correlation <- normed_scan_cor
