@@ -25,47 +25,16 @@ reduce_removing_zero <- function(regions, point_regions, min_value = 0){
   IRanges::reduce(regions)
 }
 
-zero_normalization = function(peak_regions){
-  intensity_measure = c("RawHeight", "Height")
-  summary_function = median
-  normalize_peaks = "both"
-  scan_peaks <- peak_regions$scan_peaks
-
-  all_scans = unique(unlist(purrr::map(scan_peaks, ~ .x$scan)))
-  normalization_factors <- data.frame(scan = sort(all_scans), normalization = 0)
-
-  normed_peaks <- FTMS.peakCharacterization:::internal_map$map_function(scan_peaks, FTMS.peakCharacterization:::normalize_scan_peaks, normalization_factors)
-
-  normed_scan_cor <- purrr::map_dbl(normed_peaks, FTMS.peakCharacterization:::intensity_scan_correlation)
-  normed_scan_cor[is.na(normed_scan_cor)] <- 0
-  low_cor <- abs(normed_scan_cor) <= 0.5
-
-  normed_raw <- FTMS.peakCharacterization:::normalize_raw_points(peak_regions$frequency_point_regions, normalization_factors)
-
-  peak_regions$scan_peaks <- normed_peaks
-  peak_regions$frequency_point_regions <- normed_raw
-  peak_regions$is_normalized <- "both"
-  peak_regions$normalization_factors <- normalization_factors
-
-  normed_scan_cor <- data.frame(ScanCorrelation = normed_scan_cor,
-                                HighCor = !low_cor)
-  n_scans <- purrr::map_int(scan_peaks, FTMS.peakCharacterization:::calculate_number_of_scans)
-  normed_scan_cor$HighScan <- n_scans >= quantile(n_scans, 0.9)
-  normed_scan_cor$Ignore <- normed_scan_cor$HighCor & normed_scan_cor$HighScan
-  peak_regions$scan_correlation <- normed_scan_cor
-  peak_regions
-}
-
-
 group1_characterization = function(in_list){
   in_char = in_list$char_obj
+  in_char$zip_ms$peak_finder$zero_normalization = TRUE
 
   in_char$zip_ms$peak_finder$peak_regions$peak_regions =
     reduce_removing_zero(in_char$peak_finder$peak_regions$sliding_regions,
                          in_char$peak_finder$peak_regions$frequency_point_regions)
   in_char$zip_ms$peak_finder$split_peak_regions()
   in_char$zip_ms$peak_finder$remove_double_peaks_in_scans()
-  in_char$zip_ms$peak_finder$peak_regions = zero_normalization(in_char$zip_ms$peak_finder$peak_regions)
+  in_char$zip_ms$peak_finder$normalize_data()
   in_char$zip_ms$peak_finder$find_peaks_in_regions()
   in_char$zip_ms$peak_finder$add_offset()
   in_char$zip_ms$peak_finder$sort_ascending_mz()
@@ -74,11 +43,12 @@ group1_characterization = function(in_list){
 
 group2_characterization = function(in_list){
   in_char = in_list$char_obj
+  in_char$zip_ms$peak_finder$zero_normalization = TRUE
 
   in_char$zip_ms$peak_finder$reduce_sliding_regions()
   in_char$zip_ms$peak_finder$split_peak_regions()
   in_char$zip_ms$peak_finder$remove_double_peaks_in_scans()
-  in_char$zip_ms$peak_finder$peak_regions = zero_normalization(in_char$zip_ms$peak_finder$peak_regions)
+  in_char$zip_ms$peak_finder$normalize_data()
   in_char$zip_ms$peak_finder$find_peaks_in_regions()
   in_char$zip_ms$peak_finder$add_offset()
   in_char$zip_ms$peak_finder$sort_ascending_mz()
