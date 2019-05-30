@@ -40,6 +40,93 @@ On a single scan level, possible peaks are detected by simple bump-hunting for t
 $$\ln{intensity} = intercept + a*position+b*position^2$$
 From this weighted parabolic fit the center, intensity, integrated area and sum-of-square residuals can be extracted for the peak. These characteristics are equivalent to the centroided peak center and intensity.
 
+Before further processing, the regions are checked that there is only one peak from each scan. If a scan has two or more peaks, then the scan level data in that region is discarded. Any regions that subsequently contain zero peaks are removed.
+
 ### Scan to Scan Normalization
 
-Scans are normalized to a single *median* scan based on the log-intensity ratios of a subset of peaks that are present in the 95th percentile of scans. 
+Scans are normalized to a single *median* scan based on the log-intensity differences of a subset of peaks that are present in at least the same number of scans as the 95th percentile of scan counts for the peaks. In addition, only those peaks that have an intensity greater than 0.7 times the highest intensity peak in the scan are used. Pairwise scan-to-scan distances are calculated by taking the cartesian distances between log peak intensities present in both scans, and then the cartesian distance is summed across the scan-to-scan distance to provide an overall difference of each to all other scans. The scan with the lowest summed overall distance is chosen as the "reference" scan, and normalization factors for each scan are calculated as the median log peak intensity differences in scan_i compared to the reference scan. This normalization is done twice, once using all possible peaks, after which the correlation of peak intensity with scan number is checked, and those peaks with correlation of greater than 0.5 with scan number are removed, and the normalization factors are calculated again, and then applied to both the centroided peak height and the raw point intensities.
+
+### Full Characterization
+
+Based on the previously detected peaks, the full set of raw data points for each peak in each scan within a region is known. The non-zero intensity, normalized raw data points across scans can be combined, and then characterized again using the weighted parabolic fit previously described. In addition to the data from the full set of raw points, means and standard deviations of the peak height and location can be extracted from the scan level peak characteristics previously calculated.
+
+In addition to these values, the frequency point-to-point median difference is calculated across all of the raw data points for those points that could be used for modeling frequency to M/Z, and this difference of a single point from the peak center is calculated in frequency space, and converted to M/Z space to provide an "offset" value that is useful to define the search space around the peak for any assignment algorithm.
+
+### Correction of Height and Standard Deviation
+
+Ideally, each peak would be observed in every scan. However, in some scans, some peaks are not likely to be observed due to the number of ions falling below the detection threshold. This results in a truncated distribution of peak intensities across scans. To correct these, either a correction based on a model of the truncated normal distribution can be used, or the differences can be simulated by sampling from data that is present in most of the scans. To simulate the effect on the standard deviations, the peaks present in all scans are used. For each peak, a sample of the heights across scans are taken (ranging from 5% to 95% of scans), and a new standard deviation calculated for that fraction, and a ratio of the fractional standard deviation to the "true" standard deviation calculated. The ratio sd across peaks can then be fitted to a cubic model of the fraction used, and a correction factor predicted for those peaks that are present in fewer scans. The corrected sd's can then be used to correct the mean height assuming that it is the result of a truncated normal distribution [wikipedia referenc, https://en.wikipedia.org/wiki/Truncated_normal_distribution].
+
+### Model of M/Z Standard Deviation
+
+**do we use this anywhere**?? Because if not, maybe we shouldn't bother including it.
+
+### Samples and Overall Processing
+
+Samples included two ethyl-chloroformate (ECF) derivatized amino-acid samples [reference] and two samples where lipid extracts were extracted from lung tumors [reference]. All four samples are positive mode, were converted from raw to mzML using msconvert from ProteoWizard (profile mode) and ThermoRawFileParser (centroided).
+
+For each raw data file in mzML format, they were each processed in these six ways:
+
+  1. No noise removal, no normalization, no frequency SD filtering
+  2. Noise removal, no normalization, no frequency SD filtering
+  3. Noise removal, single pass normalization with all peaks, no frequency SD filtering
+  4. Noise removal, single pass normalization with high ratio peaks, no frequency SD filtering
+  5. Noise removal, two pass normalization, no frequency SD filtering
+  6. Noise removal, two pass normalization, frequency SD filtering
+
+## Results
+
+### Naively Averaged Data Have Bad Relative Intensities
+
+To motivate our solution, we generated peak lists using the peak exporting functionality in Xcalibur (a process we have observed being used to generate datasets), as well as doing a straight averaging of point intensities using identical scans as was kept by our scan filtering (see Methods) in the xcms R package, and finally averaging peaks that were centroided via the Thermo raw file parsing utilities (wrapped by ThermoRawFileParser). In all cases, for a known assigned set of peaks, the intensity ratios between the assigned peaks are off compared to what is expected based on natural abundance probability (NAP), as shown in Figure X, with some solutions giving different amounts of error. We do note that when all of the peaks are present in a single scan, their relative intensity ratios are much closer to the theoretical ratios based on NAP.
+
+### M/Z to Frequency
+
+FT-MS data from the Thermo-Fisher Orbitrap instrument used to acquire the data does not provide any information about the raw frequency data, outside of meta-data, it merely contains the M/Z and intensity values for profile spectra acquired across multiple scans. However, it turns out that the frequency can be calculated by dividing the average M/Z of two adjacent points with their difference. The differences in frequency should be relatively constant with respect to M/Z, in contrast to the differences of adjacent M/Z points, shown in Figure Xa and Xb. Our instrument seems to have a mode of 0.5, as shown in Figure Xc. Restricting to those points that fall into a narrow range of frequency differences (0.49 - 0.51), a model of frequency to M/Z can be generated (see Methods), an example of which is shown in Figure Xd. This model seems to fit the known relationship between frequency and M/Z. This is useful, because some of the subsequent steps in our workflow use sliding windows where it is assumed that the sliding windows contain the same number of data points. M/Z point-to-point differences are not constant, but can be approximated by a lasso linear model. However, it is very difficult to create a lasso model with an intercept of 0, and then vary the width of sliding windows according to the M/Z difference at a particular M/Z. Frequency based points suffer none of these drawbacks, and it turns out that the conversion from M/Z can be derived from the raw profile level data itself, which is incredibly useful.
+
+```{r mz_frequency_figure}
+# Figure showing relationship of M/Z to frequency
+# a - mean m/z vs diff m/z
+# b - mean m/z vs diff frequency
+# c - histogram of diff frequency
+# d - mean m/z vs frequency
+
+```
+
+These models are calculated for each scan, and the intercepts from the models compared and examined for outliers. Outlier intercepts are determined from the interquartile range, and outliers removed. When scan specific models are used for conversion of M/Z to frequency, the peak order observed in M/Z space is not maintained, as shown in Figure 2a-c. Therefore, a single model based on the median intercept and slope is used for converting *all* remaining scan level data.
+
+```{r peak_ordering}
+# Figure showing changes in order of peaks
+# a - peaks in M/Z compared to frequency scan specific
+# b - peaks in M/Z compared to frequency single model
+
+```
+
+Although the original model is created from only those points that had frequency point-to-point differences within a narrow range, **all** M/Z points are converted to frequency for subsequent steps in the workflow.
+
+### Sliding Window Density to Remove Noise
+
+In a dataset of this nature, we expect that much of the data is really just noise, and doesn't contribute that much to the analysis. It is expected that noise is randomly distributed across the scans. Therefore, if we slide a window across the data and sum the number of non-zero points in each window, we expect that most of the data we encounter is actually noise. The distribution of counts is shown in Figure X. The number of peaks detected without applying a cutoff explodes by ..., with the vast majority of the peaks being present in a single scan. By merging those windows that are adjacent **and** have a point density greater than the 99th percentile, the regions most likely to contain actual, informative peaks are rapidly and easily determined.
+
+```{r slidingwindow_count_distribution}
+# Figure showing distribution of nonzero counts
+```
+
+For each region initially created, the peaks in each scan within that region can be characterized using a quadratic fit of log(intensity) to M/Z.
+
+### Peak Characterization Using Quadratic Fit
+
+Although many other types of mass-spectrometry data suffer from a variable, noisy baseline, the scan-level profile data in the direct-injection samples shows a true baseline value of 0, making the determination of the centroided values considerably easier. For the peak characterization (centroiding), we use a simple quadratic model of log(intensity) to M/Z. We add a small constant to enable using the zero values, and weight the values by their ratio to the most intense value, which is normally the value closest to the center of peak, helping to ensure that the **true** centroid is determined. From the fitted model, we can derive the centroided center and the intensity of the peak, as shown in Figure X.
+
+```{r centroided_peaks}
+# figure showing fit of quadratic model to actual data points
+```
+
+### Breaking Up Initial Regions
+
+With the characterized (centroided) peak data from across scans within each region, it is then important to determine if only one or multiple "peaks" are actually present in the region. Our solution to this is to define breaks between **actual** peaks as a single frequency bin with zero characterized peaks within it. The frequency bins are created from tiled windows that are one frequency point difference wide. Adjacent non-zero frequency bins are merged to comprise a single peak region. Figure X shows an example where an initial region is broken up into multiple regions based on the characterized peak centers. 
+
+```{r breaking_regions}
+# figure showing multiple "peaks" in what is initially a single region
+```
+
+### Normalization of Scans
