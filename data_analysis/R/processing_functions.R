@@ -26,7 +26,7 @@ reduce_removing_zero <- function(regions, point_regions, min_value = 0){
 }
 
 group1_characterization = function(in_list){
-  in_char = in_list$char_obj
+  in_char = in_list$char_obj$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = TRUE
 
   in_char$zip_ms$peak_finder$peak_regions$peak_regions =
@@ -42,7 +42,7 @@ group1_characterization = function(in_list){
 }
 
 group2_characterization = function(in_list){
-  in_char = in_list$char_obj
+  in_char = in_list$char_obj$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = TRUE
 
   in_char$zip_ms$peak_finder$reduce_sliding_regions()
@@ -56,7 +56,8 @@ group2_characterization = function(in_list){
 }
 
 group3_characterization = function(in_list){
-  in_char = in_list$char_obj
+  in_char = in_list$char_obj$clone(deep = TRUE)
+  in_char$zip_ms$peak_finder$zero_normalization = FALSE
   in_char$zip_ms$peak_finder$reduce_sliding_regions()
   in_char$zip_ms$peak_finder$split_peak_regions()
   in_char$zip_ms$peak_finder$remove_double_peaks_in_scans()
@@ -101,7 +102,8 @@ group3_characterization = function(in_list){
 }
 
 group4_characterization = function(in_list){
-  in_char = in_list$char_obj
+  in_char = in_list$char_obj$clone(deep = TRUE)
+  in_char$zip_ms$peak_finder$zero_normalization = FALSE
   in_char$zip_ms$peak_finder$reduce_sliding_regions()
   in_char$zip_ms$peak_finder$split_peak_regions()
   in_char$zip_ms$peak_finder$remove_double_peaks_in_scans()
@@ -146,7 +148,8 @@ group4_characterization = function(in_list){
 }
 
 group5_characterization = function(in_list){
-  in_char = in_list$char_obj
+  in_char = in_list$char_obj$clone(deep = TRUE)
+  in_char$zip_ms$peak_finder$zero_normalization = FALSE
   in_char$zip_ms$peak_finder$reduce_sliding_regions()
   in_char$zip_ms$peak_finder$split_peak_regions()
   in_char$zip_ms$peak_finder$remove_double_peaks_in_scans()
@@ -159,7 +162,8 @@ group5_characterization = function(in_list){
 }
 
 group6_characterization = function(in_list){
-  in_char = in_list$char_obj
+  in_char = in_list$char_obj$clone(deep = TRUE)
+  in_char$zip_ms$peak_finder$zero_normalization = FALSE
   in_char$zip_ms$peak_finder$reduce_sliding_regions()
   in_char$zip_ms$peak_finder$split_peak_regions()
   in_char$zip_ms$peak_finder$remove_double_peaks_in_scans()
