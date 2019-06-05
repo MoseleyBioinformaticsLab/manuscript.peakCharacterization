@@ -1,6 +1,6 @@
 library(FTMS.peakCharacterization)
 library(furrr)
-future::plan(multicore)
+future::plan(multicore(workers = 8))
 set_internal_map(furrr::future_map)
 library(rprojroot)
 library(ggplot2)
