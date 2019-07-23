@@ -18,6 +18,8 @@ peak_pkg_description = utils::packageDescription('FTMS.peakCharacterization')
 
 use_files = dir("data_analysis/data_input", pattern = "mzML", full.names = TRUE)
 
+write_loc = "data_analysis/data_output"
+
 analysis_plan = drake_plan(
   # check the version of peak characterization we are using, so if it changes, we rerun
   pkg = peak_pkg_description,
@@ -48,6 +50,10 @@ analysis_plan = drake_plan(
   group6_method = target(
     group6_characterization(data),
     transform = map(data)
+  ),
+  write_groups = target(
+    write_peaks_for_assignment(group6_method),
+    transform = map(group6_method)
   )
 )
 

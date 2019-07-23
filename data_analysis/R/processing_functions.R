@@ -25,6 +25,7 @@ reduce_removing_zero <- function(regions, point_regions, min_value = 0){
   IRanges::reduce(regions)
 }
 
+# only remove zero points, no consideration of percentile, and no normalization (zero_normalization)
 group1_characterization = function(in_list){
   in_char = in_list$char_obj$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = TRUE
@@ -41,6 +42,7 @@ group1_characterization = function(in_list){
   in_char
 }
 
+# remove points based on the 99th percentile, no normalization (see zero_normalization)
 group2_characterization = function(in_list){
   in_char = in_list$char_obj$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = TRUE
@@ -55,6 +57,7 @@ group2_characterization = function(in_list){
   in_char
 }
 
+# remove points from 99th percentile, do single pass normalization without intensity cutoff
 group3_characterization = function(in_list){
   in_char = in_list$char_obj$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = FALSE
@@ -101,6 +104,8 @@ group3_characterization = function(in_list){
   in_char
 }
 
+# remove points below 99th percentile
+# single pass normalization based on intensity
 group4_characterization = function(in_list){
   in_char = in_list$char_obj$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = FALSE
@@ -147,6 +152,9 @@ group4_characterization = function(in_list){
   in_char
 }
 
+# remove points based on 99th percentile
+# proper two pass normalization
+# no filtering on frequency sd
 group5_characterization = function(in_list){
   in_char = in_list$char_obj$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = FALSE
@@ -161,6 +169,9 @@ group5_characterization = function(in_list){
   in_char
 }
 
+# remove points based on 99th percentile
+# proper two pass normalization
+# filter on frequency sd
 group6_characterization = function(in_list){
   in_char = in_list$char_obj$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = FALSE
@@ -175,27 +186,15 @@ group6_characterization = function(in_list){
   in_char
 }
 
-split_with_noise <- function(in_char){
-  set_internal_map(furrr::future_map)
-  out_char <- in_char$clone(deep = TRUE)
-  out_char$peak_finder$peak_regions$peak_regions <-
-    reduce_removing_zero(out_char$peak_finder$peak_regions$sliding_regions,
-                         out_char$peak_finder$peak_regions$mz_point_regions)
-  out_char$peak_finder$split_peak_regions()
-  out_char$peak_finder$remove_double_peaks_in_scans()
-  out_char
-}
-
-split_without_noise <- function(in_char){
-  set_internal_map(furrr::future_map)
-  out_char <- in_char$clone(deep = TRUE)
-  out_char$peak_finder$reduce_sliding_regions()
-  out_char$peak_finder$split_peak_regions()
-  out_char$peak_finder$remove_double_peaks_in_scans()
-  out_char
-}
-
-write_peaks_for_assignment <- function(in_regions, out_file){
-  peak_list <- in_regions$summarize_peaks()
-  cat(jsonlite::toJSON(peak_list, auto_unbox = TRUE, pretty = TRUE, digits = 8), file = out_file, sep = "\n")
+write_peaks_for_assignment <- function(in_char){
+  in_char$out_file = file.path(write_loc, paste0(in_char$zip_ms$peak_finder$sample_id, ".zip"))
+  in_char$zip_ms$out_file = in_char$out_file
+  dir.create(in_char$zip_ms$temp_directory, recursive = TRUE)
+  in_char$zip_ms$peak_finder$start_time = Sys.time()
+  in_char$zip_ms$peak_finder$stop_time = Sys.time()
+  in_char$summarize()
+  in_char$save_peaks()
+  in_char$write_zip()
+  in_char$zip_ms$cleanup()
+  in_char$out_file
 }
