@@ -7,6 +7,7 @@ library(ggplot2)
 theme_set(cowplot::theme_cowplot())
 library(patchwork)
 library(dplyr)
+library(glue)
 project_root <- find_root(is_rstudio_project)
 
 options(future.globals.maxSize = 2000 * 1024^2)
@@ -54,6 +55,10 @@ analysis_plan = drake_plan(
   write_groups = target(
     write_peaks_for_assignment(group6_method),
     transform = map(group6_method)
+  ),
+  assign_groups = target(
+    assign_files(write_groups),
+    transform = map(write_groups)
   )
 )
 
