@@ -196,5 +196,31 @@ write_peaks_for_assignment <- function(in_char){
   in_char$save_peaks()
   in_char$write_zip()
   in_char$zip_ms$cleanup()
-  in_char$out_file
+  return_file(in_char$out_file)
+}
+
+assign_files = function(in_zip){
+  in_file = in_zip$file
+  zip_path = normalizePath(in_file)
+  curr_dir = getwd()
+  assigned_file = paste0(in_file, "_assigned.json")
+
+  if (grepl("ECF", in_file)) {
+
+    run_str = glue("python3 ./Main.py /mlab/scratch/cesb_data/smirfe_dbs/n15_1600.db {zip_path} '_assigned.json' '[\"N\"]' '[\"H\", \"Na\", \"K\", \"NH4\"]' '[1]'")
+    out_value = NULL
+  } else {
+    setwd("~/Projects/work/SMIRFE/SMIRFE_assigner/")
+    run_str = glue("python3 ./Main.py /mlab/scratch/cesb_data/smirfe_dbs/none_1600.db {zip_path} '_assigned.json' '[]' '[\"H\", \"Na\", \"K\", \"NH4\"]' '[1]'")
+    system(run_str)
+    setwd(curr_dir)
+    out_value = return_file(assigned_file)
+  }
+
+  out_value
+}
+
+return_file = function(in_file){
+  sha256 = system2("sha256sum", args = in_file, stdout = TRUE)
+  list(file = in_file, sha256 = sha256)
 }
