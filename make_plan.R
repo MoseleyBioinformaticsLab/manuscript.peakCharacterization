@@ -60,6 +60,10 @@ analysis_plan = drake_plan(
   assign_groups = target(
     assign_files(write_groups),
     transform = map(write_groups)
+  ),
+  raw_assignments = target(
+    read_assignments(assign_groups),
+    trasnform = map(assign_groups)
   )
 )
 
