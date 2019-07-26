@@ -63,7 +63,7 @@ analysis_plan = drake_plan(
   ),
   raw_assignments = target(
     read_assignments(assign_groups),
-    trasnform = map(assign_groups)
+    transform = map(assign_groups)
   )
 )
 
