@@ -8,6 +8,7 @@ theme_set(cowplot::theme_cowplot())
 library(patchwork)
 library(dplyr)
 library(glue)
+library(smirfeTools)
 project_root <- find_root(is_rstudio_project)
 
 options(future.globals.maxSize = 2000 * 1024^2)

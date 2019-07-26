@@ -220,6 +220,15 @@ assign_files = function(in_zip){
   out_value
 }
 
+read_assignments = function(in_assign){
+  if (!is.null(in_assign)) {
+    sample_assignments = read_smirfe_assignment(in_assign$file)
+  } else {
+    sample_assignments = NULL
+  }
+  sample_assignments
+}
+
 return_file = function(in_file){
   sha256 = system2("sha256sum", args = in_file, stdout = TRUE)
   list(file = in_file, sha256 = sha256)
