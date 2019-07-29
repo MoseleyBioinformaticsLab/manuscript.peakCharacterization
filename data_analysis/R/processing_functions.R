@@ -206,7 +206,7 @@ assign_files = function(in_zip){
   assigned_file = paste0(in_file, "_assigned.json")
 
   if (grepl("ECF", in_file)) {
-
+    setwd("~/Projects/work/SMIRFE/SMIRFE_assigner/")
     run_str = glue("python3 ./Main.py /mlab/scratch/cesb_data/smirfe_dbs/n15_1600.db {zip_path} '_assigned.json' '[\"15N\"]' '[\"H\", \"Na\", \"K\", \"NH4\"]' '[1]'")
     system(run_str)
     setwd(curr_dir)
