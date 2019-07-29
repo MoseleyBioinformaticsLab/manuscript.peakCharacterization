@@ -64,6 +64,10 @@ analysis_plan = drake_plan(
   raw_assignments = target(
     read_assignments(assign_groups),
     transform = map(assign_groups)
+  ),
+  interesting_peaks = target(
+    find_interesting_peaks(raw_assignments),
+    transform = map(raw_assignments)
   )
 )
 

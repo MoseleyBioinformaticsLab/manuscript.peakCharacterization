@@ -242,6 +242,7 @@ find_interesting_peaks = function(assigned_data){
   organized_data = purrr::imap_dfr(emfs$grouped_emf, function(in_emf, emf_id){
     tmp_out = data.frame(emf = emf_id,
                clique_size = in_emf$clique_size,
+               n_peak = length(in_emf$Sample_Peak),
                e_value = in_emf$min_e_value,
                stringsAsFactors = FALSE)
     tmp_out$peaks = list(in_emf$Sample_Peak)
@@ -249,9 +250,9 @@ find_interesting_peaks = function(assigned_data){
     tmp_out$min_scan = min(peak_nscan[in_emf$Sample_Peak])
     tmp_out
   })
-  possible_emfs = dplyr::filter(organized_data, clique_size > 3, min_scan < 20)
-
-  graph_emf = dplyr::slice(possible_emfs, which.min(e_value))
+  max_scan = max(unlist(purrr::map(organized_data$scans, ~ .x)))
+  possible_emfs = dplyr::filter(organized_data, clique_size > 3, min_scan < (0.5 * max_scan))
+  possible_emfs
 
 }
 
