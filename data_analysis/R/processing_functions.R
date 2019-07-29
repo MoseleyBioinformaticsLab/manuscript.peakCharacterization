@@ -207,8 +207,10 @@ assign_files = function(in_zip){
 
   if (grepl("ECF", in_file)) {
 
-    run_str = glue("python3 ./Main.py /mlab/scratch/cesb_data/smirfe_dbs/n15_1600.db {zip_path} '_assigned.json' '[\"N\"]' '[\"H\", \"Na\", \"K\", \"NH4\"]' '[1]'")
-    out_value = NULL
+    run_str = glue("python3 ./Main.py /mlab/scratch/cesb_data/smirfe_dbs/n15_1600.db {zip_path} '_assigned.json' '[\"15N\"]' '[\"H\", \"Na\", \"K\", \"NH4\"]' '[1]'")
+    system(run_str)
+    setwd(curr_dir)
+    out_value = return_file(assigned_file)
   } else {
     setwd("~/Projects/work/SMIRFE/SMIRFE_assigner/")
     run_str = glue("python3 ./Main.py /mlab/scratch/cesb_data/smirfe_dbs/none_1600.db {zip_path} '_assigned.json' '[]' '[\"H\", \"Na\", \"K\", \"NH4\"]' '[1]'")
@@ -227,6 +229,30 @@ read_assignments = function(in_assign){
     sample_assignments = NULL
   }
   sample_assignments
+}
+
+find_interesting_peaks = function(assigned_data){
+  evalue_cutoff = 0.5
+  remove_elements = "S"
+  tmp_assign = dplyr::filter(assigned_data$assignments, !grepl(remove_elements, complete_EMF))
+  emfs = get_sample_emfs(tmp_assign, assigned_data$sample, evalue_cutoff = evalue_cutoff)
+
+  peak_nscan = purrr::map_int(assigned_data$scan_level$ObservedFrequency, ~ sum(!is.na(.x)))
+
+  organized_data = purrr::imap_dfr(emfs$grouped_emf, function(in_emf, emf_id){
+    tmp_out = data.frame(emf = emf_id,
+               clique_size = in_emf$clique_size,
+               e_value = in_emf$min_e_value,
+               stringsAsFactors = FALSE)
+    tmp_out$peaks = list(in_emf$Sample_Peak)
+    tmp_out$scans = list(peak_nscan[in_emf$Sample_Peak])
+    tmp_out$min_scan = min(peak_nscan[in_emf$Sample_Peak])
+    tmp_out
+  })
+  possible_emfs = dplyr::filter(organized_data, clique_size > 3, min_scan < 20)
+
+  graph_emf = dplyr::slice(possible_emfs, which.min(e_value))
+
 }
 
 return_file = function(in_file){
