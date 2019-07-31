@@ -1,83 +1,105 @@
-# create region counts
-create_regions_count_histogram <- function(in_char, file_loc){
-  peak_regions <- in_char$peak_finder$peak_regions
+plot_nap_peaks = function(raw_data, processed_data, assignments, interesting_regions){
+  sample_ids = c(raw_data$char_obj$peak_finder$sample_id,
+                 processed_data$peak_finder$sample_id,
+                 assignments$sample)
+  if (length(unique(sample_ids)) > 1) {
+    stop("There are multiple samples in this data collection!")
+  }
 
-  counted_regions <- FTMS.peakCharacterization:::count_overlaps(peak_regions$sliding_regions, peak_regions$mz_point_regions)
-  count_data <- as.data.frame(counted_regions@elementMetadata)
+  region1 = interesting_regions$emfs[[1]]$peak_info[[1]]
+  region1$adduct_emf = paste0(region1$adduct_IMF, region1$complete_EMF)
+  region_split = split(region1, region1$adduct_emf)[[1]]
 
-  p <- ggplot(count_data, aes(x = nonzero_counts)) + geom_histogram(bins = 100) +
-    geom_vline(xintercept = quantile(count_data$nonzero_counts, .99), color = "red") + scale_y_log10(limits = c(1, NA), expand = c(0,0)) + labs(y = "Log10(count)", x = "# non-zero counts")
-  base_file <- tools::file_path_sans_ext(file_loc)
-  svg_file <- paste0(base_file, ".svg")
-  Cairo::CairoSVG(file = svg_file, width = 8, height = 5)
-  print(p)
-  dev.off()
-  sys_call <- paste0("inkscape -z -d 300 -e ", file_loc, " ", svg_file)
-  system(sys_call)
-}
+  region_peaks = unique(region_split$PeakID)
+  assignment_data = dplyr::filter(assignments$data, PeakID %in% region_peaks)
 
-# find and plot a multiple peak region
-#
-# We will cheat, and do reduction again, and then take the fully split out,
-# and find those ones where there were originally multiples in the region
-create_multiple_peak_figure <- function(characterized_sample, basic_sample, file_loc){
-  characterized_regions <- characterized_sample$peak_regions$clone(deep = TRUE)
-  sample_regions <- basic_sample$peak_finder$clone(deep = TRUE)
+  region_split = tidyr::spread(region_split, key = Type, value = Assignment_Data)
 
-  sample_regions$reduce_sliding_regions()
+  region_split = dplyr::mutate(region_split, NAP = as.numeric(NAP), relnap = NAP / max(NAP))
 
-  characterized_peaks <- characterized_regions$peak_data %>% mutate(mz = ObservedMZ)
-  characterized_peaks <- mz_points_to_regions(characterized_peaks)
+  assignment_data = tidyr::spread(assignment_data, key = Measurement, value = Value)
 
-  sample_init_regions <- sample_regions$peak_regions$peak_regions
+  region_split = dplyr::left_join(region_split, assignment_data, by = "PeakID")
+  region_split = dplyr::mutate(region_split, relIntensity = log10(relnap * max(Height)))
 
-  num_overlaps <- IRanges::countOverlaps(sample_init_regions, characterized_peaks)
+  peak_regions = processed_data$zip_ms$peak_finder$peak_regions
 
-  use_region <- sample_init_regions[which.max(num_overlaps)]
-
-  mz_point_regions <- IRanges::subsetByOverlaps(characterized_regions$mz_point_regions, use_region)
-  point_data <- as.data.frame(mz_point_regions@elementMetadata) %>% mutate(scan = as.factor(scan))
-
-  point_plot <- ggplot(point_data, aes(x = mz, y = log10(intensity), color = scan)) +
-    geom_point() + geom_line() + theme(legend.position = "none") + labs(x = "M/Z", y = "Log10(Intensity)")
-
-  tiled_regions <- IRanges::subsetByOverlaps(sample_regions$peak_regions$tiled_regions, use_region)
-
-  mz_point_regions@elementMetadata$log_int <- log(mz_point_regions@elementMetadata$intensity + 1e-8)
-  mz_point_regions <- split(mz_point_regions, mz_point_regions@elementMetadata$scan)
-
-  reduced_peaks <- purrr::map_df(names(mz_point_regions), function(in_scan){
-    FTMS.peakCharacterization:::get_reduced_peaks(mz_point_regions[[in_scan]], peak_method = "lm_weighted", min_points = 4)
+  data_regions = dplyr::filter(peak_regions$peak_data, PeakID %in% region_peaks)
+  scan_regions = peak_regions$scan_peaks[data_regions$PeakID]
+  scan_data = purrr::imap_dfr(scan_regions, function(.x, .y){
+    .x$peak = .y
+    as.data.frame(.x)
   })
 
-  reduced_peaks <- reduced_peaks[!is.na(reduced_peaks$ObservedMZ), ] %>% mutate(scan = as.factor(scan),
-                                                                                mz = ObservedMZ)
+  scan_means = dplyr::group_by(scan_data, peak) %>%
+    dplyr::summarise(mean_mz = mean(ObservedMZ), mean_height = mean(RawHeight))
 
-  reduced_mz_points <- mz_points_to_regions(reduced_peaks, mz_point_regions[[1]]@metadata$point_multiplier)
-  tiled_regions@elementMetadata$peak_count <- IRanges::countOverlaps(tiled_regions, reduced_mz_points)
-  tiled_regions_data <- as.data.frame(tiled_regions@elementMetadata)
-  tiled_regions_data <- mutate(tiled_regions_data, mz = (mz_end + mz_start) / 2,
-                               width = mean(mz_end - mz_start), scan = as.factor(1))
-  count_peak_intensity_ratio <- max(log10(reduced_peaks$Height)) / max(tiled_regions_data$peak_count)
+  xcal_file = file.path("data_analysis/data_input", paste0(sample_ids[1], ".xlsx"))
+  xcal_data = readxl::read_xlsx(xcal_file, skip = 6) %>% dplyr::mutate(mz = m/z)
 
-  tiled_regions_data <- mutate(tiled_regions_data, scaled_counts = count_peak_intensity_ratio * peak_count)
+  xcal_match = purrr::map_df(seq(1, nrow(region_split)), function(in_row){
+    min_loc = which.min(abs(xcal_data$mz - region_split[in_row, "ObservedMZ"]))
+    xcal_data[min_loc, ]
+  })
 
-  tiled_segments <- IRanges::reduce(tiled_regions[tiled_regions_data$peak_count > 0])
-  point_factor <- reduced_mz_points@metadata$point_multiplier
-  tiled_segments_mz <- data.frame(mz_start = IRanges::start(tiled_segments) / point_factor,
-                                  mz_end = IRanges::end(tiled_segments) / point_factor,
-                                  count = 2)
+  ggplot(scan_data, aes(x = ObservedMZ, y = log10(RawHeight))) + geom_point() +
+    geom_point(data = region_split, aes(x = ObservedMZ, y = relIntensity), color = "red", size = 4) +
+    geom_point(data = xcal_match, aes(x = mz-0.02, y = log10(Intensity)), color = "lightblue", size = 4) +
+    geom_point(data = scan_means, aes(x = mean_mz + 0.02, y = log10(mean_height)), color = "brown", size = 4)
+}
 
-  reduced_peak_plot <- ggplot(reduced_peaks, aes(x = ObservedMZ, y = log10(Height), color = scan)) + geom_point(color = "gray") + theme(legend.position = "none") + geom_point(data = tiled_regions_data, aes(x = mz, y = scaled_counts), color = "black") + scale_y_continuous(sec.axis = sec_axis(~./count_peak_intensity_ratio, name = "# of Scan Peaks")) + geom_segment(data = tiled_segments_mz, aes(x = mz_start, xend = mz_end, y = count, yend = count), color = "blue", size = 2)
+plot_frequency_conversion = function(raw_data){
+  raw_points = as.data.frame(raw_data$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions@elementMetadata)
+  raw_scan = dplyr::filter(raw_points, scan %in% unique(scan)[1])
+  raw_points2 = convert_mz_frequency(raw_scan)
+  convertable_stretch = rle(raw_points2$convertable)
+  convertable_df = data.frame(values = convertable_stretch$values,
+                              lengths = convertable_stretch$lengths) %>%
+    dplyr::mutate(index = seq(1, length(convertable_stretch$lengths)))
+
+  index_list = vector("list", length = nrow(convertable_df))
+  start_index = 1
+  for (i in seq_along(index_list)) {
+    end_index = start_index + convertable_df$lengths[i] - 1
+    index_list[[i]] = seq(start_index, end_index)
+    start_index = end_index + 1
+  }
+
+  possible_index = index_list[dplyr::filter(convertable_df, values, lengths > 4) %>% dplyr::pull(index)]
+  raw_possible = purrr::map(possible_index, ~ raw_points2[.x, ])
+  raw_high = purrr::map_lgl(raw_possible, ~ sum(.x$intensity >= 1e4) > 1)
+
+  example_data = raw_possible[raw_high][[1]]
+
+  example_data$pair_mz = example_data$mean_mz
+  example_data$pair_difference = example_data$mean_offset
+
+  example_data$pair_frequency = example_data$mean_frequency
+  example_data$pair_frequency_offset = example_data$mean_freq_diff
+
+  peak_plot = ggplot(example_data, aes(x = mz, y = log10(intensity+1))) + geom_point() +
+    labs(y = "Log10(Intensity)")
+  peak_plot
+
+  example_data$level1_intensity = 0
+  example_data$level1_group = 0.1
+  example_data$level1_group_xstart = example_data$mz + 1e-5
+  example_data$level1_group_xend = dplyr::lead(example_data$mz - 1e-5)
+  mz_point_plot = ggplot(example_data, aes(x = mz, y = level1_intensity)) + geom_point() +
+    geom_segment(aes(x = level1_group_xstart, xend = level1_group_xend, y = level1_group, yend = level1_group), color = "red") +
+    geom_point(aes(x = pair_mz, y = level1_group), color = "red") + labs(y = NULL)
+
+  frequency_point_plot = ggplot(example_data, aes(x = pair_frequency, y = log10(intensity+1))) + geom_point() +
+    labs(y = "Log10(Intensity)")
+
+  point_difference_plot = ggplot(example_data, aes(x = pair_frequency, y = pair_frequency_offset)) + geom_point()
+  point_difference_plot
+
+  all_frequency_difference = ggplot(raw_points2, aes(x = mz, y = log10(mean_freq_diff), color = convertable)) + geom_point()
+  all_frequency_difference
+
+  convertable_raw2 = dplyr::filter(raw_points2, convertable)
+  mz_frequency = ggplot(convertable_raw2, aes(x = mean_mz, y = mean_frequency))
 
 
-  out_plot <- point_plot + reduced_peak_plot + plot_annotation(tag_levels = "A")
-
-  base_file <- tools::file_path_sans_ext(file_loc)
-  svg_file <- paste0(base_file, ".svg")
-  Cairo::CairoSVG(file = svg_file, width = 16, height = 5)
-  print(out_plot)
-  dev.off()
-  sys_call <- paste0("inkscape -z -d 300 -e ", file_loc, " ", svg_file)
-  system(sys_call)
 }
