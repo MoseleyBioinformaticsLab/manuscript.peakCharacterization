@@ -85,7 +85,7 @@ plot_frequency_conversion = function(raw_data){
   example_data$frequency_group_xend = dplyr::lead(example_data$mean_frequency) + 5e-2
   example_data[1, "pair_mz"] = NA
   mz_point_plot = ggplot(example_data, aes(x = mz, y = log10(intensity+1))) + geom_point() +
-    geom_segment(aes(x = level1_group_xstart, xend = level1_group_xend, y = level1_intensity, yend = level1_intensity), color = "red") +
+    geom_segment(aes(x = mz_group_xstart, xend = mz_group_xend, y = level1_intensity, yend = level1_intensity), color = "red") +
     geom_point(aes(x = pair_mz, y = level1_intensity), color = "red") + labs(y = "Log10(Intensity)", x = "M/Z")
 
   frequency_point_plot = ggplot(example_data, aes(x = pair_frequency, y = log10(intensity+1))) + geom_point() +
@@ -93,11 +93,9 @@ plot_frequency_conversion = function(raw_data){
 
   point_difference_plot = ggplot(example_data, aes(x = pair_frequency, y = pair_frequency_offset)) + geom_point() +
     labs(x = "Frequency", y = "Frequency Differences")
-  point_difference_plot
 
   all_frequency_difference_plot = ggplot(raw_points2, aes(x = mz, y = log10(abs(mean_freq_diff)))) + geom_point() +
     geom_point(data = dplyr::filter(raw_points2, convertable), color = "red") + labs(x = "M/Z", y = "Log10(Frequency Differences)")
-  all_frequency_difference_plot
 
   convertable_raw2 = dplyr::filter(raw_points2, convertable)
   raw2_model = FTMS.peakCharacterization:::fit_exponentials(convertable_raw2$mean_mz, convertable_raw2$mean_frequency, c(0, -1/2, -1/3))
