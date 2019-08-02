@@ -232,7 +232,7 @@ read_assignments = function(in_assign){
 }
 
 find_interesting_peaks = function(assigned_data){
-  evalue_cutoff = 0.5
+  evalue_cutoff = 0.1
   remove_elements = "S"
   tmp_assign = dplyr::filter(assigned_data$assignments, !grepl(remove_elements, complete_EMF))
   emfs = get_sample_emfs(tmp_assign, assigned_data$sample, evalue_cutoff = evalue_cutoff)
@@ -253,6 +253,8 @@ find_interesting_peaks = function(assigned_data){
   max_scan = max(unlist(purrr::map(organized_data$scans, ~ .x)))
   possible_emfs = dplyr::filter(organized_data, clique_size > 3, min_scan < (0.5 * max_scan))
   possible_emfs
+
+  list(emfs = emfs$grouped_emf[possible_emfs$emf], summary_data = possible_emfs)
 
 }
 
