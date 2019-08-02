@@ -77,29 +77,50 @@ plot_frequency_conversion = function(raw_data){
   example_data$pair_frequency = example_data$mean_frequency
   example_data$pair_frequency_offset = example_data$mean_freq_diff
 
-  peak_plot = ggplot(example_data, aes(x = mz, y = log10(intensity+1))) + geom_point() +
-    labs(y = "Log10(Intensity)")
-  peak_plot
-
-  example_data$level1_intensity = 0
+  example_data$level1_intensity = -.1
   example_data$level1_group = 0.1
-  example_data$level1_group_xstart = example_data$mz + 1e-5
-  example_data$level1_group_xend = dplyr::lead(example_data$mz - 1e-5)
-  mz_point_plot = ggplot(example_data, aes(x = mz, y = level1_intensity)) + geom_point() +
-    geom_segment(aes(x = level1_group_xstart, xend = level1_group_xend, y = level1_group, yend = level1_group), color = "red") +
-    geom_point(aes(x = pair_mz, y = level1_group), color = "red") + labs(y = NULL)
+  example_data$mz_group_xstart = example_data$mz + 1e-5
+  example_data$mz_group_xend = dplyr::lead(example_data$mz - 1e-5)
+  example_data$frequency_group_xstart = example_data$mean_frequency - 5e-2
+  example_data$frequency_group_xend = dplyr::lead(example_data$mean_frequency) + 5e-2
+  example_data[1, "pair_mz"] = NA
+  mz_point_plot = ggplot(example_data, aes(x = mz, y = log10(intensity+1))) + geom_point() +
+    geom_segment(aes(x = level1_group_xstart, xend = level1_group_xend, y = level1_intensity, yend = level1_intensity), color = "red") +
+    geom_point(aes(x = pair_mz, y = level1_intensity), color = "red") + labs(y = "Log10(Intensity)", x = "M/Z")
 
   frequency_point_plot = ggplot(example_data, aes(x = pair_frequency, y = log10(intensity+1))) + geom_point() +
-    labs(y = "Log10(Intensity)")
+    labs(y = "Log10(Intensity)", x = "Frequency") + geom_segment(aes(x = frequency_group_xstart, xend = frequency_group_xend, y = level1_intensity, yend = level1_intensity), color = "red")
 
-  point_difference_plot = ggplot(example_data, aes(x = pair_frequency, y = pair_frequency_offset)) + geom_point()
+  point_difference_plot = ggplot(example_data, aes(x = pair_frequency, y = pair_frequency_offset)) + geom_point() +
+    labs(x = "Frequency", y = "Frequency Differences")
   point_difference_plot
 
-  all_frequency_difference = ggplot(raw_points2, aes(x = mz, y = log10(mean_freq_diff), color = convertable)) + geom_point()
-  all_frequency_difference
+  all_frequency_difference_plot = ggplot(raw_points2, aes(x = mz, y = log10(abs(mean_freq_diff)))) + geom_point() +
+    geom_point(data = dplyr::filter(raw_points2, convertable), color = "red") + labs(x = "M/Z", y = "Log10(Frequency Differences)")
+  all_frequency_difference_plot
 
   convertable_raw2 = dplyr::filter(raw_points2, convertable)
-  mz_frequency = ggplot(convertable_raw2, aes(x = mean_mz, y = mean_frequency))
+  raw2_model = FTMS.peakCharacterization:::fit_exponentials(convertable_raw2$mean_mz, convertable_raw2$mean_frequency, c(0, -1/2, -1/3))
+  convertable_raw2$predict_frequency = FTMS.peakCharacterization:::predict_exponentials(convertable_raw2$mean_mz, raw2_model$coefficients, c(0, -1/2, -1/3))
+  mz_frequency_plot = ggplot(convertable_raw2, aes(x = mean_mz, y = mean_frequency)) + geom_point(size = 4) +
+    geom_line(aes(y = predict_frequency), color = "red", size = 2) +
+    labs(x = "M/Z", y = "Frequency")
 
+  sqrt_model = FTMS.peakCharacterization:::fit_exponentials(convertable_raw2$mean_mz, convertable_raw2$mean_frequency, c(0, -1/2))
+  sqrt_pred = FTMS.peakCharacterization:::predict_exponentials(convertable_raw2$mean_mz, sqrt_model$coefficients, c(0, -1/2))
+
+  residual_data = rbind(data.frame(mz = convertable_raw2$mean_mz, frequency = convertable_raw2$mean_frequency,
+                                   predicted = convertable_raw2$predict_frequency,
+                                   type = "cube", stringsAsFactors = FALSE),
+                        data.frame(mz = convertable_raw2$mean_mz, frequency = convertable_raw2$mean_frequency,
+                                   predicted = sqrt_pred,
+                                   type = "square", stringsAsFactors = FALSE)) %>%
+    dplyr::mutate(residuals = (predicted - frequency) / frequency)
+  compare_models = ggplot(residual_data, aes(x = mz, y = residuals)) + geom_point() +
+    facet_wrap(~ type, ncol = 1)
+
+  frequency_plot =  ((mz_point_plot / frequency_point_plot / point_difference_plot)  |
+    (all_frequency_difference_plot / mz_frequency_plot)) + plot_annotation(tag_levels = "A")
+  frequency_plot
 
 }
