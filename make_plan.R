@@ -68,6 +68,9 @@ analysis_plan = drake_plan(
   interesting_peaks = target(
     find_interesting_peaks(raw_assignments),
     transform = map(raw_assignments)
+  ),
+  frequency_conversion = target(
+    plot_frequency_conversion(data)
   )
 )
 
