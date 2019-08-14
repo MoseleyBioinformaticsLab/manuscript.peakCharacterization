@@ -123,7 +123,7 @@ plot_frequency_conversion = function(raw_data){
 
 }
 
-plot_peak_ordering(peak_data){
+plot_peak_ordering = function(peak_data){
   scan_level_peaks = as.data.frame(peak_data$zip_ms$peak_finder$peak_regions$scan_peaks[[1]])
 
   scan_models = peak_data$zip_ms$peak_finder$peak_regions$frequency_point_regions@metadata$frequency_coefficients_all
