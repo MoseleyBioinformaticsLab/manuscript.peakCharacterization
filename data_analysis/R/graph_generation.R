@@ -145,6 +145,7 @@ plot_peak_ordering = function(peak_data){
 
   by_scan = tidyr::gather(by_scan, key = "type_order", value = "order", single_order, scan_order)
 
-  ggplot(by_scan, aes(x = mz_order, y = order, color = type_order)) + geom_point() +
+  peak_ordering_plot = ggplot(by_scan, aes(x = mz_order, y = order, color = type_order)) + geom_point() +
     theme(legend.position = c(0.8, 0.9))
+  peak_ordering_plot
 }
