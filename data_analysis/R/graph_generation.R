@@ -122,3 +122,29 @@ plot_frequency_conversion = function(raw_data){
   frequency_plot
 
 }
+
+plot_peak_ordering(peak_data){
+  scan_level_peaks = as.data.frame(peak_data$zip_ms$peak_finder$peak_regions$scan_peaks[[1]])
+
+  scan_models = peak_data$zip_ms$peak_finder$peak_regions$frequency_point_regions@metadata$frequency_coefficients_all
+  scan_models = dplyr::filter(scan_models, scan %in% scan_level_peaks$scan)
+
+  by_scan = purrr::map_df(seq(1, nrow(scan_level_peaks)), function(in_row){
+    use_mz = scan_level_peaks[in_row, "ObservedMZ"]
+    use_model = dplyr::filter(scan_models, scan %in% scan_level_peaks[in_row, "scan"])
+
+    out_freq = FTMS.peakCharacterization:::predict_exponentials(use_mz, unlist(use_model[1, c("V1", "V2", "V3")]),
+                peak_data$zip_ms$peak_finder$peak_regions$frequency_point_regions@metadata$frequency_fit_description)
+    data.frame(mz = use_mz, single_frequency = scan_level_peaks[in_row, "ObservedFrequency"],
+               scan_frequency = out_freq)
+  })
+
+  by_scan = dplyr::arrange(by_scan, mz) %>% dplyr::mutate(mz_order = seq(1, nrow(.))) %>%
+    dplyr::arrange(single_frequency) %>% dplyr::mutate(single_order = seq(1, nrow(.))) %>%
+    dplyr::arrange(scan_frequency) %>% dplyr::mutate(scan_order = seq(1, nrow(.)))
+
+  by_scan = tidyr::gather(by_scan, key = "type_order", value = "order", single_order, scan_order)
+
+  ggplot(by_scan, aes(x = mz_order, y = order, color = type_order)) + geom_point() +
+    theme(legend.position = c(0.8, 0.9))
+}

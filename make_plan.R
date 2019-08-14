@@ -71,6 +71,9 @@ analysis_plan = drake_plan(
   ),
   frequency_conversion = target(
     plot_frequency_conversion(data)
+  ),
+  peak_ordering = target(
+    plot_peak_ordering(group6_method_data)
   )
 )
 
