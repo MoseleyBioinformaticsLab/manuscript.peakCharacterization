@@ -101,6 +101,8 @@ drake::loadd(peak_ordering)
 peak_ordering
 ```
 
+*caption*: Peak ordering in M/Z compared with ordering in frequency space when a single M/Z to frequency model is used or scan specific M/Z to frequency models are used. For a single peak, the scan level peak M/Z's were extracted, and then frequency values for those M/Z generated using a single common model of M/Z to frequency (*single_order*), or models derived from each scan (*scan_order*). A subset of the peaks end up out of order using scan specific models, implying that a single model should be used across all the scan level data.
+
 Although the original model is created from only those points that had frequency point-to-point differences within a narrow range, **all** M/Z points are converted to frequency for subsequent steps in the workflow.
 
 ### Sliding Window Density to Remove Noise
@@ -111,6 +113,8 @@ In a dataset of this nature, we expect that much of the data is really just nois
 drake::loadd(sliding_regions)
 sliding_regions
 ```
+
+*caption*: Histogram of the number of non-zero points across all scans in sliding windows 10 frequency points wide and 1 frequency point apart. The red vertical line denotes the lower 99th percentile of the data, only sliding windows with non-zero counts above the red line will be kept for subsequent use.
 
 For each region initially created, the peaks in each scan within that region can be characterized using a quadratic fit of log(intensity) to M/Z.
 
