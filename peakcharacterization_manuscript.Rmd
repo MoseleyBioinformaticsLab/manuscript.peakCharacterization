@@ -92,6 +92,8 @@ drake::loadd(frequency_conversion)
 frequency_conversion
 ```
 
+*caption*: **A**: Intensity vs M/Z for a single peak from a single scan. Red lines denote the differences between each point, and red dots the average between the pair of points. The difference over the point is used to derive the frequency values in **B**. **B** plots the intensity vs the converted frequency points derived from **A**. The red lines denote pairwise differences, which are shown in **C** for this single peak. The differences for all peaks across all scans vs M/Z are shown in **D**, with those differences that lie within 0.49 - 0.51 shown in red. **E** shows the plot of derived frequency *vs* M/Z, with fitted values from the linear model in red. 
+
 Frequency models are calculated for each scan, and the square root term from all scan level models are checked for outliers based on the interquartile ranges across all scans in a sample. When scan specific models are used for conversion of M/Z to frequency, the peak order observed in M/Z space is not maintained, as shown in Figure XA. Therefore, a single model for all scans based on the median of each term in the model across scans is used for converting *all* remaining scan level data.
 
 ```{r peak_ordering}
@@ -106,7 +108,8 @@ Although the original model is created from only those points that had frequency
 In a dataset of this nature, we expect that much of the data is really just noise, and doesn't contribute that much to the analysis. It is expected that noise is randomly distributed across the scans. Therefore, if we slide a window across the data and sum the number of non-zero points in each window, we expect that most of the data we encounter is actually noise. The distribution of counts is shown in Figure X. The number of peaks detected without applying a cutoff explodes by ..., with the vast majority of the peaks being present in a single scan. By merging those windows that are adjacent **and** have a point density greater than the 99th percentile, the regions most likely to contain actual, informative peaks are rapidly and easily determined.
 
 ```{r slidingwindow_count_distribution}
-# Figure showing distribution of nonzero counts
+drake::loadd(sliding_regions)
+sliding_regions
 ```
 
 For each region initially created, the peaks in each scan within that region can be characterized using a quadratic fit of log(intensity) to M/Z.
