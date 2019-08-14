@@ -74,6 +74,9 @@ analysis_plan = drake_plan(
   ),
   peak_ordering = target(
     plot_peak_ordering(group6_method_data)
+  ),
+  sliding_regions = target(
+    plot_sliding_window_density(data)
   )
 )
 

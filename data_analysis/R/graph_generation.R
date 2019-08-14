@@ -149,3 +149,17 @@ plot_peak_ordering = function(peak_data){
     theme(legend.position = c(0.8, 0.9))
   peak_ordering_plot
 }
+
+plot_sliding_window_density = function(peak_data){
+  sliding_regions = peak_data$char_obj$zip_ms$peak_finder$peak_regions$sliding_regions
+  frequency_points = peak_data$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions
+
+  region_counts = FTMS.peakCharacterization:::count_overlaps(sliding_regions, frequency_points)
+  nonzero_counts = data.frame(nonzero = region_counts@elementMetadata$nonzero_counts)
+
+  data_cutoff = stats::quantile(nonzero_counts$nonzero, 0.99)
+
+  sliding_window_nonzero_count = ggplot(nonzero_counts, aes(x = nonzero)) + geom_histogram(bins = 100) + geom_vline(xintercept = data_cutoff, color = "red") +
+    scale_y_log10(expand = c(0,0), limits = c(1, NA))
+  sliding_window_nonzero_count
+}
