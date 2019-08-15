@@ -26,7 +26,7 @@ reduce_removing_zero <- function(regions, point_regions, min_value = 0){
 }
 
 # only remove zero points, no consideration of percentile, and no normalization (zero_normalization)
-group1_characterization = function(in_list){
+noperc_nonorm = function(in_list){
   in_char = in_list$char_obj$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = TRUE
 
@@ -43,7 +43,7 @@ group1_characterization = function(in_list){
 }
 
 # remove points based on the 99th percentile, no normalization (see zero_normalization)
-group2_characterization = function(in_list){
+perc99_nonorm = function(in_list){
   in_char = in_list$char_obj$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = TRUE
 
@@ -58,7 +58,7 @@ group2_characterization = function(in_list){
 }
 
 # remove points from 99th percentile, do single pass normalization without intensity cutoff
-group3_characterization = function(in_list){
+singlenorm = function(in_list){
   in_char = in_list$char_obj$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = FALSE
   in_char$zip_ms$peak_finder$reduce_sliding_regions()
@@ -106,7 +106,7 @@ group3_characterization = function(in_list){
 
 # remove points below 99th percentile
 # single pass normalization based on intensity
-group4_characterization = function(in_list){
+singlenorm_int = function(in_list){
   in_char = in_list$char_obj$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = FALSE
   in_char$zip_ms$peak_finder$reduce_sliding_regions()
@@ -155,7 +155,7 @@ group4_characterization = function(in_list){
 # remove points based on 99th percentile
 # proper two pass normalization
 # no filtering on frequency sd
-group5_characterization = function(in_list){
+doublenorm = function(in_list){
   in_char = in_list$char_obj$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = FALSE
   in_char$zip_ms$peak_finder$reduce_sliding_regions()
@@ -172,7 +172,7 @@ group5_characterization = function(in_list){
 # remove points based on 99th percentile
 # proper two pass normalization
 # filter on frequency sd
-group6_characterization = function(in_list){
+filtersd = function(in_list){
   in_char = in_list$char_obj$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = FALSE
   in_char$zip_ms$peak_finder$reduce_sliding_regions()
@@ -261,4 +261,9 @@ find_interesting_peaks = function(assigned_data){
 return_file = function(in_file){
   sha256 = system2("sha256sum", args = in_file, stdout = TRUE)
   list(file = in_file, sha256 = sha256)
+}
+
+rsd_comparison = function(...) {
+  tmp = list(...)
+  tmp
 }
