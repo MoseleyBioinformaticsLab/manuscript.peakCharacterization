@@ -1,10 +1,10 @@
 ---
 title: "Novel Methods for Characterizing Peaks from Direct Injection FT-MS Experiments"
-author: "Robert M Flight"
+author: "Robert M Flight, Joshua M Mitchell, Hunter NB Moseley"
 date: "`r Sys.time()`"
 commit: "`r substr(git2r::branch_target(git2r::head(git2r::repository())), 1, 8)`"
 output: 
-  redoc::redoc
+  pdf_document
 ---
 
 ```{r setup, echo = FALSE}
