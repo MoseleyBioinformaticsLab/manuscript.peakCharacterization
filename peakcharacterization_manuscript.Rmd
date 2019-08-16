@@ -139,3 +139,7 @@ With the characterized (centroided) peak data from across scans within each regi
 ```
 
 ### Normalization of Scans
+
+### Changes in RSD
+
+Each step in the peak characterization either changes the overall number of peaks coming from each scan (sliding windows and breaking initial regions) or the overall intensity of the points within a scan. Therefore, one way to quantify any potential *improvements* in the characterized peaks is to look at the relative standard deviation for the characterized scan level peak intensities, and compare them as each processing step is introduced. 
