@@ -49,13 +49,18 @@ analysis_plan = drake_plan(
   ),
   sliding_regions = target(
     plot_sliding_window_density(data)
-  )
+  ),
   # # here we want to combine the ways a data file was processed and compare
   # # their rsd's across processing methods.
   # rsd_data = target(
   #   rsd_info(method),
   #   transform = combine(method, .by = data)
   # )
+  manuscript = rmarkdown::render(
+    knitr_in("peakcharacterization_manuscript.Rmd"),
+    output_file = file_out("peakcharacterization.docx"),
+    quiet = TRUE
+  )
 )
 
 make(analysis_plan, lock_envir = FALSE, memory_strategy = "memory")
