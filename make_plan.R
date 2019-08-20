@@ -63,4 +63,4 @@ analysis_plan = drake_plan(
   )
 )
 
-make(analysis_plan, lock_envir = FALSE, memory_strategy = "memory")
+make(analysis_plan, lock_envir = FALSE, memory_strategy = "preclean")
