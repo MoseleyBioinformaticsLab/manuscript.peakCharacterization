@@ -39,7 +39,7 @@ noperc_nonorm = function(in_list){
   in_char$zip_ms$peak_finder$find_peaks_in_regions()
   in_char$zip_ms$peak_finder$add_offset()
   in_char$zip_ms$peak_finder$sort_ascending_mz()
-  in_char
+  list(char_obj = in_char, processed = "noperc_nonorm")
 }
 
 # remove points based on the 99th percentile, no normalization (see zero_normalization)
@@ -54,7 +54,7 @@ perc99_nonorm = function(in_list){
   in_char$zip_ms$peak_finder$find_peaks_in_regions()
   in_char$zip_ms$peak_finder$add_offset()
   in_char$zip_ms$peak_finder$sort_ascending_mz()
-  in_char
+  list(char_obj = in_char, processed = "perc99_nonorm")
 }
 
 # remove points from 99th percentile, do single pass normalization without intensity cutoff
@@ -101,7 +101,7 @@ singlenorm = function(in_list){
   in_char$zip_ms$peak_finder$find_peaks_in_regions()
   in_char$zip_ms$peak_finder$add_offset()
   in_char$zip_ms$peak_finder$sort_ascending_mz()
-  in_char
+  list(char_obj = in_char, processed = "singlenorm")
 }
 
 # remove points below 99th percentile
@@ -149,7 +149,7 @@ singlenorm_int = function(in_list){
   in_char$zip_ms$peak_finder$find_peaks_in_regions()
   in_char$zip_ms$peak_finder$add_offset()
   in_char$zip_ms$peak_finder$sort_ascending_mz()
-  in_char
+  list(char_obj = in_char, processed = "singlenorm_int")
 }
 
 # remove points based on 99th percentile
@@ -166,7 +166,7 @@ doublenorm = function(in_list){
   in_char$zip_ms$peak_finder$find_peaks_in_regions()
   in_char$zip_ms$peak_finder$add_offset()
   in_char$zip_ms$peak_finder$sort_ascending_mz()
-  in_char
+  list(char_obj = in_char, processed = "doublenorm")
 }
 
 # remove points based on 99th percentile
@@ -183,11 +183,12 @@ filtersd = function(in_list){
   in_char$zip_ms$peak_finder$remove_high_frequency_sd()
   in_char$zip_ms$peak_finder$add_offset()
   in_char$zip_ms$peak_finder$sort_ascending_mz()
-  in_char
+  list(char_obj = in_char, processed = "filtersd")
 }
 
-write_peaks_for_assignment <- function(in_char){
-  in_char$out_file = file.path(write_loc, paste0(in_char$zip_ms$peak_finder$sample_id, ".zip"))
+write_peaks_for_assignment <- function(in_data){
+  in_char = in_data$char_obj
+  in_char$out_file = file.path(write_loc, paste0(in_data$processed, "_", in_char$zip_ms$peak_finder$sample_id, ".zip"))
   in_char$zip_ms$out_file = in_char$out_file
   dir.create(in_char$zip_ms$temp_directory, recursive = TRUE)
   in_char$zip_ms$peak_finder$start_time = Sys.time()
@@ -207,13 +208,13 @@ assign_files = function(in_zip){
 
   if (grepl("ECF", in_file)) {
     setwd("~/Projects/work/SMIRFE/SMIRFE_assigner/")
-    run_str = glue("python3 ./Main.py /mlab/scratch/cesb_data/smirfe_dbs/n15_1600.db {zip_path} '_assigned.json' '[\"15N\"]' '[\"H\", \"Na\", \"K\", \"NH4\"]' '[1]'")
+    run_str = glue("pipenv run python3 ./Main.py /mlab/scratch/cesb_data/smirfe_dbs/n15_1600.db {zip_path} '_assigned.json' '[\"15N\"]' '[\"H\", \"Na\"]' '[1]'")
     system(run_str)
     setwd(curr_dir)
     out_value = return_file(assigned_file)
   } else {
     setwd("~/Projects/work/SMIRFE/SMIRFE_assigner/")
-    run_str = glue("python3 ./Main.py /mlab/scratch/cesb_data/smirfe_dbs/none_1600.db {zip_path} '_assigned.json' '[]' '[\"H\", \"Na\", \"K\", \"NH4\"]' '[1]'")
+    run_str = glue("pipenv run python3 ./Main.py /mlab/scratch/cesb_data/smirfe_dbs/none_1600.db {zip_path} '_assigned.json' '[]' '[\"H\", \"Na\", \"K\", \"NH4\"]' '[1]'")
     system(run_str)
     setwd(curr_dir)
     out_value = return_file(assigned_file)
