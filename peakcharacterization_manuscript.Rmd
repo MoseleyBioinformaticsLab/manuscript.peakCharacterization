@@ -150,5 +150,5 @@ rsd_plot_rsd_data
 
 ```{r rsd_table}
 drake::loadd(rsd_table_rsd_data)
-knitr::kable(rsd_table_rsd_data, digits = 3)
+flextable::flextable(rsd_table_rsd_data)
 ```
