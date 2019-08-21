@@ -291,6 +291,6 @@ rsd_info = function(...) {
   rsd_values
 }
 
-rsd_table = function(rsd_df){
+summarize_rsd = function(rsd_df){
  rsd_df
 }
