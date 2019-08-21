@@ -150,5 +150,7 @@ rsd_plot_rsd_data
 
 ```{r rsd_table}
 drake::loadd(rsd_table_rsd_data)
-flextable::flextable(rsd_table_rsd_data)
+rsd_out = flextable::flextable(rsd_table_rsd_data)
+rsd_out = flextable::autofit(rsd_out)
+rsd_out
 ```
