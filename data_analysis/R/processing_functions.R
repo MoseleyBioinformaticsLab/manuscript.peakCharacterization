@@ -264,7 +264,33 @@ return_file = function(in_file){
   list(file = in_file, sha256 = sha256)
 }
 
-rsd_comparison = function(...) {
-  tmp = list(...)
-  tmp
+rsd_info = function(...) {
+  processed_data = list(...)
+  names(processed_data) = purrr::map_chr(processed_data, "processed")
+
+  calc_rsd = function(in_char, processing){
+    scan_peaks = in_char$zip_ms$peak_finder$peak_regions$scan_peaks
+    n_peak = purrr::map_int(scan_peaks, nrow)
+    keep_peak = n_peak >= 3
+    scan_peaks = scan_peaks[keep_peak]
+    rsd = purrr::map_df(scan_peaks, function(in_peaks){
+      data.frame(mean = mean(in_peaks$Height),
+                 sd = sd(in_peaks$Height),
+                 n_peak = nrow(in_peaks),
+                 stringsAsFactors = FALSE)
+    })
+    rsd$rsd = rsd$sd / rsd$mean
+    rsd$processed = processing
+    rsd
+  }
+
+  rsd_values = purrr::map_df(processed_data, function(in_data){
+    calc_rsd(in_data$char_obj, in_data$processed)
+  })
+
+  rsd_values
+}
+
+rsd_table = function(rsd_df){
+ rsd_df
 }
