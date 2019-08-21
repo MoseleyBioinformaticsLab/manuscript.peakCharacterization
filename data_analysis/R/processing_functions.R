@@ -292,5 +292,14 @@ rsd_info = function(...) {
 }
 
 summarize_rsd = function(rsd_df){
- rsd_df
+  get_mode = function(in_values){
+    d_estimate = stats::density(in_values)
+    y_max = which.max(d_estimate$y)
+    d_estimate$x[y_max]
+  }
+  dplyr::group_by(rsd_df, processed) %>%
+    dplyr::summarize(mean = mean(rsd),
+                     median = median(rsd),
+                     mode = get_mode(rsd),
+                     max = max(rsd))
 }
