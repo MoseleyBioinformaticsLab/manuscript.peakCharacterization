@@ -6,6 +6,7 @@ library(rprojroot)
 library(ggplot2)
 theme_set(cowplot::theme_cowplot())
 library(patchwork)
+library(ggridges)
 library(dplyr)
 library(glue)
 library(smirfeTools)
@@ -41,6 +42,10 @@ analysis_plan = drake_plan(
                                      doublenorm,
                                      filtersd), data)
   ),
+  zip = target(
+    write_peaks_for_assignment(method),
+    transform = map(method)
+  ),
   frequency_conversion = target(
     plot_frequency_conversion(data)
   ),
@@ -50,12 +55,20 @@ analysis_plan = drake_plan(
   sliding_regions = target(
     plot_sliding_window_density(data)
   ),
-  # # here we want to combine the ways a data file was processed and compare
-  # # their rsd's across processing methods.
-  # rsd_data = target(
-  #   rsd_info(method),
-  #   transform = combine(method, .by = data)
-  # )
+  # here we want to combine the ways a data file was processed and compare
+  # their rsd's across processing methods.
+  rsd = target(
+    rsd_info(method),
+    transform = combine(method, .by = data)
+  ),
+  rsd_plot = target(
+    plot_rsd_differences(rsd),
+    transform = map(rsd)
+  ),
+  rsd_table = target(
+    summarize_rsd(rsd),
+    transform = map(rsd)
+  ),
   manuscript = rmarkdown::render(
     knitr_in("peakcharacterization_manuscript.Rmd"),
     output_file = file_out("peakcharacterization.docx"),
