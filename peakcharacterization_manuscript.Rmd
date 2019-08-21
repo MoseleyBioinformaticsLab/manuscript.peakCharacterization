@@ -2,7 +2,6 @@
 title: "Novel Methods for Characterizing Peaks from Direct Injection FT-MS Experiments"
 author: "Robert M Flight, Joshua M Mitchell, Hunter NB Moseley"
 date: "`r Sys.time()`"
-commit: "`r substr(git2r::branch_target(git2r::head(git2r::repository())), 1, 8)`"
 output: 
   redoc::redoc
 ---
@@ -143,3 +142,13 @@ With the characterized (centroided) peak data from across scans within each regi
 ### Changes in RSD
 
 Each step in the peak characterization either changes the overall number of peaks coming from each scan (sliding windows and breaking initial regions) or the overall intensity of the points within a scan. Therefore, one way to quantify any potential *improvements* in the characterized peaks is to look at the relative standard deviation for the characterized scan level peak intensities, and compare them as each processing step is introduced. 
+
+```{r rsd_plots}
+drake::loadd(rsd_plot_data)
+rsd_plot_data
+```
+
+```{r rsd_table}
+drake::loadd(rsd_table_data)
+knitr::kable(rsd_table_data, digits = 3)
+```
