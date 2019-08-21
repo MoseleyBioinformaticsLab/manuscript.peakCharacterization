@@ -123,7 +123,8 @@ plot_frequency_conversion = function(raw_data){
 
 }
 
-plot_peak_ordering = function(peak_data){
+plot_peak_ordering = function(data_obj){
+  peak_data = data_obj$char_obj
   scan_level_peaks = as.data.frame(peak_data$zip_ms$peak_finder$peak_regions$scan_peaks[[1]])
 
   scan_models = peak_data$zip_ms$peak_finder$peak_regions$frequency_point_regions@metadata$frequency_coefficients_all
@@ -162,4 +163,10 @@ plot_sliding_window_density = function(peak_data){
   sliding_window_nonzero_count = ggplot(nonzero_counts, aes(x = nonzero)) + geom_histogram(bins = 100) + geom_vline(xintercept = data_cutoff, color = "red") +
     scale_y_log10(expand = c(0,0), limits = c(1, NA))
   sliding_window_nonzero_count
+}
+
+plot_rsd_differences = function(rsd_values){
+
+  rsd_comparison_plot = ggplot(rsd_values, aes(x = rsd, y = processed, fill = processed)) + geom_density_ridges()
+  rsd_comparison_plot
 }
