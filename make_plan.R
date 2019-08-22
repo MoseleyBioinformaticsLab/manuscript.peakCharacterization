@@ -1,4 +1,5 @@
 library(FTMS.peakCharacterization)
+disable_logging()
 library(furrr)
 future::plan(multicore(workers = 8))
 set_internal_map(furrr::future_map)
