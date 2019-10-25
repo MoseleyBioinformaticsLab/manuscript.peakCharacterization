@@ -91,9 +91,9 @@ For each peak, a sample of the heights across scans are taken (ranging from 5% t
 The ratio sd across peaks can then be fitted to a cubic model of the fraction used, and a correction factor predicted for those peaks that are present in fewer scans. 
 The corrected sd's can then be used to correct the mean height assuming that it is the result of a truncated normal distribution [wikipedia reference, https://en.wikipedia.org/wiki/Truncated_normal_distribution].
 
-### Model of M/Z Standard Deviation
+### Frequency Standard Deviation Filtering
 
-**do we use this anywhere**?? Because if not, maybe we shouldn't bother including it.
+High-peak-density artifacts [Mitchell et al., 2018] present as singular peaks with higher than expected frequency standard deviations calculated from the scan-to-scan frequency peak locations. Outliers are removed by examining the distribution of peak frequency SDs across the entire spectrum.
 
 ### Samples and Overall Processing
 
@@ -202,6 +202,18 @@ Figure X shows an example where an initial region is broken up into multiple reg
 ```
 
 ### Normalization of Scans
+
+Due to differences in how many ions are captured in the trap, the peak intensities in each scan vary slightly.
+There are two issues with these peak intensities across scans: 1 - Some peak intensities correlate with the scan; 2 - Some peak intensities are correlated with M/Z / frequency.
+The solution to **1** is to do a two pass normalization, detect the correlated peak intensities, remove them, and then calculate normalization factors again.
+Figure XA shows that some peaks will be correlated with scan number.
+The solution to peak intensities correlated with M/Z appears to be tied to their intensities, as shown in Figure XB.
+The highlighted peaks in Figure XB are those with an intensity greater than 0.7, and are **not** correlated with M/Z.
+If *all* peaks are used for normalization, a very different set of normalization factors will be generated than by using only the *most intense* peaks, as shown in Figure XC.
+
+```{r normalization_data}
+# figure showing peak intensity correlation with M/Z, intensity varying with M/Z, changes in normalization using all vs most intense
+```
 
 ### Changes in RSD
 
