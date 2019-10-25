@@ -180,7 +180,7 @@ For each region initially created, the peaks in each scan within that region can
 
 ### Peak Characterization Using Quadratic Fit
 
-Although many other types of mass-spectrometry data suffer from a variable, noisy baseline, the scan-level profile data in the direct-injection samples shows a true baseline value of 0, making the determination of the centroided values considerably easier. 
+Although many other types of mass-spectrometry data suffer from a variable, noisy baseline, the scan-level profile data from the Thermo Fusion has a baseline of 0 due to manipulations in the Thermo firmware, making the determination of the centroided values considerably easier. 
 For the peak characterization (centroiding), we use a simple quadratic model of log(intensity) to M/Z. 
 We add a small constant to enable using the zero values, and weight the values by their ratio to the most intense value, which is normally the value closest to the center of peak, helping to ensure that the **true** centroid is determined. 
 From the fitted model, we can derive the centroided center and the intensity of the peak, as shown in Figure X.
