@@ -172,3 +172,16 @@ plot_rsd_differences = function(rsd_values){
     coord_cartesian(xlim = c(0, 1)) + theme(legend.position = "none")
   rsd_comparison_plot
 }
+
+proportional_error = function(peak_data){
+  raw_peaks = peak_data$peak_finder$peak_regions$scan_peaks
+  n_peak = purrr::map_int(raw_peaks, nrow)
+  raw_peaks = raw_peaks[n_peak > 2]
+
+  peak_sd = purrr::map_df(raw_peaks, function(in_peaks){
+    tmp_df = data.frame(mean = mean(in_peaks$Height),
+                        sd = sd(in_peaks$Height),
+                        stringsAsFactors = FALSE)
+  })
+  peak_sd$rsd = peak_sd$sd / peak_sd$mean
+}
