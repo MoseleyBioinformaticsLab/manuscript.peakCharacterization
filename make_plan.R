@@ -56,6 +56,12 @@ analysis_plan = drake_plan(
   sliding_regions = target(
     plot_sliding_window_density(data)
   ),
+  # combine the ways data file was processed and compare
+  # normalization factors
+  normalization_values = target(
+    norm_factors(method),
+    transform = combine(method, .by = data)
+  ),
   # here we want to combine the ways a data file was processed and compare
   # their rsd's across processing methods.
   rsd = target(

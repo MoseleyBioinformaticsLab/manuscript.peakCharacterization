@@ -264,6 +264,23 @@ return_file = function(in_file){
   list(file = in_file, sha256 = sha256)
 }
 
+normalization_factors = function(...){
+  processed_data = list(...)
+  names(processed_data) = purrr::map_chr(processed_data, "processed")
+  normed_samples = grep("norm", names(processed_data), value = TRUE)
+  processed_data = processed_data[normed_samples]
+
+  get_factors = function(processed_obj){
+    norm_df = processed_obj$char_obj$zip_ms$peak_finder$peak_regions$normalization_factors
+    norm_df$processing = processed_obj$processing
+    norm_df
+  }
+
+  normalization_values = purrr::map_df(normed_samples, get_factors)
+  normalization_values
+
+}
+
 rsd_info = function(...) {
   processed_data = list(...)
   names(processed_data) = purrr::map_chr(processed_data, "processed")
