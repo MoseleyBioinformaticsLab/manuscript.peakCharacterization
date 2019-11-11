@@ -70,10 +70,16 @@ singlenorm = function(in_list){
     intensity_measure = c("RawHeight", "Height")
     summary_function = median
     normalize_peaks = "both"
-    scan_peaks <- peak_regions$scan_peaks
+    scan_peaks <- purrr::map(peak_regions$peak_region_list, "peaks")
 
     normalization_factors <- FTMS.peakCharacterization:::single_pass_normalization(scan_peaks, intensity_measure = intensity_measure, summary_function = summary_function,
                                                        min_ratio = 0)
+
+    normed_list_regions = internal_map$map_function(peak_regions$peak_region_list, function(in_region){
+      in_region$points = normalize_raw_points(in_region$points, normalization_factors)
+      in_region$peaks = normalize_scan_peaks(in_region$peaks, normalization_factors)
+      in_region
+    })
 
     normed_peaks <- FTMS.peakCharacterization:::internal_map$map_function(scan_peaks, FTMS.peakCharacterization:::normalize_scan_peaks, normalization_factors)
 
@@ -83,7 +89,7 @@ singlenorm = function(in_list){
 
     normed_raw <- FTMS.peakCharacterization:::normalize_raw_points(peak_regions$frequency_point_regions, normalization_factors)
 
-    peak_regions$scan_peaks <- normed_peaks
+    peak_regions$peak_region_list = normed_list_regions
     peak_regions$frequency_point_regions <- normed_raw
     peak_regions$is_normalized <- "both"
     peak_regions$normalization_factors <- normalization_factors
@@ -118,10 +124,16 @@ singlenorm_int = function(in_list){
     intensity_measure = c("RawHeight", "Height")
     summary_function = median
     normalize_peaks = "both"
-    scan_peaks <- peak_regions$scan_peaks
+    scan_peaks <- purrr::map(peak_regions$peak_region_list, "peaks")
 
     normalization_factors <- FTMS.peakCharacterization:::single_pass_normalization(scan_peaks, intensity_measure = intensity_measure, summary_function = summary_function,
                                                        min_ratio = 0.7)
+
+    normed_list_regions = internal_map$map_function(peak_regions$peak_region_list, function(in_region){
+      in_region$points = normalize_raw_points(in_region$points, normalization_factors)
+      in_region$peaks = normalize_scan_peaks(in_region$peaks, normalization_factors)
+      in_region
+    })
 
     normed_peaks <- FTMS.peakCharacterization:::internal_map$map_function(scan_peaks, FTMS.peakCharacterization:::normalize_scan_peaks, normalization_factors)
 
@@ -131,7 +143,7 @@ singlenorm_int = function(in_list){
 
     normed_raw <- FTMS.peakCharacterization:::normalize_raw_points(peak_regions$frequency_point_regions, normalization_factors)
 
-    peak_regions$scan_peaks <- normed_peaks
+    peak_regions$peak_region_list = normed_list_regions
     peak_regions$frequency_point_regions <- normed_raw
     peak_regions$is_normalized <- "both"
     peak_regions$normalization_factors <- normalization_factors
