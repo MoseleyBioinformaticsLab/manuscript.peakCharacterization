@@ -29,6 +29,7 @@ reduce_removing_zero <- function(regions, point_regions, min_value = 0){
 noperc_nonorm = function(in_list){
   in_char = in_list$char_obj$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = TRUE
+  in_char$zip_ms$peak_finder$progress = TRUE
 
   in_char$zip_ms$peak_finder$peak_regions$peak_regions =
     reduce_removing_zero(in_char$peak_finder$peak_regions$sliding_regions,
