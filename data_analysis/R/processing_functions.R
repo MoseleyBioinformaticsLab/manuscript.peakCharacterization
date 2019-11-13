@@ -77,8 +77,8 @@ singlenorm = function(in_list){
                                                        min_ratio = 0)
 
     normed_list_regions = FTMS.peakCharacterization:::internal_map$map_function(peak_regions$peak_region_list, function(in_region){
-      in_region$points = FTMS.peakCharacterization:::internal_mapnormalize_raw_points(in_region$points, normalization_factors)
-      in_region$peaks = FTMS.peakCharacterization:::internal_mapnormalize_scan_peaks(in_region$peaks, normalization_factors)
+      in_region$points = FTMS.peakCharacterization:::normalize_raw_points(in_region$points, normalization_factors)
+      in_region$peaks = FTMS.peakCharacterization:::normalize_scan_peaks(in_region$peaks, normalization_factors)
       in_region
     })
 
