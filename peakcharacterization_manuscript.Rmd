@@ -219,7 +219,7 @@ If *all* peaks are used for normalization, a very different set of normalization
 ### Changes in Relative Standard Deviation (RSD)
 
 Each step in the peak characterization either changes the overall number of peaks coming from each scan (sliding windows and breaking initial regions) or the overall intensity of the points within a scan. 
-Therefore, one way to quantify any potential *improvements* in the characterized peaks is to look at the relative standard deviation for the characterized scan level peak intensities, and compare them as each processing step is introduced. 
+Therefore, one way to quantify any potential *improvements* in the characterized peaks is to look at the relative standard deviation (RSD) for the characterized scan level peak intensities, and compare them as each processing step is introduced. 
 
 ```{r rsd_plots}
 drake::loadd(rsd_plot_rsd_data)
@@ -231,5 +231,8 @@ drake::loadd(rsd_table_rsd_data)
 knitr::kable(rsd_out, digits = 3)
 ```
 
+### Difference to Relative Natural Abundance
 
+As an alternative to RSD, we can also compare the fit of relative intensities after assignment using SMIRFE [reference] to the theoretical relative natural abundances (relNAP) of the assigned isotopic molecular formula's (IMFs) within the assigned elemental molecular formula's (EMFs).
+Theoretically, we expect that lower quality data will have both lower numbers of assignments, and that for those things that are assigned, the fit between relative intensity and relNAP will be worse.
 
