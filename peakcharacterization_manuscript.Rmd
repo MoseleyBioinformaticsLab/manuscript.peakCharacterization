@@ -228,7 +228,7 @@ rsd_plot_rsd_data
 
 ```{r rsd_table, results = 'asis'}
 drake::loadd(rsd_table_rsd_data)
-knitr::kable(rsd_out, digits = 3)
+knitr::kable(rsd_table_rsd_data, digits = 3)
 ```
 
 ### Difference to Relative Natural Abundance
