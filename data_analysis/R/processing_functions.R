@@ -280,12 +280,12 @@ return_file = function(in_file){
 normalization_factors = function(...){
   processed_data = list(...)
   names(processed_data) = purrr::map_chr(processed_data, "processed")
-  normed_samples = grep("norm", names(processed_data), value = TRUE)
+  normed_samples = grep("nonorm", names(processed_data), value = TRUE, invert = TRUE)
   processed_data = processed_data[normed_samples]
 
   get_factors = function(processed_obj){
     norm_df = processed_obj$char_obj$zip_ms$peak_finder$peak_regions$normalization_factors
-    norm_df$processing = processed_obj$processing
+    norm_df$processing = processed_obj$processed
     norm_df
   }
 
