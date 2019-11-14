@@ -217,8 +217,8 @@ If *all* peaks are used for normalization, a very different set of normalization
 ```
 
 ```{r normalization_factors}
-loadd(normalization_plot_normalization_values_data_4)
-normalization_plot_normalization_values_data_4
+loadd(normalization_plot_normalization_values_data)
+normalization_plot_normalization_values_data
 ```
 
 ### Changes in Relative Standard Deviation (RSD)
