@@ -205,7 +205,7 @@ normalization_graph = function(normalization_data){
 
   diff_norm = dplyr::filter(diff_norm, !(processing %in% "singlenorm"))
   diff_plot = ggplot(diff_norm, aes(x = scan, y = diff, color = processing)) + geom_point() + geom_line() +
-    theme(legend.position = c(0.8, 0.8))
+    theme(legend.position = c(0.5, 0.9))
 
   (hist_plot | diff_plot) + plot_annotation(tag_levels = "A")
 }
