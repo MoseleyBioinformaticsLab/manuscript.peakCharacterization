@@ -299,6 +299,7 @@ rsd_info = function(...) {
   names(processed_data) = purrr::map_chr(processed_data, "processed")
 
   calc_rsd = function(in_char, processing){
+    scan_peaks = purrr::map(in_char$zip_ms$peak_finder$peak_regions$peak_region_list, "peaks")
     scan_peaks = in_char$zip_ms$peak_finder$peak_regions$scan_peaks
     n_peak = purrr::map_int(scan_peaks, nrow)
     keep_peak = n_peak >= 3
