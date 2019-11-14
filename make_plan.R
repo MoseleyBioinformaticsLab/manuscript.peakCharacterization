@@ -75,7 +75,7 @@ analysis_plan = drake_plan(
     summarize_rsd(rsd),
     transform = map(rsd)
   ),
-  manuscript = rmarkdown::render(
+  zz_manuscript = rmarkdown::render(
     knitr_in("peakcharacterization_manuscript.Rmd"),
     output_file = file_out("peakcharacterization.docx"),
     quiet = TRUE
