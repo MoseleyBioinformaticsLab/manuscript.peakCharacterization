@@ -61,6 +61,10 @@ analysis_plan = drake_plan(
     normalization_factors(method),
     transform = combine(method, .by = data)
   ),
+  normalization_plot = target(
+    normalization_graph(normalization_values),
+    transform = map(normalization_values)
+  ),
   # here we want to combine the ways a data file was processed and compare
   # their rsd's across processing methods.
   rsd = target(

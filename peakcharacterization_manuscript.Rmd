@@ -216,6 +216,11 @@ If *all* peaks are used for normalization, a very different set of normalization
 # figure showing peak intensity correlation with M/Z, intensity varying with M/Z, changes in normalization using all vs most intense
 ```
 
+```{r normalization_factors}
+loadd(normalization_plot_normalization_values_data_4)
+normalization_plot_normalization_values_data_4
+```
+
 ### Changes in Relative Standard Deviation (RSD)
 
 Each step in the peak characterization either changes the overall number of peaks coming from each scan (sliding windows and breaking initial regions) or the overall intensity of the points within a scan. 
