@@ -58,7 +58,7 @@ analysis_plan = drake_plan(
   # combine the ways data file was processed and compare
   # normalization factors
   normalization_values = target(
-    norm_factors(method),
+    normalization_factors(method),
     transform = combine(method, .by = data)
   ),
   # here we want to combine the ways a data file was processed and compare
