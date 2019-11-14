@@ -125,7 +125,8 @@ plot_frequency_conversion = function(raw_data){
 
 plot_peak_ordering = function(data_obj){
   peak_data = data_obj$char_obj
-  scan_level_peaks = as.data.frame(peak_data$zip_ms$peak_finder$peak_regions$scan_peaks[[1]])
+  scan_peaks = purrr::map(peak_data$zip_ms$peak_finder$peak_regions$peak_region_list, "peaks")
+  scan_level_peaks = as.data.frame(scan_peaks[[1]])
 
   scan_models = peak_data$zip_ms$peak_finder$peak_regions$frequency_point_regions@metadata$frequency_coefficients_all
   scan_models = dplyr::filter(scan_models, scan %in% scan_level_peaks$scan)
