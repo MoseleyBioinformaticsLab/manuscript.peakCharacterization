@@ -289,7 +289,7 @@ normalization_factors = function(...){
     norm_df
   }
 
-  normalization_values = purrr::map_df(normed_samples, get_factors)
+  normalization_values = purrr::map_df(processed_data, get_factors)
   normalization_values
 
 }
