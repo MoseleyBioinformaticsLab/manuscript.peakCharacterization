@@ -209,3 +209,164 @@ normalization_graph = function(normalization_data){
 
   (hist_plot | diff_plot) + plot_annotation(tag_levels = "A")
 }
+
+plot_correlate_scan_mz = function(processed_obj){
+  # to make this something we can test
+  # loadd("method_perc99_nonorm_data")
+  # processed_obj = method_perc99_nonorm_data
+
+  intensity_measure = c("RawHeight", "Height")
+  summary_function = median
+  normalize_peaks = "both"
+
+  scan_peaks = purrr::map(processed_obj$char_obj$zip_ms$peak_finder$peak_regions$peak_region_list, ~ as.data.frame(.x$peaks))
+
+  ## getting the relationship between normalized peak height and scan ----
+  normalization_factors <- FTMS.peakCharacterization:::single_pass_normalization(scan_peaks, intensity_measure = intensity_measure, summary_function = summary_function,
+                                                                                 min_ratio = 0)
+
+  normed_peaks = purrr::map(scan_peaks, function(.x){
+    .x2 = dplyr::inner_join(.x, normalization_factors, by = "scan")
+    .x2$Height = exp(log(.x2$RawHeight) - .x2$normalization)
+    .x2$normalization = NULL
+    .x2
+  })
+
+  peak_scan_correlation = purrr::imap_dfr(normed_peaks, function(.x, .y){
+    data.frame(n_scan = nrow(.x), correlation = cor(log10(.x$Height), .x$scan),
+               peak = as.numeric(.y), stringsAsFactors = FALSE)
+  }) %>% dplyr::filter(!is.na(correlation))
+
+  max_scan = max(dplyr::filter(peak_scan_correlation, n_scan <= 150)$n_scan)
+  high_cor = dplyr::filter(peak_scan_correlation, n_scan >= 0.8*max_scan, correlation >= 0.8)
+
+  example_peak = normed_peaks[[high_cor[1, "peak"]]]
+
+  height_2_scan = ggplot(example_peak, aes(x = scan, y = log10(Height))) + geom_point()
+
+
+  # do the basic normalization to get M/Z to difference ----
+  intensity_measure = c("RawHeight", "Height")
+  summary_function = median
+  use_peaks = NULL
+  min_ratio = 0
+  n_scan_per_peak <- purrr::map_int(scan_peaks, function(x){
+    if (sum(duplicated(x$scan)) == 0) {
+      return(length(x$scan))
+    } else {
+      return(0L)
+    }
+  })
+
+  use_measure <- NULL
+  for (imeasure in intensity_measure){
+    if (imeasure %in% names(scan_peaks[[1]])) {
+      use_measure <- imeasure
+      break()
+    }
+  }
+
+  if (is.null(use_measure)) {
+    stop("The desired intensity measure for normalization is not present!")
+  }
+
+  scan_cutoff <- quantile(n_scan_per_peak, 0.95)
+
+  if (is.null(use_peaks)) {
+    use_peaks <- rep(TRUE, length(scan_peaks))
+  }
+
+  normalize_peaks <- which((n_scan_per_peak >= scan_cutoff) & use_peaks)
+
+  all_scans <- data.frame(scan = unique(unlist(purrr::map(scan_peaks, function(x){unique(x$scan)}))))
+
+  peak_intensity <- purrr::map_dfc(scan_peaks[normalize_peaks], function(x){
+    tmp_data <- dplyr::left_join(all_scans, as.data.frame(x[, c("scan", use_measure)]), by = "scan")
+    log(tmp_data[, use_measure])
+  })
+
+  peak_mz = purrr::map_dfc(scan_peaks[normalize_peaks], function(x){
+    tmp_data <- dplyr::left_join(all_scans, as.data.frame(x[, c("scan", "ObservedMZ")]), by = "scan")
+    tmp_data[, "ObservedMZ"]
+  })
+  all_na = purrr::map_lgl(seq_len(nrow(peak_intensity)), ~ sum(is.na(peak_intensity[.x, ])) == ncol(peak_intensity))
+
+  all_scans = all_scans[!all_na, , drop = FALSE]
+  peak_intensity = peak_intensity[!all_na, , drop = FALSE]
+  peak_mz = peak_mz[!all_na, , drop = FALSE]
+
+  intensity_ratio <- purrr::map_dfr(seq_len(nrow(peak_intensity)), function(x){
+    #message(x)
+    peak_intensity[x, ] / max(peak_intensity[x, ], na.rm = TRUE)
+  })
+  peak_intensity[intensity_ratio < min_ratio] <- NA
+
+  intensity_scans <- purrr::map_int(seq_len(ncol(peak_intensity)), function(x){
+    sum(!is.na(peak_intensity[, x]))
+  })
+
+  peak_intensity <- peak_intensity[, intensity_scans >= scan_cutoff, drop = FALSE]
+  peak_mz = peak_mz[, intensity_scans >= scan_cutoff, drop = FALSE]
+
+  notna_scans <- rowSums(!is.na(as.matrix(peak_intensity)))
+  keep_scans <- notna_scans >= 25
+
+  if (sum(keep_scans) == 0) {
+    stop("No scans left to use in normalization!")
+  }
+
+  all_scans <- all_scans[keep_scans, , drop = FALSE]
+  peak_intensity <- peak_intensity[keep_scans, ]
+  peak_mz = peak_mz[keep_scans, ]
+
+  scan_distances <- purrr::map_dbl(seq(1, nrow(peak_intensity)), function(in_scan){
+    scan_peaks <- peak_intensity[in_scan, ,drop = FALSE]
+    scan_peaks_matrix <- matrix(unlist(scan_peaks), nrow = nrow(peak_intensity) - 1, ncol = ncol(scan_peaks), byrow = TRUE)
+
+    other_matrix <- as.matrix(peak_intensity[-in_scan, , drop = FALSE])
+    scan_other_diff <- scan_peaks_matrix - other_matrix
+    scan_distances <- purrr::map_dbl(seq(1, nrow(scan_other_diff)), function(x){
+      sqrt(sum(scan_other_diff[x, ]^2, na.rm = TRUE))
+    })
+    sum(scan_distances)
+  })
+
+  normalize_scan <- which.min(scan_distances)
+
+  scan_norm_matrix <- matrix(unlist(peak_intensity[normalize_scan, , drop = FALSE]),
+                             nrow = nrow(peak_intensity), ncol = ncol(peak_intensity), byrow = TRUE)
+
+  diff_matrix <- as.matrix(peak_intensity) - scan_norm_matrix
+
+  rownames(diff_matrix) = paste0("d", seq(1, nrow(diff_matrix)))
+  colnames(diff_matrix) = paste0("p", seq(1, ncol(diff_matrix)))
+
+  diff_df = as.data.frame(t(diff_matrix))
+  diff_df$peak = rownames(diff_df)
+  diff_df$mz = colMeans(peak_mz, na.rm = TRUE)
+
+  int_df = as.data.frame(t(as.matrix(peak_intensity)))
+  int_df$peak = diff_df$peak
+  colnames(int_df) = paste0("i", seq(1, ncol(int_df)))
+
+  diff_int_df = dplyr::left_join(diff_df, int_df, by = "peak")
+
+  diff_int_list = purrr::map(seq(1, nrow(diff_matrix)), funcion(in_scan){
+    grab_cols = paste0(c("d", "i"), in_scan)
+    tmp_df = diff_int_df[, grab_cols]
+    names(tmp_df) = c("difference", "intensity")
+    tmp_df = dplyr::filter(tmp_df, !is.na(difference), !is.na(intensity))
+    tmp_df$use = FALSE
+    cutoff = max(tmp_df$intensity) * 0.7
+    tmp_df[tmp_df$intensity >= cutoff, "use"] = TRUE
+    tmp_df
+  })
+
+  diff_int_plots = purrr::map(diff_int_list, function(intensity_df){
+    ggplot(dplyr::filter(intensity_df, !use), aes(x = intensity, y = difference)) + geom_point(size = 3) +
+      geom_point(data = dplyr::filter(intensity_df, use), size = 3, color = "red")
+  })
+
+  list(correlation = height_2_scan, diff_df = diff_int_list, diff_plot = diff_int_plots)
+
+}
