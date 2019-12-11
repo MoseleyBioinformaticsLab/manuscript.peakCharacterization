@@ -58,7 +58,7 @@ analysis_plan = drake_plan(
   # look for correlating with scan and correlating normalization values with M/Z
   correlate_scan_mz = target(
     plot_correlate_scan_mz(method),
-    transform = map(method)
+    transform = combine(method, .by = data)
   ),
   # combine the ways data file was processed and compare
   # normalization factors

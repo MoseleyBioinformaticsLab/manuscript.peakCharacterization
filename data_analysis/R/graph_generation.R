@@ -210,7 +210,12 @@ normalization_graph = function(normalization_data){
   (hist_plot | diff_plot) + plot_annotation(tag_levels = "A")
 }
 
-plot_correlate_scan_mz = function(processed_obj){
+plot_correlate_scan_mz = function(...){
+  processed_data = list(...)
+  names(processed_data) = purrr::map_chr(processed_data, "processed")
+  use_names = grep("perc99", names(processed_data), value = TRUE)
+  message(use_names)
+  processed_obj = processed_data[[use_names]]
   # to make this something we can test
   # loadd("method_perc99_nonorm_data")
   # processed_obj = method_perc99_nonorm_data
