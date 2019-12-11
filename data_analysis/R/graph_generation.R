@@ -351,7 +351,7 @@ plot_correlate_scan_mz = function(processed_obj){
 
   diff_int_df = dplyr::left_join(diff_df, int_df, by = "peak")
 
-  diff_int_list = purrr::map(seq(1, nrow(diff_matrix)), funcion(in_scan){
+  diff_int_list = purrr::map(seq(1, nrow(diff_matrix)), function(in_scan){
     grab_cols = paste0(c("d", "i"), in_scan)
     tmp_df = diff_int_df[, grab_cols]
     names(tmp_df) = c("difference", "intensity")
