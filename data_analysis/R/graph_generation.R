@@ -346,8 +346,8 @@ plot_correlate_scan_mz = function(processed_obj){
   diff_df$mz = colMeans(peak_mz, na.rm = TRUE)
 
   int_df = as.data.frame(t(as.matrix(peak_intensity)))
-  int_df$peak = diff_df$peak
   colnames(int_df) = paste0("i", seq(1, ncol(int_df)))
+  int_df$peak = diff_df$peak
 
   diff_int_df = dplyr::left_join(diff_df, int_df, by = "peak")
 
@@ -363,8 +363,9 @@ plot_correlate_scan_mz = function(processed_obj){
   })
 
   diff_int_plots = purrr::map(diff_int_list, function(intensity_df){
-    ggplot(dplyr::filter(intensity_df, !use), aes(x = intensity, y = difference)) + geom_point(size = 3) +
+    p = ggplot(dplyr::filter(intensity_df, !use), aes(x = intensity, y = difference)) + geom_point(size = 3) +
       geom_point(data = dplyr::filter(intensity_df, use), size = 3, color = "red")
+    p
   })
 
   list(correlation = height_2_scan, diff_df = diff_int_list, diff_plot = diff_int_plots)
