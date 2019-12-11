@@ -210,7 +210,7 @@ normalization_graph = function(normalization_data){
   (hist_plot | diff_plot) + plot_annotation(tag_levels = "A")
 }
 
-plot_correlate_scan_mz = function(...){
+correlate_scan_height = function(...){
   processed_data = list(...)
   names(processed_data) = purrr::map_chr(processed_data, "processed")
   use_names = grep("perc99", names(processed_data), value = TRUE)
@@ -247,7 +247,7 @@ plot_correlate_scan_mz = function(...){
 
   example_peak = normed_peaks[[high_cor[1, "peak"]]]
 
-  height_2_scan = ggplot(example_peak, aes(x = scan, y = log10(Height))) + geom_point()
+  height_2_scan = ggplot(example_peak, aes(x = scan, y = log10(Height))) + geom_point(size = 3)
 
 
   # do the basic normalization to get M/Z to difference ----
@@ -375,4 +375,9 @@ plot_correlate_scan_mz = function(...){
 
   list(correlation = height_2_scan, diff_df = diff_int_list, diff_plot = diff_int_plots)
 
+}
+
+correlate_scan_height_graph = function(correlation_plots){
+  p = (correlation_plots$correlation | correlation_plots$diff_plot[[1]]) + plot_annotation(tag_levels = "A")
+  p
 }

@@ -56,9 +56,13 @@ analysis_plan = drake_plan(
     plot_sliding_window_density(data)
   ),
   # look for correlating with scan and correlating normalization values with M/Z
-  correlate_scan_mz = target(
-    plot_correlate_scan_mz(method),
+  correlate_scan_height = target(
+    correlate_scan_height(method),
     transform = combine(method, .by = data)
+  ),
+  correlate_scan_height_plot = target(
+    correlate_scan_height_graph(correlate_scan_height),
+    transform = map(correlate_scan_height)
   ),
   # combine the ways data file was processed and compare
   # normalization factors
