@@ -381,3 +381,35 @@ correlate_scan_height_graph = function(correlation_plots){
   p = (correlation_plots$correlation | correlation_plots$diff_plot[[1]]) + plot_annotation(tag_levels = "A")
   p
 }
+
+
+plot_peak_fitting = function(processed_obj){
+  # to make this something we can test
+  #loadd("method_perc99_nonorm_data")
+  #processed_obj = method_perc99_nonorm_data
+
+  use_peak = processed_obj$char_obj$zip_ms$peak_finder$peak_regions$peak_region_list[[1]]
+  peak_points = as.data.frame(use_peak$points@elementMetadata)
+  use_scan = unique(peak_points$scan)[1]
+  peak_points = dplyr::filter(peak_points, scan %in% use_scan)
+
+  w = peak_points$intensity / max(peak_points$intensity)
+  peak_points$log_int = log(peak_points$intensity + 1e-8)
+  peak_fit = FTMS.peakCharacterization:::parabolic_fit(peak_points$frequency, peak_points$log_int, w = w)
+  peak_points$log_fit = peak_fit$fitted.values
+  fitted_info = FTMS.peakCharacterization:::get_fitted_peak_info(peak_points, "frequency", w)
+
+  log_plot = ggplot(peak_points, aes(x = frequency, y = log_int)) +
+    geom_line(aes(x = frequency, y = log_fit), color = "red", size = 2) +
+    geom_point(size = 3) +
+    geom_point(data = fitted_info, aes(x = ObservedCenter, y = log(Height)), color = "blue", size = 3) +
+    labs(x = "Frequency", y = "Log(Intensity)")
+
+  norm_plot = ggplot(peak_points, aes(x = frequency, y = intensity)) +
+    geom_line(aes(x = frequency, y = exp(log_fit)), color = "red", size = 2) +
+    geom_point(size = 3) +
+    geom_point(data = fitted_info, aes(x = ObservedCenter, y = Height), color = "blue", size = 3) +
+    labs(x = "Frequency", y = "Intensity")
+
+  (log_plot | norm_plot) + plot_annotation(tag_levels = "A")
+}

@@ -165,9 +165,9 @@ Although the original model is created from only those points that had frequency
 In a dataset of this nature, we expect that much of the data is really just noise, and doesn't contribute that much to the analysis. 
 It is expected that noise is randomly distributed across the scans. 
 Therefore, if we slide a window across the data and sum the number of non-zero points in each window, we expect that most of the data we encounter is actually noise. 
-The distribution of counts is shown in Figure X. 
+The distribution of counts in sliding windows ten points wide and offset by one point is shown in Figure X. 
 The number of peaks detected without applying a cutoff explodes by ..., with the vast majority of the peaks being present in a single scan. 
-By merging those windows that are adjacent **and** have a point density greater than the 99th percentile, the regions most likely to contain actual, informative peaks are rapidly and easily determined.
+By discarding those windows that have a non-zero point density below the 99th percentile, and merging the remaining adjacent windows, the regions most likely to contain actual, informative peaks are rapidly and easily determined.
 
 ```{r slidingwindow_count_distribution}
 drake::loadd(sliding_regions)
@@ -188,6 +188,8 @@ From the fitted model, we can derive the centroided center and the intensity of 
 
 ```{r centroided_peaks}
 # figure showing fit of quadratic model to actual data points
+drake::loadd(peak_fit_plot)
+peak_fit_plot
 ```
 
 ### Breaking Up Initial Regions
@@ -214,12 +216,12 @@ If *all* peaks are used for normalization, a very different set of normalization
 
 ```{r normalization_data}
 # figure showing peak intensity correlation with M/Z, intensity varying with M/Z
-loadd(correlate_scan_height_plot_correlate_scan_height_data)
+drake::loadd(correlate_scan_height_plot_correlate_scan_height_data)
 correlate_scan_height_plot_correlate_scan_height_data
 ```
 
 ```{r normalization_factors}
-loadd(normalization_plot_normalization_values_data)
+drake::loadd(normalization_plot_normalization_values_data)
 normalization_plot_normalization_values_data
 ```
 
