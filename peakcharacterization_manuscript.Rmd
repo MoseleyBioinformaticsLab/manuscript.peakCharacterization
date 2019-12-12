@@ -128,8 +128,8 @@ The Thermo Fusion instrument from which most of our collaborators data has been 
 Restricting to those points that fall into a narrow range of frequency differences (0.49 - 0.51), a model of frequency to M/Z can be generated (see Methods), an example of which is shown in Figure XE. 
 This model seems to fit the known relationship between frequency and M/Z, where the frequency is related to $1/\sqrt{mz}$. 
 This is useful, because some of the subsequent steps in our workflow use sliding and tiled windows where it is assumed that the sliding windows contain the same number of data points. 
-M/Z point-to-point differences are not constant, but can be approximated by a lasso linear model. 
-However, it is very difficult to create a lasso model with an intercept of 0, and then vary the width of sliding windows according to the M/Z difference at a particular M/Z. 
+M/Z point-to-point differences are not constant, but can be approximated by a lasso linear model; however, it is very difficult to create a lasso model with an intercept of 0.
+In addition, we would also need to vary the width of sliding windows according to the M/Z difference at a particular M/Z based on the lasso model.
 Frequency based points suffer none of these drawbacks, and the conversion from M/Z can be derived from the raw profile level data itself, which is incredibly useful.
 
 ```{r mz_frequency_figure}
