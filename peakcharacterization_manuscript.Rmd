@@ -202,6 +202,8 @@ Figure X shows an example where an initial region is broken up into multiple reg
 
 ```{r breaking_regions}
 # figure showing multiple "peaks" in what is initially a single region
+drake::loadd(split_region_plot)
+split_region_plot
 ```
 
 ### Normalization of Scans

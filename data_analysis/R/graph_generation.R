@@ -459,5 +459,5 @@ plot_region_splitting = function(region_list){
     coord_cartesian(xlim = c(xmin, xmax)) +
     labs(x = "frequency", y = "no. of peaks")
 
-  p1 / p2 / p3
+  (p1 / p2 / p3) + plot_annotation(tag_level = "A")
 }
