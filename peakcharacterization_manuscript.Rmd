@@ -198,13 +198,21 @@ With the characterized (centroided) peak data from across scans within each regi
 Our solution to this is to define breaks between **actual** peaks as a single frequency bin with zero characterized peaks within it. 
 The frequency bins are created from tiled windows that are one frequency point difference wide. 
 Adjacent non-zero frequency bins are merged to comprise a single peak region. 
-Figure X shows an example where an initial region is broken up into multiple regions based on the characterized peak centers. 
+Figure X shows an example where an initial region is broken up into two regions based on the characterized peak centers. 
 
 ```{r breaking_regions}
 # figure showing multiple "peaks" in what is initially a single region
 drake::loadd(split_region_plot)
 split_region_plot
 ```
+
+*caption*:Splitting a single region into two regions based on the present peaks.
+**A**: The full set of raw frequency and intensity data across all scans for the region are shown. 
+Clearly the region has two separate peaks within it.
+**B**: The peak centroids (frequency and intensity) for each peak in black.
+The tiled regions (red) are used to quantify the number of peaks.
+**C**: The number of peaks within each tiled region shown as a histogram.
+Each group of non-zero adjacent regions will be merged to form a new peak region.
 
 ### Normalization of Scans
 
