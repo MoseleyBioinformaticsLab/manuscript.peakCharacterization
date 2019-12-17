@@ -217,11 +217,14 @@ Each group of non-zero adjacent regions will be merged to form a new peak region
 ### Normalization of Scans
 
 Due to differences in how many ions are captured in the trap, the peak intensities in each scan vary slightly.
-There are two issues with these peak intensities across scans: 1 - Some peak intensities correlate with the scan; 2 - Some peak differences across scans are correlated with intensity.
-The solution to **1** is to do a two pass normalization, detect the correlated peak intensities, remove them, and then calculate normalization factors again.
-Figure XA shows that some peaks will be correlated with scan number.
+Using the median peak differences between scans, it is possible to normalize the peak intensities across scans.
+However, there are two issues with these peak intensities across scans: 1 - Some peak intensities correlate with the scan number; 2 - Some peak differences between scans are correlated with intensity.
+The solution to **1** is to do a two pass normalization.
+In the first pass, the peaks who's intensity is correlated with intensity are detected.
+In the second pass, the correlated peaks are removed, and normalization is carried out again.
+Figure XA contains an example peak whose intensity across scans is correlated with scan number.
 The solution to **2** (peak differences correlated with intensity) is to only use the most intense peaks, as shown in Figure XB.
-The highlighted peaks in Figure XB are those with an intensity greater than 0.7, and at least visually, their differences are **not** correlated with intensity.
+The highlighted peaks in Figure XB are those with an intensity greater than 0.7 of the maximum intensity observed in that scan, and at least visually, their differences are **not** correlated with intensity.
 If *all* peaks are used for normalization, a very different set of normalization factors will be generated than by using only the *most intense* peaks, as shown in Figure XA and XB.
 
 ```{r normalization_data}
@@ -230,20 +233,34 @@ drake::loadd(correlate_scan_height_plot_correlate_scan_height_data)
 correlate_scan_height_plot_correlate_scan_height_data
 ```
 
+*caption*: **A**: An example of a peak whose height across scans is correlated with scan number.
+**B**: The peak differences to the same peaks in a reference scan are plotted against peak height.
+Black: Peaks with a height < 0.7 of the maximum. 
+Red: Peaks with a height >= 0.7 of the maximum.
+
+
 ```{r normalization_factors}
 drake::loadd(normalization_plot_normalization_values_data)
 normalization_plot_normalization_values_data
 ```
 
+*caption*: **A**: Histogram of scan normalization factors using either a single pass normalization using *all* peaks (singlenorm), single pass normalization using peaks with an intensity >= 0.7 of the maximum intensity (singlenorm_int), or the double pass normalization removing peaks whose height is correlated with scan and using the most intense peaks (doublenorm). 
+**B**: The difference of the normalization factors obtained from either doublenorm or singlenorm_int compared to singlenorm.
+
+
+
 ### Changes in Relative Standard Deviation (RSD)
 
 Each step in the peak characterization either changes the overall number of peaks coming from each scan (sliding windows and breaking initial regions) or the overall intensity of the points within a scan. 
-Therefore, one way to quantify any potential *improvements* in the characterized peaks is to look at the relative standard deviation (RSD) for the characterized scan level peak intensities, and compare them as each processing step is introduced. 
+Therefore, one way to quantify any potential *improvements* in the characterized peaks is to look at the relative standard deviation (RSD) for the characterized scan level peak intensities (calculated as the standard deviation of peak heights across scans divided by the mean peak height), and compare them as each processing step is introduced. 
 
 ```{r rsd_plots}
 drake::loadd(rsd_plot_rsd_data)
 rsd_plot_rsd_data
 ```
+
+*caption*: Density plots of relative standard deviations (RSD) of peak heights across scans for each of the processing methods. 
+A peak had to be present in at least three scans for the RSD value to be reported.
 
 ```{r rsd_table, results = 'asis'}
 drake::loadd(rsd_table_rsd_data)
