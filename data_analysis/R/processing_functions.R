@@ -333,3 +333,66 @@ summarize_rsd = function(rsd_df){
                      mode = get_mode(rsd),
                      max = max(rsd))
 }
+
+split_regions = function(p99_nonorm_data){
+  # loadd("method_perc99_nonorm_data")
+  # p99_nonorm_data = method_perc99_nonorm_data
+
+
+  self = p99_nonorm_data$char_obj$zip_ms$peak_finder
+  use_regions <- seq_len(length(self$peak_regions$peak_regions))
+  signal_regions = self$peak_regions$peak_regions[use_regions]
+  frequency_point_regions = self$peak_regions$frequency_point_regions
+  tiled_regions = self$peak_regions$tiled_regions
+  min_scan = self$peak_regions$min_scan
+  peak_method = self$peak_method
+  min_points = self$min_points
+
+  signal_list = as.list(split(signal_regions, seq(1, length(signal_regions))))
+  min_scan2 = floor(min_scan / 2)
+
+  set.seed(1234)
+  signal_list = signal_list[sample(length(signal_list), 500)]
+  point_regions_list = purrr::map(signal_list, function(in_region){
+    points = IRanges::subsetByOverlaps(frequency_point_regions, in_region)
+
+    nonzero = as.data.frame(points@elementMetadata) %>%
+      dplyr::filter(intensity > 0) %>%
+      dplyr::pull(scan) %>% unique(.) %>% length(.)
+
+    if (nonzero >= min_scan2) {
+      tiles = IRanges::subsetByOverlaps(tiled_regions, in_region)
+      return(list(points = points, tiles = tiles, region = in_region))
+    } else {
+      return(NULL)
+    }
+  })
+
+  not_null = purrr::map_lgl(point_regions_list, ~ !is.null(.x))
+  point_regions_list = point_regions_list[not_null]
+  point_regions_list = point_regions_list[sample(length(point_regions_list))]
+
+  # split_data = purrr::imap(point_regions_list, function(.x, .y){
+  #   message(.y)
+  #   split_region_by_peaks(.x, peak_method = peak_method, min_points = min_points)
+  # })
+  split_data = FTMS.peakCharacterization:::internal_map$map_function(point_regions_list, split_region_by_peaks,
+                                         peak_method = peak_method, min_points = min_points)
+
+  null_regions = purrr::map_lgl(split_data, ~ is.null(.x[[1]]$points))
+  split_data = split_data[!null_regions]
+
+
+  n_regions = purrr::map_int(split_data, ~length(.x))
+
+  possible_region = which(n_regions == 2)
+  possible_region = which(n_regions == 2)
+  n_each = purrr::imap_dfr(split_data[possible_region], function(.x, .y){
+    data.frame(region = .y, n_1 = nrow(.x[[1]]$peaks), n_2 = nrow(.x[[2]]$peaks))
+  })
+  examine_region = dplyr::filter(n_each, n_1 > 90, n_2 > 100)
+  use_list = point_regions_list[[examine_region[1, "region"]]]
+
+  use_list
+
+}

@@ -59,6 +59,13 @@ analysis_plan = drake_plan(
   peak_fit_plot = target(
     plot_peak_fitting(method_perc99_nonorm_data)
   ),
+  # region splitting
+  find_sub_region = target(
+    split_regions(method_perc99_nonorm_data)
+  ),
+  split_region_plot = target(
+    plot_region_splitting(find_sub_region)
+  ),
   # look for correlating with scan and correlating normalization values with M/Z
   correlate_scan_height = target(
     correlate_scan_height(method),

@@ -413,3 +413,51 @@ plot_peak_fitting = function(processed_obj){
 
   (log_plot | norm_plot) + plot_annotation(tag_levels = "A")
 }
+
+plot_region_splitting = function(region_list){
+  frequency_point_regions = region_list$points
+  tiled_regions = region_list$tiles
+  frequency_point_regions@elementMetadata$log_int <- log(frequency_point_regions@elementMetadata$intensity + 1e-8)
+
+  scan_runs = rle(frequency_point_regions@elementMetadata$scan)
+  #if (min(scan_runs$lengths) < min_points + 2) {
+  frequency_point_splitscan <- split(frequency_point_regions, frequency_point_regions@elementMetadata$scan)
+  reduced_peaks <- purrr::map_df(names(frequency_point_splitscan), function(in_scan){
+    FTMS.peakCharacterization:::get_reduced_peaks(frequency_point_splitscan[[in_scan]], peak_method = "lm_weighted", min_points = 4)
+  })
+
+  frequency_multiplier = region_list$points@metadata$frequency_multiplier
+  reduced_regions = IRanges::IRanges(start = round(reduced_peaks$ObservedCenter.frequency * frequency_multiplier),
+                                     width = 1)
+  tiled_overlap = IRanges::countOverlaps(tiled_regions, reduced_regions)
+
+  point_data = as.data.frame(region_list$points@elementMetadata)
+
+
+  tiled_regions = as.data.frame(region_list$tiles)
+  tiled_regions$start_freq = tiled_regions$start / frequency_multiplier
+  tiled_regions$end_freq = tiled_regions$end / frequency_multiplier
+  tiled_regions$counts = tiled_overlap
+  tiled_regions$mid_point = tiled_regions$start_freq + 0.25
+  tiled_regions$intensity = 10000
+
+  original_points = as.data.frame(frequency_point_regions@elementMetadata)
+
+  xmin = min(original_points$frequency - 0.5)
+  xmax = max(original_points$frequency + 0.5)
+
+  p1 = ggplot(original_points, aes(x = frequency, y = intensity, group = scan)) +
+    geom_point() + geom_line() + coord_cartesian(xlim = c(xmin, xmax)) +
+    labs(x = NULL)
+
+  p2 = ggplot(reduced_peaks, aes(x = ObservedCenter.frequency, y = Height.frequency)) +
+    geom_point() + geom_segment(data = tiled_regions, aes(x = start_freq + 5e-2, xend = end_freq - 5e-2, y = intensity, yend = intensity), color = "red") +
+    coord_cartesian(xlim = c(xmin, xmax)) +
+    labs(x = NULL, y = "intensity")
+
+  p3 = ggplot(tiled_regions, aes(x = mid_point, y = counts)) + geom_col() +
+    coord_cartesian(xlim = c(xmin, xmax)) +
+    labs(x = "frequency", y = "no. of peaks")
+
+  p1 / p2 / p3
+}
