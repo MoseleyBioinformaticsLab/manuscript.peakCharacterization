@@ -396,3 +396,89 @@ split_regions = function(p99_nonorm_data){
   use_list
 
 }
+
+density_calculate = function(frequency_values, metadata, frequency_range = NULL){
+  freq_points = FTMS.peakCharacterization::frequency_points_to_frequency_regions(as.data.frame(frequency_values), multiplier = metadata$multiplier)
+
+  sliding_regions = FTMS.peakCharacterization::create_frequency_regions(point_spacing = metadata$point_spacing, frequency_range = frequency_range,
+                                             n_point = metadata$n_point, delta_point = metadata$delta_point,
+                                             multiplier = metadata$multiplier)
+
+  sliding_density = IRanges::countOverlaps(sliding_regions, freq_points)
+
+  n_region = 9 * metadata$n_point
+  small_window = c(1 * metadata$n_point, 5 * metadata$n_point)
+  large_window = c((5 * metadata$n_point) + 1, 9 * metadata$n_point)
+
+  start_i = (9 * metadata$n_point) + 1
+  end_i = length(sliding_regions) - (9 * metadata$n_point) - 1
+
+  stats = purrr::map_dbl(seq(start_i, end_i), function(in_i){
+    inner_window = list(sort(in_i - small_window),
+                        sort(in_i + small_window))
+    outer_window = list(sort(in_i - large_window),
+                        sort(in_i + large_window))
+
+    inner_seq = unlist(purrr::map(inner_window, ~ seq(.x[1], .x[2])))
+    outer_seq = unlist(purrr::map(outer_window, ~ seq(.x[1], .x[2])))
+
+    calculate_statistic = function(query_density, reference_window){
+      ref_mean = mean(reference_window)
+      ref_sd = sd(reference_window)
+      if ((ref_mean > 0) & (ref_sd > 0)) {
+        z = ((query_density - ref_mean)^2) / (ref_sd^2)
+        return(z * sign(query_density - ref_mean))
+      } else {
+        return(0)
+      }
+
+    }
+
+    z_inner = calculate_statistic(sliding_density[in_i], sliding_density[inner_seq])
+    z_outer = calculate_statistic(sliding_density[in_i], sliding_density[outer_seq])
+    max(z_inner, z_outer)
+  })
+  all_z = rep(0, length(sliding_density))
+  all_z[seq(start_i, end_i)] = stats
+
+  tmp_df = data.frame(z = all_z, frequency_start = IRanges::start(sliding_regions))
+
+  high_df = which(tmp_df$z >= 100)
+
+  high_sliding = sliding_regions[high_df]
+  high_merged = IRanges::reduce(high_sliding)
+  min_width = IRanges::width(sliding_regions[1]) / 10 * 3
+  keep_merged = high_merged[IRanges::width(high_merged) >= min_width]
+  return(list(freq_points = freq_points, hpd = keep_merged))
+}
+
+hpd_calculate = function(in_data){
+  sample = in_data$char_obj$zip_ms$id
+  match_excel = grep(sample, excel_files, value = TRUE)
+
+  xl_data = readxl::read_excel(match_excel, skip = 8, col_names = FALSE)
+  xl_data = xl_data[, 1:2]
+  names(xl_data) = c("mz", "intensity")
+
+  frequency_coefficients = in_data$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions@metadata$frequency_coefficients
+  frequency_description = in_data$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions@metadata$frequency_fit_description
+  mz_coefficients = in_data$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions@metadata$mz_coefficients
+  mz_description = in_data$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions@metadata$mz_fit_description
+  org_frequency = as.data.frame(in_data$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions@elementMetadata)
+  xl_data$frequency = FTMS.peakCharacterization:::predict_exponentials(xl_data$mz, frequency_coefficients, frequency_description)
+
+  sliding_metadata = in_data$char_obj$zip_ms$peak_finder$peak_regions$sliding_regions@metadata
+
+  min_mz = round(min(xl_data$mz))
+  freq_mz = data.frame(mz = c(1599, 1600))
+  freq_mz$frequency = FTMS.peakCharacterization:::predict_exponentials(freq_mz$mz, frequency_coefficients, frequency_description)
+
+  freq_diff = freq_mz[1, "frequency"] - freq_mz[2, "frequency"]
+  region_points = list(point_spacing = freq_diff / 10,
+                       n_point = 10, delta_point = 1, multiplier = sliding_metdata$multiplier)
+
+
+  frequency_range = c(min(c(min(c(xl_data$frequency, org_frequency$frequency)))),
+                      max(c(max(c(xl_data$frequency, org_frequency$frequency)))))
+
+}
