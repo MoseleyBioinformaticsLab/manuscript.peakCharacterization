@@ -101,14 +101,14 @@ High-peak-density artifacts [Mitchell et al., 2018] present as singular peaks wi
 Samples included two ethyl-chloroformate (ECF) derivatized amino-acid samples [reference] and two samples where lipid extracts were extracted from lung tumors [reference]. 
 All four samples are positive mode, were converted from raw to mzML using msconvert from ProteoWizard (profile mode) and ThermoRawFileParser (centroided).
 
-For each raw data file in mzML format, they were each processed in these six ways:
+For each raw data file in profile mzML format, they were processed in these six ways:
 
-  1. No noise removal, no normalization, no frequency SD filtering
-  2. Noise removal, no normalization, no frequency SD filtering
-  3. Noise removal, single pass normalization with all peaks, no frequency SD filtering
-  4. Noise removal, single pass normalization with high ratio peaks, no frequency SD filtering
-  5. Noise removal, two pass normalization, no frequency SD filtering
-  6. Noise removal, two pass normalization, frequency SD filtering
+  1. No noise removal, no normalization, no frequency SD filtering (noperc_nonorm)
+  2. Noise removal, no normalization, no frequency SD filtering (perc99_nonorm)
+  3. Noise removal, single pass normalization with all peaks, no frequency SD filtering (singlenorm)
+  4. Noise removal, single pass normalization with high ratio peaks, no frequency SD filtering (singlenorm_int)
+  5. Noise removal, two pass normalization, no frequency SD filtering (doublenorm)
+  6. Noise removal, two pass normalization, frequency SD filtering (filtersd)
 
 ## Results
 
@@ -247,7 +247,15 @@ normalization_plot_normalization_values_data
 *caption*: **A**: Histogram of scan normalization factors using either a single pass normalization using *all* peaks (singlenorm), single pass normalization using peaks with an intensity >= 0.7 of the maximum intensity (singlenorm_int), or the double pass normalization removing peaks whose height is correlated with scan and using the most intense peaks (doublenorm). 
 **B**: The difference of the normalization factors obtained from either doublenorm or singlenorm_int compared to singlenorm.
 
+### Removal of High Peak Density Artefacts
 
+We previously described the presence of high peak density (HPD) artefacts in FT-MS spectra [Mitchell et al., Metabolomics, 2018]. 
+Ideally, the peak characterization procedure should reduce their presence in the resultant reported peaks. 
+Their presence should be minimized by removing noise peaks, and removing regions that have multiple reported peaks in the same scan. 
+We expect they may present are as characterized peaks that have larger than expected standard deviations in their frequencies when calculated across scans.
+These peaks can be detected by simply examining the distribution of frequency SDs and removing those that are outliers.
+To verify the removal of HPD regions, we converted centroided M/Z's from XCalibur to frequency values using the previously decided values for that sample.
+Peak density was measured using a sliding window 10 points wide and offset by one point.
 
 ### Changes in Relative Standard Deviation (RSD)
 
