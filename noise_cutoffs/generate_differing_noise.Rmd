@@ -47,7 +47,7 @@ reduce_removing_noise <- function(regions, point_regions, multiplier = 1){
   
   cutoff_value = ceiling(median(chunk_perc) * multiplier)
   
-  regions = regions[nz_counts >= cutoff_value]
+  regions = regions[nz_counts > cutoff_value]
   IRanges::reduce(regions)
 }
 ```
