@@ -37,7 +37,7 @@ reduce_removing_noise <- function(regions, point_regions, multiplier = 1){
   chunk_indices = seq(1, length(nz_counts), by = 10000)
   
   chunk_perc = purrr::map_dbl(chunk_indices, function(in_index){
-    use_density = sliding_density[seq(in_index, min(in_index + 9999, length(sliding_density)))]
+    use_counts = nz_counts[seq(in_index, min(in_index + 9999, length(nz_counts)))]
     if (max(use_density) > 0) {
       return(stats::quantile(use_density, 0.99))
     } else {
