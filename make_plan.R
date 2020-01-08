@@ -88,7 +88,7 @@ analysis_plan = drake_plan(
     transform = map(normalization_values)
   ),
   hpds = target(
-    hpds_from_excel(data),
+    hpds_from_excel(method),
     transform = map(method)
   ),
   # here we want to combine the ways a data file was processed and compare
