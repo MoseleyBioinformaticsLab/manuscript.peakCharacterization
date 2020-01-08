@@ -1,4 +1,5 @@
 library(FTMS.peakCharacterization)
+library(methods)
 disable_logging()
 library(furrr)
 future::plan(multicore(workers = 8))
