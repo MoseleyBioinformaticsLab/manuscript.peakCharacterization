@@ -489,6 +489,7 @@ hpds_from_excel = function(in_data){
   split_xl = split(xl_hpd$hpd_points, xl_hpd$hpd_points$region)
   xl_ranges = purrr::map(split_xl, ~ range(.x$mz))
   message("got hpd sites")
+  message(nrow(peak_data))
   inside_peaks = purrr::imap_dfr(xl_ranges, function(in_range, in_id){
     tmp_df = dplyr::filter(peak_data, dplyr::between(ObservedMZ, in_range[1], in_range[2]))
     if (nrow(tmp_df) > 0) {
@@ -498,7 +499,7 @@ hpds_from_excel = function(in_data){
       return(NULL)
     }
   })
-  message("inside peaks")
+  message("inside")
   list(sample = sample, peak_data = inside_peaks, hpd = xl_hpd)
 }
 
