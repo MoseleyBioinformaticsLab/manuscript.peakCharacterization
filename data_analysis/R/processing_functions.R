@@ -465,7 +465,7 @@ hpds_from_excel = function(in_data){
   xl_data = readxl::read_excel(match_excel, skip = 8, col_names = FALSE)
   xl_data = xl_data[, 1:2]
   names(xl_data) = c("mz", "intensity")
-
+  message("got xl data")
   frequency_coefficients = in_data$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions@metadata$frequency_coefficients
   frequency_description = in_data$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions@metadata$frequency_fit_description
   mz_coefficients = in_data$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions@metadata$mz_coefficients
@@ -488,7 +488,7 @@ hpds_from_excel = function(in_data){
   scan_level = in_data$char_obj$zip_ms$peak_finder$peak_regions$scan_level_arrays
   split_xl = split(xl_hpd$hpd_points, xl_hpd$hpd_points$region)
   xl_ranges = purrr::map(split_xl, ~ range(.x$mz))
-
+  message("got hpd sites")
   inside_peaks = purrr::imap_dfr(xl_ranges, function(in_range, in_id){
     tmp_df = dplyr::filter(peak_data, dplyr::between(ObservedMZ, in_range[1], in_range[2]))
     if (nrow(tmp_df) > 0) {
@@ -498,6 +498,7 @@ hpds_from_excel = function(in_data){
       return(NULL)
     }
   })
+  message("inside peaks")
   list(sample = sample, peak_data = inside_peaks, hpd = xl_hpd)
 }
 
