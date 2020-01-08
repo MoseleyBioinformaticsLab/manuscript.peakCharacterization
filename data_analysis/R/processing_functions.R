@@ -390,7 +390,7 @@ split_regions = function(p99_nonorm_data){
   n_each = purrr::imap_dfr(split_data[possible_region], function(.x, .y){
     data.frame(region = .y, n_1 = nrow(.x[[1]]$peaks), n_2 = nrow(.x[[2]]$peaks))
   })
-  examine_region = dplyr::filter(n_each, n_1 > 90, n_2 > 100)
+  examine_region = dplyr::filter(n_each, n_1 > 50, n_2 > 50)
   use_list = point_regions_list[[examine_region[1, "region"]]]
 
   use_list
@@ -449,10 +449,16 @@ density_calculate = function(frequency_values, metadata, frequency_range = NULL)
   high_merged = IRanges::reduce(high_sliding)
   min_width = IRanges::width(sliding_regions[1]) / 10 * 3
   keep_merged = high_merged[IRanges::width(high_merged) >= min_width]
-  return(list(freq_points = freq_points, hpd = keep_merged))
+  hpd_points = purrr::map_df(seq(1, length(keep_merged)), function(in_region){
+    tmp_points = IRanges::subsetByOverlaps(freq_points, keep_merged[in_region])
+    tmp_data = as.data.frame(tmp_points@elementMetadata)
+    tmp_data$region = in_region
+    tmp_data
+  })
+  return(list(hpd_points = hpd_points, freq_points = freq_points, hpd_regions = keep_merged, stats = tmp_df))
 }
 
-hpd_calculate = function(in_data){
+hpds_from_excel = function(in_data){
   sample = in_data$char_obj$zip_ms$id
   match_excel = grep(sample, excel_files, value = TRUE)
 
@@ -469,16 +475,29 @@ hpd_calculate = function(in_data){
 
   sliding_metadata = in_data$char_obj$zip_ms$peak_finder$peak_regions$sliding_regions@metadata
 
-  min_mz = round(min(xl_data$mz))
-  freq_mz = data.frame(mz = c(1599, 1600))
-  freq_mz$frequency = FTMS.peakCharacterization:::predict_exponentials(freq_mz$mz, frequency_coefficients, frequency_description)
-
-  freq_diff = freq_mz[1, "frequency"] - freq_mz[2, "frequency"]
-  region_points = list(point_spacing = freq_diff / 10,
-                       n_point = 10, delta_point = 1, multiplier = sliding_metdata$multiplier)
+  freq_diff = 1000
+  sliding_metadata$point_spacing = round(freq_diff / 10)
 
 
   frequency_range = c(min(c(min(c(xl_data$frequency, org_frequency$frequency)))),
                       max(c(max(c(xl_data$frequency, org_frequency$frequency)))))
 
+  xl_hpd = density_calculate(xl_data, sliding_metadata, frequency_range)
+
+  peak_data = in_data$char_obj$zip_ms$peak_finder$peak_regions$peak_data
+  scan_level = in_data$char_obj$zip_ms$peak_finder$peak_regions$scan_level_arrays
+  split_xl = split(xl_hpd$hpd_points, xl_hpd$hpd_points$region)
+  xl_ranges = purrr::map(split_xl, ~ range(.x$mz))
+
+  inside_peaks = purrr::imap_dfr(xl_ranges, function(in_range, in_id){
+    tmp_df = dplyr::filter(peak_data, dplyr::between(ObservedMZ, in_range[1], in_range[2]))
+    if (nrow(tmp_df) > 0) {
+      tmp_df$region = in_id
+      return(tmp_df)
+    } else {
+      return(NULL)
+    }
+  })
+  list(sample = sample, peak_data = inside_peaks, hpd = xl_hpd)
 }
+
