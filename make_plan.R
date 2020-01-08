@@ -20,6 +20,7 @@ library(drake)
 peak_pkg_description = utils::packageDescription('FTMS.peakCharacterization')
 
 use_files = dir("data_analysis/data_input", pattern = "mzML", full.names = TRUE)
+excel_files = dir("data_analysis/data_input", pattern = ".xlsx", full.names = TRUE)
 
 write_loc = "data_analysis/data_output"
 
@@ -84,6 +85,10 @@ analysis_plan = drake_plan(
   normalization_plot = target(
     normalization_graph(normalization_values),
     transform = map(normalization_values)
+  ),
+  xl_hpds = target(
+    hpd_calculate(data),
+    transform = map(method)
   ),
   # here we want to combine the ways a data file was processed and compare
   # their rsd's across processing methods.
