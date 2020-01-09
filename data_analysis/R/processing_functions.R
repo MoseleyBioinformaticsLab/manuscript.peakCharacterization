@@ -508,6 +508,7 @@ hpds_from_excel = function(in_data){
 hpds_compare = function(...){
   hpd_data = list(...)
   hpd_process = purrr::map_chr(hpd_data, ~ .x$processed)
+  message(hpd_process)
 
   filtersd = hpd_data[[grepl("filtersd", hpd_process)]]
 }
