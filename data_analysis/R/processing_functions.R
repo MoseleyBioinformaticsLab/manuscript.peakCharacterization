@@ -500,6 +500,7 @@ hpds_from_excel = function(in_data){
     }
   })
   message("inside")
-  list(sample = sample, peak_data = inside_peaks, hpd = xl_hpd)
+  list(sample = sample, peak_data = inside_peaks, hpd = xl_hpd,
+       processed = in_data$processed)
 }
 
