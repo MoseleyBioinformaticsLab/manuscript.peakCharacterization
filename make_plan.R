@@ -48,6 +48,11 @@ analysis_plan = drake_plan(
     write_peaks_for_assignment(method),
     transform = map(method)
   ),
+  # assigning the resultant zip files
+  assign = target(
+    assign_files(zip),
+    transform = map(zip)
+  ),
   frequency_conversion = target(
     plot_frequency_conversion(data)
   ),

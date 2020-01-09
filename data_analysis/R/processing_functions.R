@@ -510,5 +510,8 @@ hpds_compare = function(...){
   hpd_process = purrr::map_chr(hpd_data, ~ .x$processed)
   print(hpd_process)
 
-  filtersd = hpd_data[[grepl("filtersd", hpd_process)]]
+  filtersd = hpd_data[[which(grepl("filtersd", hpd_process))]]
+
+  sd_cutoff = filtersd$max_sd
+
 }
