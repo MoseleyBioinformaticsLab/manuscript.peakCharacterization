@@ -91,6 +91,10 @@ analysis_plan = drake_plan(
     hpds_from_excel(method),
     transform = map(method)
   ),
+  hpds_compare = target(
+    hpds_compare(hpds),
+    transform = combine(hpds, .by = data)
+  ),
   # here we want to combine the ways a data file was processed and compare
   # their rsd's across processing methods.
   rsd = target(

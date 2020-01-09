@@ -500,7 +500,14 @@ hpds_from_excel = function(in_data){
     }
   })
   message("inside")
+  max_sd = max(peak_data$ObservedFrequencySD)
   list(sample = sample, peak_data = inside_peaks, hpd = xl_hpd,
-       processed = in_data$processed)
+       processed = in_data$processed, max_sd = max_sd)
 }
 
+hpds_compare = function(...){
+  hpd_data = list(...)
+  hpd_process = purrr::map_chr(hpd_data, ~ .x$processed)
+
+  filtersd = hpd_data[[grepl("filtersd", hpd_process)]]
+}
