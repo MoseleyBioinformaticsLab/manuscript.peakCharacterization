@@ -284,3 +284,8 @@ knitr::kable(rsd_table_rsd_data, digits = 3)
 As an alternative to RSD, we can also compare the fit of relative intensities after assignment using SMIRFE [reference] to the theoretical relative natural abundances (relNAP) of the assigned isotopic molecular formula's (IMFs) within the assigned elemental molecular formula's (EMFs).
 Theoretically, we expect that lower quality data will have both lower numbers of assignments, and that for those things that are assigned, the fit between relative intensity and relNAP will be worse.
 
+### Changes in Variance Across a Large Dataset
+
+For large datasets, we expect that more correct peak intensities will result in better agreement between sample normalized peak intensities within a sample class. 
+If incorrect peak intensities are being reported, then we would expect between class to within class variances to be very random, resulting in F-statistics close to 1.
+For each matched peak across samples, we kept the peaks present in at least 25% of samples in both classes of sample (disease, non-disease), and calculated the F-statistic for peaks generated using our peak-characterization and those from XCMS.
