@@ -27,7 +27,7 @@ The data consists of profile mode M/Z spectra from multiple scans encoded as M/Z
 There is no information about the original frequency values available in either the `raw` files or the `mzML` files. 
 However, the frequency values can be approximated by averaging the M/Z of adjacent points, and dividing the M/Z by the difference. 
 Ideally, the difference between subsequent points in frequency space is constant, in practice there is a range of differences in frequency space.
-The *true, constant* difference can be obtained by examining the mode of the mean frequency differences, and then constraining *useful* points (those that can be used for generating a model of frequency to M/Z) to be within 2% of the mode value. 
+The *true, constant* difference can be obtained by examining the median of the mean frequency differences, and then constraining *useful* points (those that can be used for generating a model of frequency to M/Z) to be within 2% of the mode value. 
 These *useful* points can be used to construct a linear model relating M/Z to frequency for individual scans based on the formula:
 
 $$frequency = intercept + x* \frac{1}{\sqrt{mz}} + y * \frac{1}{\sqrt[3]{mz}}$$
@@ -49,7 +49,9 @@ The sliding and tiled windows are also converted to IRanges objects the same way
 
 ### Peak Containing Intervals
 
-To find intervals that contain points that are not just noise, the number of non-zero intensity frequency points in each sliding window are counted, and any sliding window with a non-zero count greater than or equal to the 99th percentile of non-zero counts is kept, and the remaining sliding windows are reduced, where overlapping sliding windows are merged together to create the initial peak regions.
+To find intervals that contain points that are not just noise, the number of non-zero intensity frequency points in each sliding window are counted.
+The 99th percentile of non-zero counts across 10000 sliding windows are computed over all sliding windows, and then the median value of these 99th percentiles computed. 
+Any sliding window with a non-zero count less than or equal to 1.5 times the median percentile is removed, and the remaining sliding windows are reduced, where overlapping windows are merged together to create the initial peak regions.
 
 Within each initial interval region, peaks in each scan are detected (see **Peak Detection**), and their centers binned by the tiled windows. Adjacent tiled windows with non-zero peak counts are merged together, and any zero peak count tiled windows split the initial region into multiple peak interval regions. These interval regions should contain a single **real** peak that was detected in one or more scans.
 
@@ -94,7 +96,9 @@ The corrected sd's can then be used to correct the mean height assuming that it 
 
 ### Frequency Standard Deviation Filtering
 
-High-peak-density artifacts [Mitchell et al., 2018] present as singular peaks with higher than expected frequency standard deviations calculated from the scan-to-scan frequency peak locations. Outliers are removed by examining the distribution of peak frequency SDs across the entire spectrum.
+High-peak-density (HPD) artifacts [Mitchell et al., 2018] present as singular peaks with higher than expected frequency standard deviations (FSDs) calculated from the scan-to-scan frequency peak locations. Outliers are detected by calculating the interquartile range (IQR) of the distribution of FSDs across the entire spectrum, and those FSD that are greater than the median plus 1.5 times the IQR (as implemented in boxplot.stats) are removed.
+The HPD detection algorithm from Mitchell et al. was re-implemented in R for this work.
+For HPD detection, the peaks in excel output from Xcalibur were used after converting the M/Z peak centers into frequency space. Sliding windows 1000 frequency points wide and offset by 100 points were used for the density calculations.
 
 ### Samples and Overall Processing
 
