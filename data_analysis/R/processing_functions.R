@@ -193,7 +193,7 @@ filtersd = function(in_list){
   in_char$zip_ms$peak_finder$remove_double_peaks_in_scans()
   in_char$zip_ms$peak_finder$normalize_data()
   in_char$zip_ms$peak_finder$find_peaks_in_regions()
-  in_char$zip_ms$peak_finder$remove_high_frequency_sd()
+  in_char$zip_ms$peak_finder$indicate_high_frequency_sd()
   in_char$zip_ms$peak_finder$add_offset()
   in_char$zip_ms$peak_finder$sort_ascending_mz()
   list(char_obj = in_char, processed = "filtersd")
