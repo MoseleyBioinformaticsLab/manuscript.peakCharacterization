@@ -3,7 +3,8 @@ title: "Novel Methods for Characterizing Peaks from Direct Injection FT-MS Exper
 author: "Robert M Flight, Joshua M Mitchell, Hunter NB Moseley"
 date: "`r Sys.time()`"
 output: 
-  redoc::redoc
+  word_document:
+    keep_md: true
 ---
 
 ```{r setup, echo = FALSE}

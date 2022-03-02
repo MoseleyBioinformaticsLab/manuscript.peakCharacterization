@@ -6,6 +6,7 @@ reading_scans_tile_windows <- function(in_file, pkg_desc){
   use_file = in_file
   char_ms <- CharacterizeMSPeaks$new(use_file, peak_finder = PeakRegionFinder$new())
   char_ms$load_file()
+  char_ms$peak_finder$start_time = Sys.time()
   char_ms$filter_raw_scans()
   char_ms$zip_ms$peak_finder <- char_ms$peak_finder
   char_ms$zip_ms$peak_finder$add_data(char_ms$zip_ms$raw_ms)
@@ -14,7 +15,8 @@ reading_scans_tile_windows <- function(in_file, pkg_desc){
   char_ms$zip_ms$cleanup() # don't want to leave stuff in the tmp directory
   char_ms$zip_ms$peak_finder$add_regions()
 
-  list(char_obj = char_ms, pkg = pkg_desc)
+  list(char = char_ms,
+       pkg = pkg_desc)
 }
 
 reduce_removing_zero <- function(regions, point_regions, min_value = 0){
@@ -26,14 +28,14 @@ reduce_removing_zero <- function(regions, point_regions, min_value = 0){
 }
 
 # only remove zero points, no consideration of percentile, and no normalization (zero_normalization)
-noperc_nonorm = function(in_list){
-  in_char = in_list$char_obj$clone(deep = TRUE)
+noperc_nonorm = function(char_obj){
+  in_char = char_obj$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = TRUE
   in_char$zip_ms$peak_finder$progress = TRUE
 
   in_char$zip_ms$peak_finder$peak_regions$peak_regions =
     reduce_removing_zero(in_char$peak_finder$peak_regions$sliding_regions,
-                         in_char$peak_finder$peak_regions$frequency_point_regions)
+                    in_char$peak_finder$peak_regions$frequency_point_regions)
   in_char$zip_ms$peak_finder$split_peak_regions()
   in_char$zip_ms$peak_finder$remove_double_peaks_in_scans()
   in_char$zip_ms$peak_finder$normalize_data()
@@ -44,8 +46,8 @@ noperc_nonorm = function(in_list){
 }
 
 # remove points based on the 99th percentile, no normalization (see zero_normalization)
-perc99_nonorm = function(in_list){
-  in_char = in_list$char_obj$clone(deep = TRUE)
+perc99_nonorm = function(char_obj){
+  in_char = char_obj$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = TRUE
 
   in_char$zip_ms$peak_finder$reduce_sliding_regions()
@@ -59,8 +61,8 @@ perc99_nonorm = function(in_list){
 }
 
 # remove points from 99th percentile, do single pass normalization without intensity cutoff
-singlenorm = function(in_list){
-  in_char = in_list$char_obj$clone(deep = TRUE)
+singlenorm = function(use_char){
+  in_char = use_char$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = FALSE
   in_char$zip_ms$peak_finder$reduce_sliding_regions()
   in_char$zip_ms$peak_finder$split_peak_regions()
@@ -113,8 +115,8 @@ singlenorm = function(in_list){
 
 # remove points below 99th percentile
 # single pass normalization based on intensity
-singlenorm_int = function(in_list){
-  in_char = in_list$char_obj$clone(deep = TRUE)
+singlenorm_int = function(use_char){
+  in_char = use_char$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = FALSE
   in_char$zip_ms$peak_finder$reduce_sliding_regions()
   in_char$zip_ms$peak_finder$split_peak_regions()
@@ -168,8 +170,8 @@ singlenorm_int = function(in_list){
 # remove points based on 99th percentile
 # proper two pass normalization
 # no filtering on frequency sd
-doublenorm = function(in_list){
-  in_char = in_list$char_obj$clone(deep = TRUE)
+doublenorm = function(use_char){
+  in_char = use_char$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = FALSE
   in_char$zip_ms$peak_finder$reduce_sliding_regions()
   in_char$zip_ms$peak_finder$split_peak_regions()
@@ -185,8 +187,8 @@ doublenorm = function(in_list){
 # remove points based on 99th percentile
 # proper two pass normalization
 # filter on frequency sd
-filtersd = function(in_list){
-  in_char = in_list$char_obj$clone(deep = TRUE)
+filtersd = function(use_char){
+  in_char = use_char$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = FALSE
   in_char$zip_ms$peak_finder$reduce_sliding_regions()
   in_char$zip_ms$peak_finder$split_peak_regions()
