@@ -9,30 +9,24 @@ excel_files = dir(here::here("data/data_input"), pattern = ".xlsx", full.names =
 
 method_mzml = expand_grid(
   method_function = rlang::syms(c("noperc_nonorm",
-                            "perc99_nonorm",
-                            "singlenorm",
-                            "singlenorm_int",
-                            "doublenorm",
-                            "filtersd")),
+                                  "perc99_nonorm",
+                                  "singlenorm",
+                                  "singlenorm_int",
+                                  "doublenorm",
+                                  "filtersd")),
   mzml = use_files)
 method_mzml = method_mzml %>%
   dplyr::mutate(rest_id = gsub(".mzML", "", basename(mzml)))
 ## tar_plan supports drake-style targets and also tar_target()
-pkg = tar_target(pkg, utils::packageDescription('FTMS.peakCharacterization'))
+pkg_tar = tar_target(pkg, utils::packageDescription('FTMS.peakCharacterization'))
 method_peaks = tar_map(
   unlist = FALSE,
   values = method_mzml,
   names = c("method_function", "rest_id"),
   tar_target(data, reading_scans_tile_windows(mzml, pkg)),
-  tar_target(processing, method_function(data)),
-  tar_target(zip, write_peaks_for_assignment(processing)),
+  tar_target(method, method_function(data)),
+  tar_target(zip, write_peaks_for_assignment(method)),
   tar_target(assign, assign_files(zip))
-)
-
-combine_scan_height = tar_combine(
-  scan_height_cor,
-  method_peaks[["data"]],
-  command = correlate_scan_height(!!!.x)
 )
 
 one_offs = tar_plan(
@@ -44,4 +38,4 @@ one_offs = tar_plan(
   tar_render(manuscript, "doc/peakcharacterization_manuscript.Rmd")
 )
 
-list(pkg, method_peaks, combine_scan_height, one_offs)
+list(pkg_tar, method_peaks, one_offs)
