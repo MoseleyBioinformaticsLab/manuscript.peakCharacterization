@@ -48,10 +48,10 @@ plot_nap_peaks = function(raw_data, processed_data, assignments, interesting_reg
     geom_point(data = scan_means, aes(x = mean_mz + 0.02, y = log10(mean_height)), color = "brown", size = 4)
 }
 
-plot_frequency_conversion = function(...){
-  all_data = as.list(...)
+plot_frequency_conversion = function(char_obj){
 
-  raw_points = as.data.frame(raw_data$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions@elementMetadata)
+
+  raw_points = as.data.frame(char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions@elementMetadata)
   raw_scan = dplyr::filter(raw_points, scan %in% unique(scan)[1])
   raw_points2 = convert_mz_frequency(raw_scan)
   convertable_stretch = rle(raw_points2$convertable)

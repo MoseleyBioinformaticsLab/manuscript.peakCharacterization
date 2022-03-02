@@ -15,8 +15,7 @@ reading_scans_tile_windows <- function(in_file, pkg_desc){
   char_ms$zip_ms$cleanup() # don't want to leave stuff in the tmp directory
   char_ms$zip_ms$peak_finder$add_regions()
 
-  list(char = char_ms,
-       pkg = pkg_desc)
+  char_ms
 }
 
 reduce_removing_zero <- function(regions, point_regions, min_value = 0){
