@@ -27,7 +27,9 @@ if (!file.exists(file.path(zip_save, "pkg.rds"))) {
   saveRDS(pkg, file.path(zip_save, "pkg.rds"))
 } else {
   old_pkg = readRDS(file.path(zip_save, "pkg.rds"))
-  if (pkg != old_pkg) {
+  curr_sha = digest::digest(pkg, algo = "sha256")
+  old_sha = digest::digest(old_pkg, algo = "sha256")
+  if (curr_sha != old_sha) {
     warning("saved pkg and current pkg don't match!")
   }
 }
