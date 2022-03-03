@@ -18,35 +18,80 @@ reading_scans_tile_windows <- function(in_file, pkg_desc){
   char_ms
 }
 
-reduce_removing_zero <- function(regions, point_regions, min_value = 0){
-  regions <- FTMS.peakCharacterization:::count_overlaps(regions, point_regions)
-  nz_counts <- regions@elementMetadata$nonzero_counts
+reduce_removing_zero <- function(regions, point_regions_list, multiplier = 1.5, n_point_region = 10000){
+  nz_counts = FTMS.peakCharacterization:::count_overlaps(regions, point_regions_list[[1]])
+  n_region = seq(2, length(point_regions_list))
+  for (iregion in n_region) {
+    nz_counts_iregion = FTMS.peakCharacterization:::count_overlaps(regions, point_regions_list[[iregion]])
+    nz_counts = nz_counts + nz_counts_iregion
+  }
 
-  regions <- regions[nz_counts > min_value]
+
+  regions = regions[nz_counts > 0]
   IRanges::reduce(regions)
 }
 
+single_adjustable_normalization = function(peak_regions, min_ratio = 0){
+  intensity_measure = c("RawHeight", "Height")
+  summary_function = median
+  normalize_peaks = "both"
+  scan_peaks <- purrr::map(peak_regions$peak_region_list, "peaks")
+
+  normalization_factors <- FTMS.peakCharacterization:::single_pass_normalization(scan_peaks, intensity_measure = intensity_measure, summary_function = summary_function,
+                                                                                 min_ratio = min_ratio)
+  named_norm = normalization_factors$normalization
+  names(named_norm) = as.character(normalization_factors$scan)
+  normed_list_regions = FTMS.peakCharacterization:::internal_map$map_function(peak_regions$peak_region_list, function(in_region){
+    in_region$points = FTMS.peakCharacterization:::normalize_raw_points(in_region$points, named_norm)
+    in_region$peaks = FTMS.peakCharacterization:::normalize_scan_peaks(in_region$peaks, normalization_factors)
+    in_region
+  })
+
+  normed_raw <- FTMS.peakCharacterization:::normalize_raw_points(peak_regions$frequency_point_regions$frequency, named_norm)
+  normed_peaks <- FTMS.peakCharacterization:::internal_map$map_function(scan_peaks, FTMS.peakCharacterization:::normalize_scan_peaks, normalization_factors)
+
+  normed_scan_cor <- purrr::map_dbl(normed_peaks, FTMS.peakCharacterization:::intensity_scan_correlation)
+  normed_scan_cor[is.na(normed_scan_cor)] <- 0
+  low_cor <- abs(normed_scan_cor) <= 0.5
+
+
+  peak_regions$peak_region_list = normed_list_regions
+  peak_regions$frequency_point_regions$frequency <- normed_raw
+  peak_regions$is_normalized <- "both"
+  peak_regions$normalization_factors <- normalization_factors
+
+  normed_scan_cor <- data.frame(ScanCorrelation = normed_scan_cor,
+                                HighCor = !low_cor)
+  n_scans <- purrr::map_int(scan_peaks, FTMS.peakCharacterization:::calculate_number_of_scans)
+  peak_regions$scan_correlation <- normed_scan_cor
+  peak_regions
+}
+
+
 # only remove zero points, no consideration of percentile, and no normalization (zero_normalization)
-noperc_nonorm = function(char_obj){
-  in_char = char_obj$clone(deep = TRUE)
+noperc_nonorm = function(use_char){
+  in_char = use_char$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = TRUE
   in_char$zip_ms$peak_finder$progress = TRUE
 
   in_char$zip_ms$peak_finder$peak_regions$peak_regions =
     reduce_removing_zero(in_char$peak_finder$peak_regions$sliding_regions,
-                    in_char$peak_finder$peak_regions$frequency_point_regions)
+                          in_char$peak_finder$peak_regions$frequency_point_regions$frequency,
+                         in_char$peak_finder$quantile_multiplier,
+                         in_char$peak_finder$n_point_region)
   in_char$zip_ms$peak_finder$split_peak_regions()
   in_char$zip_ms$peak_finder$remove_double_peaks_in_scans()
   in_char$zip_ms$peak_finder$normalize_data()
   in_char$zip_ms$peak_finder$find_peaks_in_regions()
   in_char$zip_ms$peak_finder$add_offset()
   in_char$zip_ms$peak_finder$sort_ascending_mz()
+  in_char$zip_ms$peak_finder$model_mzsd()
   list(char_obj = in_char, processed = "noperc_nonorm")
 }
 
 # remove points based on the 99th percentile, no normalization (see zero_normalization)
-perc99_nonorm = function(char_obj){
-  in_char = char_obj$clone(deep = TRUE)
+perc99_nonorm = function(use_char){
+  in_char = use_char$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = TRUE
 
   in_char$zip_ms$peak_finder$reduce_sliding_regions()
@@ -56,6 +101,7 @@ perc99_nonorm = function(char_obj){
   in_char$zip_ms$peak_finder$find_peaks_in_regions()
   in_char$zip_ms$peak_finder$add_offset()
   in_char$zip_ms$peak_finder$sort_ascending_mz()
+  in_char$zip_ms$peak_finder$model_mzsd()
   list(char_obj = in_char, processed = "perc99_nonorm")
 }
 
@@ -68,47 +114,12 @@ singlenorm = function(use_char){
   in_char$zip_ms$peak_finder$remove_double_peaks_in_scans()
 
   # do single pass normalization without considering intensity
-  single_all_normalization = function(peak_regions){
-    intensity_measure = c("RawHeight", "Height")
-    summary_function = median
-    normalize_peaks = "both"
-    scan_peaks <- purrr::map(peak_regions$peak_region_list, "peaks")
 
-    normalization_factors <- FTMS.peakCharacterization:::single_pass_normalization(scan_peaks, intensity_measure = intensity_measure, summary_function = summary_function,
-                                                       min_ratio = 0)
-
-    normed_list_regions = FTMS.peakCharacterization:::internal_map$map_function(peak_regions$peak_region_list, function(in_region){
-      in_region$points = FTMS.peakCharacterization:::normalize_raw_points(in_region$points, normalization_factors)
-      in_region$peaks = FTMS.peakCharacterization:::normalize_scan_peaks(in_region$peaks, normalization_factors)
-      in_region
-    })
-
-    normed_peaks <- FTMS.peakCharacterization:::internal_map$map_function(scan_peaks, FTMS.peakCharacterization:::normalize_scan_peaks, normalization_factors)
-
-    normed_scan_cor <- purrr::map_dbl(normed_peaks, FTMS.peakCharacterization:::intensity_scan_correlation)
-    normed_scan_cor[is.na(normed_scan_cor)] <- 0
-    low_cor <- abs(normed_scan_cor) <= 0.5
-
-    normed_raw <- FTMS.peakCharacterization:::normalize_raw_points(peak_regions$frequency_point_regions, normalization_factors)
-
-    peak_regions$peak_region_list = normed_list_regions
-    peak_regions$frequency_point_regions <- normed_raw
-    peak_regions$is_normalized <- "both"
-    peak_regions$normalization_factors <- normalization_factors
-
-    normed_scan_cor <- data.frame(ScanCorrelation = normed_scan_cor,
-                                  HighCor = !low_cor)
-    n_scans <- purrr::map_int(scan_peaks, FTMS.peakCharacterization:::calculate_number_of_scans)
-    normed_scan_cor$HighScan <- n_scans >= quantile(n_scans, 0.9)
-    normed_scan_cor$Ignore <- normed_scan_cor$HighCor & normed_scan_cor$HighScan
-    peak_regions$scan_correlation <- normed_scan_cor
-    peak_regions
-  }
-
-  in_char$zip_ms$peak_finder$peak_regions = single_all_normalization(in_char$zip_ms$peak_finder$peak_regions)
+  in_char$zip_ms$peak_finder$peak_regions = single_adjustable_normalization(in_char$zip_ms$peak_finder$peak_regions, 0)
   in_char$zip_ms$peak_finder$find_peaks_in_regions()
   in_char$zip_ms$peak_finder$add_offset()
   in_char$zip_ms$peak_finder$sort_ascending_mz()
+  in_char$zip_ms$peak_finder$model_mzsd()
   list(char_obj = in_char, processed = "singlenorm")
 }
 
@@ -122,47 +133,11 @@ singlenorm_int = function(use_char){
   in_char$zip_ms$peak_finder$remove_double_peaks_in_scans()
 
   # do single pass normalization with considering intensity
-  single_high_normalization = function(peak_regions){
-    intensity_measure = c("RawHeight", "Height")
-    summary_function = median
-    normalize_peaks = "both"
-    scan_peaks <- purrr::map(peak_regions$peak_region_list, "peaks")
-
-    normalization_factors <- FTMS.peakCharacterization:::single_pass_normalization(scan_peaks, intensity_measure = intensity_measure, summary_function = summary_function,
-                                                       min_ratio = 0.7)
-
-    normed_list_regions = FTMS.peakCharacterization:::internal_map$map_function(peak_regions$peak_region_list, function(in_region){
-      in_region$points = FTMS.peakCharacterization:::normalize_raw_points(in_region$points, normalization_factors)
-      in_region$peaks = FTMS.peakCharacterization:::normalize_scan_peaks(in_region$peaks, normalization_factors)
-      in_region
-    })
-
-    normed_peaks <- FTMS.peakCharacterization:::internal_map$map_function(scan_peaks, FTMS.peakCharacterization:::normalize_scan_peaks, normalization_factors)
-
-    normed_scan_cor <- purrr::map_dbl(normed_peaks, FTMS.peakCharacterization:::intensity_scan_correlation)
-    normed_scan_cor[is.na(normed_scan_cor)] <- 0
-    low_cor <- abs(normed_scan_cor) <= 0.5
-
-    normed_raw <- FTMS.peakCharacterization:::normalize_raw_points(peak_regions$frequency_point_regions, normalization_factors)
-
-    peak_regions$peak_region_list = normed_list_regions
-    peak_regions$frequency_point_regions <- normed_raw
-    peak_regions$is_normalized <- "both"
-    peak_regions$normalization_factors <- normalization_factors
-
-    normed_scan_cor <- data.frame(ScanCorrelation = normed_scan_cor,
-                                  HighCor = !low_cor)
-    n_scans <- purrr::map_int(scan_peaks, FTMS.peakCharacterization:::calculate_number_of_scans)
-    normed_scan_cor$HighScan <- n_scans >= quantile(n_scans, 0.9)
-    normed_scan_cor$Ignore <- normed_scan_cor$HighCor & normed_scan_cor$HighScan
-    peak_regions$scan_correlation <- normed_scan_cor
-    peak_regions
-  }
-
-  in_char$zip_ms$peak_finder$peak_regions = single_high_normalization(in_char$zip_ms$peak_finder$peak_regions)
+  in_char$zip_ms$peak_finder$peak_regions = single_adjustable_normalization(in_char$zip_ms$peak_finder$peak_regions, 0.7)
   in_char$zip_ms$peak_finder$find_peaks_in_regions()
   in_char$zip_ms$peak_finder$add_offset()
   in_char$zip_ms$peak_finder$sort_ascending_mz()
+  in_char$zip_ms$peak_finder$model_mzsd()
   list(char_obj = in_char, processed = "singlenorm_int")
 }
 
@@ -180,6 +155,7 @@ doublenorm = function(use_char){
   in_char$zip_ms$peak_finder$find_peaks_in_regions()
   in_char$zip_ms$peak_finder$add_offset()
   in_char$zip_ms$peak_finder$sort_ascending_mz()
+  in_char$zip_ms$peak_finder$model_mzsd()
   list(char_obj = in_char, processed = "doublenorm")
 }
 
@@ -197,6 +173,7 @@ filtersd = function(use_char){
   in_char$zip_ms$peak_finder$indicate_high_frequency_sd()
   in_char$zip_ms$peak_finder$add_offset()
   in_char$zip_ms$peak_finder$sort_ascending_mz()
+  in_char$zip_ms$peak_finder$model_mzsd()
   list(char_obj = in_char, processed = "filtersd")
 }
 
@@ -295,25 +272,33 @@ normalization_factors = function(...){
 
 }
 
+calc_rsd = function(in_char, processing){
+  scan_peaks = purrr::map(in_char$zip_ms$peak_finder$peak_regions$peak_region_list, "peaks")
+  n_peak = purrr::map_int(scan_peaks, nrow)
+  keep_peak = n_peak >= 3
+  scan_peaks = scan_peaks[keep_peak]
+  rsd = purrr::map_df(scan_peaks, function(in_peaks){
+    data.frame(mean = mean(in_peaks$Height),
+               sd = sd(in_peaks$Height),
+               n_peak = nrow(in_peaks),
+               stringsAsFactors = FALSE)
+  })
+  rsd$rsd = rsd$sd / rsd$mean
+  rsd$processed = processing
+  rsd$sample = in_char$zip_ms$peak_finder$sample_id
+  rsd
+}
+
+single_rsd = function(char_list){
+  rsd_df = calc_rsd(char_list$char_obj, char_list$processed)
+  rsd_df
+}
+
 rsd_info = function(...) {
   processed_data = list(...)
   names(processed_data) = purrr::map_chr(processed_data, "processed")
 
-  calc_rsd = function(in_char, processing){
-    scan_peaks = purrr::map(in_char$zip_ms$peak_finder$peak_regions$peak_region_list, "peaks")
-    n_peak = purrr::map_int(scan_peaks, nrow)
-    keep_peak = n_peak >= 3
-    scan_peaks = scan_peaks[keep_peak]
-    rsd = purrr::map_df(scan_peaks, function(in_peaks){
-      data.frame(mean = mean(in_peaks$Height),
-                 sd = sd(in_peaks$Height),
-                 n_peak = nrow(in_peaks),
-                 stringsAsFactors = FALSE)
-    })
-    rsd$rsd = rsd$sd / rsd$mean
-    rsd$processed = processing
-    rsd
-  }
+
 
   rsd_values = purrr::map_df(processed_data, function(in_data){
     calc_rsd(in_data$char_obj, in_data$processed)
@@ -328,7 +313,7 @@ summarize_rsd = function(rsd_df){
     y_max = which.max(d_estimate$y)
     d_estimate$x[y_max]
   }
-  dplyr::group_by(rsd_df, processed) %>%
+  dplyr::group_by(rsd_df, processed, sample) %>%
     dplyr::summarize(mean = mean(rsd),
                      median = median(rsd),
                      mode = get_mode(rsd),
