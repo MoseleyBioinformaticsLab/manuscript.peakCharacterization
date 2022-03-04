@@ -22,7 +22,7 @@ method_data = expand_grid(
   method_function = (c("noperc_nonorm",
                                   "perc99_nonorm",
                                   "singlenorm",
-                                  "singlenorm_int",
+                                  "intsinglenorm",
                                   "doublenorm",
                                   "filtersd")),
   data_names = paste0("data_", data_mzml$name)) %>%

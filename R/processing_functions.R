@@ -125,7 +125,7 @@ singlenorm = function(use_char){
 
 # remove points below 99th percentile
 # single pass normalization based on intensity
-singlenorm_int = function(use_char){
+intsinglenorm = function(use_char){
   in_char = use_char$clone(deep = TRUE)
   in_char$zip_ms$peak_finder$zero_normalization = FALSE
   in_char$zip_ms$peak_finder$reduce_sliding_regions()
