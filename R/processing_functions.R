@@ -179,7 +179,16 @@ filtersd = function(use_char){
 
 write_peaks_for_assignment <- function(in_data){
   in_char = in_data$char_obj
-  in_char$out_file = file.path(write_loc, paste0(in_data$processed, "_", in_char$zip_ms$peak_finder$sample_id, ".zip"))
+  processed_id = in_data$processed
+  sample_id = in_char$zip_ms$peak_finder$sample_id
+  out_id = dplyr::case_when(
+  grepl("97Cpos", sample_id) ~ "97lipid",
+  grepl("49Cpos", sample_id) ~ "49lipid",
+  grepl("1_ECF", sample_id) ~ "1ecf",
+  grepl("2_ECF", sample_id) ~ "2ecf")
+  out_full = paste0(processed_id, "_", out_id, ".zip")
+  write_loc = file.path("data/data_output", out_full)
+  in_char$out_file = write_loc
   in_char$zip_ms$out_file = in_char$out_file
   dir.create(in_char$zip_ms$temp_directory, recursive = TRUE)
   in_char$zip_ms$peak_finder$start_time = Sys.time()
@@ -197,8 +206,8 @@ assign_files = function(in_zip){
   curr_dir = getwd()
   assigned_file = paste0(in_file, "_assigned.json")
 
-  if (grepl("ECF", in_file)) {
-    setwd("~/Projects/work/SMIRFE/SMIRFE_assigner/")
+  if (grepl("ecf", in_file)) {
+    setwd("smirfe_related/smirfe_code/SMIRFE_assigner_original/")
     run_str = glue("pipenv run python3 ./Main.py /mlab/scratch/cesb_data/smirfe_dbs/n15_1600.db {zip_path} '_assigned.json' '[\"15N\"]' '[\"H\", \"Na\"]' '[1]'")
     system(run_str)
     setwd(curr_dir)
@@ -251,7 +260,7 @@ find_interesting_peaks = function(assigned_data){
 }
 
 return_file = function(in_file){
-  sha256 = system2("sha256sum", args = in_file, stdout = TRUE)
+  sha256 = digest::digest(algo = "sha256", file = in_file)
   list(file = in_file, sha256 = sha256)
 }
 
