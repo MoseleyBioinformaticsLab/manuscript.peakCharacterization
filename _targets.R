@@ -7,6 +7,10 @@ lapply(list.files("./R", full.names = TRUE), source)
 use_files = dir("data/data_input", pattern = "mzML", full.names = TRUE)
 excel_files = dir("data/data_input", pattern = ".xlsx", full.names = TRUE)
 
+pkg_sha = as.character(utils::packageDescription("FTMS.peakCharacterization")$GithubSHA1)
+
+pkg_tar = tar_target(pkg, pkg_sha)
+
 data_mzml = expand_grid(
   data_function = rlang::syms("reading_scans_tile_windows"),
   mzml = use_files
@@ -33,7 +37,7 @@ method_data = expand_grid(
 data_tar = tar_map(
   values = data_mzml,
   names = "name",
-  tar_target(data, data_function(mzml))
+  tar_target(data, data_function(mzml, pkg))
 )
 method_tar = tar_map(
   values = method_data,
