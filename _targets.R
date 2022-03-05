@@ -4,8 +4,8 @@ source("./packages.R")
 ## Load your R files
 lapply(list.files("./R", full.names = TRUE), source)
 
-use_files = dir(here::here("data/data_input"), pattern = "mzML", full.names = TRUE)
-excel_files = dir(here::here("data/data_input"), pattern = ".xlsx", full.names = TRUE)
+use_files = dir("data/data_input", pattern = "mzML", full.names = TRUE)
+excel_files = dir("data/data_input", pattern = ".xlsx", full.names = TRUE)
 
 data_mzml = expand_grid(
   data_function = rlang::syms("reading_scans_tile_windows"),
@@ -52,7 +52,7 @@ method_tar = tar_map(
 rsd_tar = tar_combine(
   rsd_combine,
   method_tar[[2]],
-  command = single_rsd(!!!.x),
+  command = merge_rsd(!!!.x),
   iteration = "list"
 )
 

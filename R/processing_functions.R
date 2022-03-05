@@ -294,16 +294,9 @@ single_rsd = function(char_list){
   rsd_df
 }
 
-rsd_info = function(...) {
-  processed_data = list(...)
-  names(processed_data) = purrr::map_chr(processed_data, "processed")
-
-
-
-  rsd_values = purrr::map_df(processed_data, function(in_data){
-    calc_rsd(in_data$char_obj, in_data$processed)
-  })
-
+merge_rsd = function(...) {
+  rsd_list = list(...)
+  rsd_values = purrr::map_dfr(rsd_list, ~.x)
   rsd_values
 }
 

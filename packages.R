@@ -22,4 +22,6 @@ library(here)
 library(tidyr)
 options(future.globals.maxSize = 2000 * 1024^2)
 library(rmarkdown)
-tar_option_set(memory = "transient")
+tar_option_set(memory = "transient",
+               packages = "FTMS.peakCharacterization",
+               imports = "FTMS.peakCharacterization")
