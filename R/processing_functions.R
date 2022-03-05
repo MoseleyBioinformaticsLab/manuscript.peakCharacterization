@@ -205,16 +205,14 @@ assign_files = function(in_zip){
   zip_path = normalizePath(in_file)
   curr_dir = getwd()
   assigned_file = paste0(in_file, "_assigned.json")
-
+  setwd("smirfe_related/smirfe_code/SMIRFE_assigner/")
   if (grepl("ecf", in_file)) {
-    setwd("smirfe_related/smirfe_code/SMIRFE_assigner_original/")
-    run_str = glue("pipenv run python3 ./Main.py /mlab/scratch/cesb_data/smirfe_dbs/n15_1600.db {zip_path} '_assigned.json' '[\"15N\"]' '[\"H\", \"Na\"]' '[1]'")
+    run_str = glue("python3.8 -m pipenv run python3 ./Main.py ../../smirfe_dbs/n15_1600_match_smirfemanuscript.db {zip_path} '_assigned.json' '[\"15N\"]' '[\"H\", \"Na\"]' '[1]'")
     system(run_str)
     setwd(curr_dir)
     out_value = return_file(assigned_file)
   } else {
-    setwd("~/Projects/work/SMIRFE/SMIRFE_assigner/")
-    run_str = glue("pipenv run python3 ./Main.py /mlab/scratch/cesb_data/smirfe_dbs/none_1600.db {zip_path} '_assigned.json' '[]' '[\"H\", \"Na\", \"K\", \"NH4\"]' '[1]'")
+    run_str = glue("python3.8 -m pipenv run python3 ./Main.py ../../smirfe_dbs/none_nosulfur_1600.db {zip_path} '_assigned.json' '[]' '[\"H\", \"Na\", \"K\", \"NH4\"]' '[1]'")
     system(run_str)
     setwd(curr_dir)
     out_value = return_file(assigned_file)
