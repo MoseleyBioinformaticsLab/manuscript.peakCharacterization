@@ -30,14 +30,10 @@ method_data = expand_grid(
                 data_sym = rlang::syms(data_names),
                 method_sym = rlang::syms(method_function))
 
-## tar_plan supports drake-style targets and also tar_target()
-pc_info = utils::packageDescription("FTMS.peakCharacterization")
-pkg_tar = tar_target(pkg, c(pc_info$Version, pc_info$GithubSHA1))
-
 data_tar = tar_map(
   values = data_mzml,
   names = "name",
-  tar_target(data, data_function(mzml, pkg))
+  tar_target(data, data_function(mzml))
 )
 method_tar = tar_map(
   values = method_data,
