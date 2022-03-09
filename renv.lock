@@ -520,9 +520,14 @@
     "documentNumbering": {
       "Package": "documentNumbering",
       "Version": "0.0.4",
-      "Source": "Repository",
-      "Repository": null,
-      "Hash": "b01eb0243ea8d26d2a7182a8cb44c8c5",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "documentNumbering",
+      "RemoteUsername": "rmflight",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "ef1054dfe48313620a513b161005423d1b092a22",
+      "Hash": "d9677d8f54bab72d148ec4598970621c",
       "Requirements": [
         "R6"
       ]
