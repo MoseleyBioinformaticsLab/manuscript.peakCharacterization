@@ -55,6 +55,11 @@ plot_frequency_conversion = function(char_obj){
   raw_scan = dplyr::filter(raw_points, scan %in% unique(scan)[1])
   raw_points2 = convert_mz_frequency(raw_scan)
   convertable_stretch = rle(raw_points2$convertable)
+  raw_points = as.data.frame(char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions$frequency[[1]]@elementMetadata)
+  is_convertable = dplyr::between(raw_points$mean_freq_diff, 0.49, 0.51)
+  is_convertable[is.na(is_convertable)] = FALSE
+  raw_points$org_convertable = is_convertable
+  convertable_stretch = rle(raw_points$org_convertable)
   convertable_df = data.frame(values = convertable_stretch$values,
                               lengths = convertable_stretch$lengths) %>%
     dplyr::mutate(index = seq(1, length(convertable_stretch$lengths)))
@@ -69,6 +74,7 @@ plot_frequency_conversion = function(char_obj){
 
   possible_index = index_list[dplyr::filter(convertable_df, values, lengths > 4) %>% dplyr::pull(index)]
   raw_possible = purrr::map(possible_index, ~ raw_points2[.x, ])
+  raw_possible = purrr::map(possible_index, ~ raw_points[.x, ])
   raw_high = purrr::map_lgl(raw_possible, ~ sum(.x$intensity >= 1e4) > 1)
 
   example_data = raw_possible[raw_high][[1]]
@@ -98,17 +104,26 @@ plot_frequency_conversion = function(char_obj){
 
   all_frequency_difference_plot = ggplot(raw_points2, aes(x = mz, y = log10(abs(mean_freq_diff)))) + geom_point() +
     geom_point(data = dplyr::filter(raw_points2, convertable), color = "red") + labs(x = "M/Z", y = "Log10(Frequency Differences)")
+  all_frequency_difference_plot = ggplot(raw_points, aes(x = mz, y = log10(abs(mean_freq_diff)))) + geom_point() +
+    geom_point(data = dplyr::filter(raw_points, org_convertable), color = "red") + labs(x = "M/Z", y = "Log10(Frequency Differences)")
 
   convertable_raw2 = dplyr::filter(raw_points2, convertable)
+  convertable_raw2 = dplyr::filter(raw_points, org_convertable)
   raw2_model = FTMS.peakCharacterization:::fit_exponentials(convertable_raw2$mean_mz, convertable_raw2$mean_frequency, c(0, -1/2, -1/3))
   convertable_raw2$predict_frequency = FTMS.peakCharacterization:::predict_exponentials(convertable_raw2$mean_mz, raw2_model$coefficients, c(0, -1/2, -1/3))
   mz_frequency_plot = ggplot(convertable_raw2, aes(x = mean_mz, y = mean_frequency)) + geom_point(size = 4) +
     geom_line(aes(y = predict_frequency), color = "red", size = 2) +
     labs(x = "M/Z", y = "Frequency")
 
+
+
   sqrt_model = FTMS.peakCharacterization:::fit_exponentials(convertable_raw2$mean_mz, convertable_raw2$mean_frequency, c(0, -1/2))
   sqrt_pred = FTMS.peakCharacterization:::predict_exponentials(convertable_raw2$mean_mz, sqrt_model$coefficients, c(0, -1/2))
 
+  convertable_raw2$predict_square = sqrt_pred
+  sqrt_frequency_plot = ggplot(convertable_raw2, aes(x = mean_mz, y = mean_frequency)) + geom_point(size = 4) +
+    geom_line(aes(y = predict_square), color = "red", size = 2) +
+    labs(x = "M/Z", y = "Frequency")
   residual_data = rbind(data.frame(mz = convertable_raw2$mean_mz, frequency = convertable_raw2$mean_frequency,
                                    predicted = convertable_raw2$predict_frequency,
                                    type = "cube", stringsAsFactors = FALSE),
@@ -122,6 +137,12 @@ plot_frequency_conversion = function(char_obj){
   frequency_plot =  ((mz_point_plot / frequency_point_plot / point_difference_plot)  |
     (all_frequency_difference_plot / mz_frequency_plot)) + plot_annotation(tag_levels = "A")
   frequency_plot
+  frequency_histogram = raw_points %>%
+    ggplot(aes(x = log10(mean_freq_diff))) +
+    geom_histogram(bins = 100) +
+    labs(x = "Log10(Frequency Differences)")
+  list(all = frequency_plot, histrogram = frequency_histogram,
+       residuals = residual_data)
 
 }
 
