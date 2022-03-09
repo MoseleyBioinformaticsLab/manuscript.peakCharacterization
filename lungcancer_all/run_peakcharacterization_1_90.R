@@ -11,7 +11,7 @@ all_mzml_files <- data.frame(mzml_file = basename(all_mzml_files), mzml_path = a
 peak_pick_samples <- dplyr::left_join(peak_pick_samples, all_mzml_files, by = "sample")
 
 curr_date = Sys.Date()
-use_date = "2022-03-03"
+use_date = "2022-03-08"
 if (curr_date != use_date) {
   warning("current date and the use date dont match!")
 }
