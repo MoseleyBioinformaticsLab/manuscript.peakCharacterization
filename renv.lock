@@ -80,15 +80,15 @@
     },
     "FTMS.peakCharacterization": {
       "Package": "FTMS.peakCharacterization",
-      "Version": "0.1.100",
+      "Version": "0.1.101",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "FTMS.peakCharacterization",
       "RemoteUsername": "MoseleyBioinformaticsLab",
       "RemoteRef": "HEAD",
-      "RemoteSha": "266ed61193d2de4ada5ebcd60b33d640768472c6",
-      "Hash": "be9dcf9c4cca97458c00f0595378ad28",
+      "RemoteSha": "31b1ffd6641c55fa7ae5ad60efd85d06d1d3910d",
+      "Hash": "4cea61c1e2a3afa0552938d0348f1f62",
       "Requirements": [
         "IRanges",
         "MSnbase",
@@ -515,6 +515,16 @@
       "Requirements": [
         "foreach",
         "iterators"
+      ]
+    },
+    "documentNumbering": {
+      "Package": "documentNumbering",
+      "Version": "0.0.4",
+      "Source": "Repository",
+      "Repository": null,
+      "Hash": "b01eb0243ea8d26d2a7182a8cb44c8c5",
+      "Requirements": [
+        "R6"
       ]
     },
     "dotenv": {
