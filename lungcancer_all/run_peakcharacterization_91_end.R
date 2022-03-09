@@ -40,7 +40,7 @@ n_sample <- floor(nrow(peak_pick_samples) / 2)
 use_files <- peak_pick_samples$mzml_path[(n_sample + 1):(nrow(peak_pick_samples))]
 
 library(furrr)
-plan(multiprocess)
+plan(multicore)
 set_internal_map(furrr::future_map)
 
 json_files = gsub(".mzML", ".json", use_files)

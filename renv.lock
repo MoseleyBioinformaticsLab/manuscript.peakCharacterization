@@ -80,15 +80,15 @@
     },
     "FTMS.peakCharacterization": {
       "Package": "FTMS.peakCharacterization",
-      "Version": "0.1.101",
+      "Version": "0.1.102",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "FTMS.peakCharacterization",
       "RemoteUsername": "MoseleyBioinformaticsLab",
       "RemoteRef": "HEAD",
-      "RemoteSha": "31b1ffd6641c55fa7ae5ad60efd85d06d1d3910d",
-      "Hash": "4cea61c1e2a3afa0552938d0348f1f62",
+      "RemoteSha": "0f9a209819d0df06e3f55c3181290cfbd81208b1",
+      "Hash": "6161940629924d8e804a1953df83d6ab",
       "Requirements": [
         "IRanges",
         "MSnbase",
@@ -904,6 +904,17 @@
         "stringr",
         "xfun",
         "yaml"
+      ]
+    },
+    "knitrProgressBar": {
+      "Package": "knitrProgressBar",
+      "Version": "1.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "0eff7cdf2ade50ff15e43bfeb13b92ed",
+      "Requirements": [
+        "R.oo",
+        "R6"
       ]
     },
     "labeling": {
