@@ -138,7 +138,7 @@ plot_peak_ordering = function(data_obj){
   scan_peaks = purrr::map(peak_data$zip_ms$peak_finder$peak_regions$peak_region_list, "peaks")
   scan_level_peaks = as.data.frame(scan_peaks[[1]])
 
-  scan_models = peak_data$zip_ms$peak_finder$peak_regions$frequency_point_regions@metadata$frequency_coefficients_all
+  scan_models = peak_data$zip_ms$peak_finder$peak_regions$frequency_point_regions$metadata$frequency_coefficients_all
   scan_models = dplyr::filter(scan_models, scan %in% scan_level_peaks$scan)
 
   by_scan = purrr::map_df(seq(1, nrow(scan_level_peaks)), function(in_row){
@@ -146,7 +146,7 @@ plot_peak_ordering = function(data_obj){
     use_model = dplyr::filter(scan_models, scan %in% scan_level_peaks[in_row, "scan"])
 
     out_freq = FTMS.peakCharacterization:::predict_exponentials(use_mz, unlist(use_model[1, c("V1", "V2", "V3")]),
-                peak_data$zip_ms$peak_finder$peak_regions$frequency_point_regions@metadata$frequency_fit_description)
+                                                                peak_data$zip_ms$peak_finder$peak_regions$frequency_point_regions$metadata$frequency_fit_description)
     data.frame(mz = use_mz, single_frequency = scan_level_peaks[in_row, "ObservedFrequency"],
                scan_frequency = out_freq)
   })
@@ -157,7 +157,7 @@ plot_peak_ordering = function(data_obj){
 
   by_scan = tidyr::gather(by_scan, key = "type_order", value = "order", single_order, scan_order)
 
-  peak_ordering_plot = ggplot(by_scan, aes(x = mz_order, y = order, color = type_order)) + geom_point() +
+  peak_ordering_plot = ggplot(by_scan, aes(x = mz_order, y = order, color = type_order)) + geom_point(size = 3) +
     theme(legend.position = c(0.8, 0.9))
   peak_ordering_plot
 }
