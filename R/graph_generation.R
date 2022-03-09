@@ -175,11 +175,8 @@ plot_sliding_window_density = function(peak_data){
     nz_counts = nz_counts + nz_counts_iregion
   }
 
-  region_counts = FTMS.peakCharacterization:::count_overlaps(sliding_regions, frequency_points)
-  nonzero_counts = data.frame(nonzero = region_counts@elementMetadata$nonzero_counts)
   chunk_indices = seq(1, length(nz_counts), by = n_point_region)
 
-  data_cutoff = stats::quantile(nonzero_counts$nonzero, 0.99)
   chunk_perc = purrr::map_dbl(chunk_indices, function(in_index){
     use_counts = nz_counts[seq(in_index, min(in_index + (n_point_region - 1), length(nz_counts)))]
     if (max(use_counts) > 0) {
@@ -193,9 +190,6 @@ plot_sliding_window_density = function(peak_data){
     seq(chunk_indices[1], (chunk_indices[2] - 1))])
   single_99 = stats::quantile(single_chunk$use_counts, 0.99)
 
-  sliding_window_nonzero_count = ggplot(nonzero_counts, aes(x = nonzero)) + geom_histogram(bins = 100) + geom_vline(xintercept = data_cutoff, color = "red") +
-    scale_y_log10(expand = c(0,0), limits = c(1, NA))
-  sliding_window_nonzero_count
   all_99 = data.frame(perc_99 = chunk_perc,
                            index = seq(1, length(chunk_perc)))
   all_cut = 1.5 * median(all_99$perc_99)
