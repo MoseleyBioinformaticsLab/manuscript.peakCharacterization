@@ -283,13 +283,18 @@ The solution to **2** (peak differences correlated with intensity) is to only us
 The highlighted peaks in Figure XB are those with an intensity greater than 0.7 of the maximum intensity observed in that scan, and at least visually, their differences are **not** correlated with intensity.
 If *all* peaks are used for normalization, a very different set of normalization factors will be generated than by using only the *most intense* peaks, as shown in Figure XA and XB.
 
-```{r normalization_data, eval = FALSE}
-# figure showing peak intensity correlation with M/Z, intensity varying with M/Z
-tar_load(correlate_scan_height_plot_correlate_scan_height_data)
-correlate_scan_height_plot_correlate_scan_height_data
+```{r increment_intensity_scan}
+figure_count$increment("intensity_scan")
 ```
 
-*caption*: **A**: An example of a peak whose height across scans is correlated with scan number.
+```{r intensity_scan, dn_id = figure_count}
+# figure showing peak intensity correlation with M/Z, intensity varying with M/Z
+tar_load(intensity_scan_cor_plot)
+intensity_scan_cor_plot
+```
+
+`r figure_count$label_text("intensity_scan")`. 
+**A**: An example of a peak whose height across scans is correlated with scan number.
 **B**: The peak differences to the same peaks in a reference scan are plotted against peak height.
 Black: Peaks with a height < 0.7 of the maximum. 
 Red: Peaks with a height >= 0.7 of the maximum.

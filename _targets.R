@@ -91,5 +91,4 @@ list(pkg_tar,
      method_tar,
      rsd_tar,
      figures_tar,
-     tables_tar,
-     scan_height_tar)
+     tables_tar)
