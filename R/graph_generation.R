@@ -252,12 +252,9 @@ normalization_graph = function(normalization_data){
   (hist_plot | diff_plot) + plot_annotation(tag_levels = "A")
 }
 
-correlate_scan_height = function(...){
-  processed_data = list(...)
-  names(processed_data) = purrr::map_chr(processed_data, "processed")
-  use_names = grep("perc99", names(processed_data), value = TRUE)
-  message(use_names)
-  processed_obj = processed_data[[use_names]]
+correlate_scan_height = function(char_list){
+  char_obj = char_list$char_obj
+  processed = char_list$processed
   # to make this something we can test
   # loadd("method_perc99_nonorm_data")
   # processed_obj = method_perc99_nonorm_data
@@ -266,13 +263,14 @@ correlate_scan_height = function(...){
   summary_function = median
   normalize_peaks = "both"
 
-  scan_peaks = purrr::map(processed_obj$char_obj$zip_ms$peak_finder$peak_regions$peak_region_list, ~ as.data.frame(.x$peaks))
+  scan_peaks = purrr::map(char_obj$zip_ms$peak_finder$peak_regions$peak_region_list, "peaks")
 
   ## getting the relationship between normalized peak height and scan ----
   normalization_factors <- FTMS.peakCharacterization:::single_pass_normalization(scan_peaks, intensity_measure = intensity_measure, summary_function = summary_function,
                                                                                  min_ratio = 0)
 
   normed_peaks = purrr::map(scan_peaks, function(.x){
+    .x = as.data.frame(.x)
     .x2 = dplyr::inner_join(.x, normalization_factors, by = "scan")
     .x2$Height = exp(log(.x2$RawHeight) - .x2$normalization)
     .x2$normalization = NULL
