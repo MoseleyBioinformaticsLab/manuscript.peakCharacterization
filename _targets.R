@@ -32,7 +32,8 @@ method_data = expand_grid(
                                   "singlenorm",
                                   "intsinglenorm",
                                   "doublenorm",
-                                  "filtersd")),
+                                  "filtersd",
+                       "msnbase_centroid")),
   data_names = paste0("data_", data_mzml$name)) %>%
   dplyr::mutate(name = gsub("data_", "", data_names),
                 data_sym = rlang::syms(data_names),

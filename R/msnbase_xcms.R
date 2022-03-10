@@ -1,4 +1,10 @@
-msnbase_only = function(mzml_file){
+msnbase_centroid = function(mzml_file, char_list = NULL){
+
+  if (!is.null(char_list)) {
+    # get the scans from the normalization object,
+    # and then subset the profiled scans using it
+  }
+
   mzml_prof = MSnbase::readMSData(mzml_file, msLevel. = 1, centroided. = FALSE)
   mzml_info = get_ms_info(mzml_prof)
 
