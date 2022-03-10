@@ -74,7 +74,7 @@ figures_tar = tar_plan(
 
   tar_target(find_sub_region, split_regions(method_perc99_nonorm_97lipid)
   ),
-  tar_target(intensity_scan_cor, correlate_scan_hight(method_perc99_nonorm_97lipid)),
+  tar_target(intensity_scan_cor, correlate_scan_height(method_perc99_nonorm_97lipid)),
   tar_target(intensity_scan_cor_plot, correlate_scan_height_graph(intensity_scan_cor)),
   tar_target(split_region_plot,
              plot_region_splitting(find_sub_region)
