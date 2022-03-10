@@ -4,6 +4,10 @@ source("./packages.R")
 ## Load your R files
 lapply(list.files("./R", full.names = TRUE), source)
 
+## debugging stuff
+tar_option_set(debug = "scan_height_correlation")
+## targets::tar_make(callr_function = NULL)
+
 use_files = dir("data/data_input", pattern = "mzML", full.names = TRUE)
 excel_files = dir("data/data_input", pattern = ".xlsx", full.names = TRUE)
 
@@ -56,6 +60,13 @@ rsd_tar = tar_combine(
   iteration = "list"
 )
 
+scan_height_tar = tar_combine(
+  scan_height_correlation,
+  method_tar[[1]],
+  command = correlate_scan_height(!!!.x),
+  iteration = "list"
+)
+
 # rsd_tar = tar_combine(
 #   rsd_data,
 #   values = ends_with("97lipid")
@@ -80,9 +91,10 @@ tables_tar = tar_plan(
   tar_target(rsd_values, summarize_rsd(rsd_combine))
 )
 
-list(pkg_tar, data_tar, method_tar, rsd_tar, figures_tar, tables_tar)
-
-
-# start target method_noperc_nonorm_161212_unlabeledAAs_2_ECF
-# error target method_noperc_nonorm_161212_unlabeledAAs_2_ECF
-# trying to get slot "elementMetadata" from an object of a basic class ("list") with no slots
+list(pkg_tar,
+     data_tar,
+     method_tar,
+     rsd_tar,
+     figures_tar,
+     tables_tar,
+     scan_height_tar)
