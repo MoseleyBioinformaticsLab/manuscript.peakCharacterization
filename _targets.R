@@ -61,16 +61,26 @@ rsd_tar = tar_combine(
 #   values = ends_with("97lipid")
 # )
 
-one_off_tar = tar_plan(
+figures_tar = tar_plan(
   tar_target(frequency_conversion, plot_frequency_conversion(data_97lipid)),
-  tar_target(peak_ordering, plot_peak_ordering(data_97lipid)),
+  tar_target(peak_ordering, plot_peak_ordering(method_filtersd_97lipid)),
   tar_target(sliding_regions, plot_sliding_window_density(data_97lipid)),
-  tar_target(peak_fit_plot, plot_peak_fitting(data_97lipid)),
+  tar_target(peak_fit_plot, plot_peak_fitting(method_filtersd_97lipid)),
+  tar_target(rsd_plot, plot_rsd_differences(rsd_combine)),
 
+  tar_target(find_sub_region, split_regions(method_perc99_nonorm_97lipid)
+  ),
+  tar_target(split_region_plot,
+             plot_region_splitting(find_sub_region)
+  ),
   tar_render(manuscript, "doc/peakcharacterization_manuscript.Rmd")
 )
 
-list(pkg_tar, data_tar, method_tar, rsd_tar, one_off_tar)
+tables_tar = tar_plan(
+  tar_target(rsd_values, summarize_rsd(rsd_combine))
+)
+
+list(pkg_tar, data_tar, method_tar, rsd_tar, figures_tar, tables_tar)
 
 
 # start target method_noperc_nonorm_161212_unlabeledAAs_2_ECF
