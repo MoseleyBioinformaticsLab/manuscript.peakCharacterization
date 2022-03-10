@@ -32,8 +32,7 @@ method_data = expand_grid(
                                   "singlenorm",
                                   "intsinglenorm",
                                   "doublenorm",
-                                  "filtersd",
-                       "msnbase_centroid")),
+                                  "filtersd")),
   data_names = paste0("data_", data_mzml$name)) %>%
   dplyr::mutate(name = gsub("data_", "", data_names),
                 data_sym = rlang::syms(data_names),
@@ -87,9 +86,27 @@ tables_tar = tar_plan(
   tar_target(rsd_values, summarize_rsd(rsd_combine))
 )
 
+msnbase_mzml = expand_grid(
+  data_function = rlang::syms("msnbase_centroid"),
+  mzml = use_files
+) %>%
+  dplyr::mutate(name = dplyr::case_when(
+    grepl("97Cpos", mzml) ~ "97lipid",
+    grepl("49Cpos", mzml) ~ "49lipid",
+    grepl("1_ECF", mzml) ~ "1ecf",
+    grepl("2_ECF", mzml) ~ "2ecf"
+  ))
+
+msnbase_tar = tar_map(
+  values = msnbase_mzml,
+  names = "name",
+  tar_target(msnbase, data_function())
+)
+
 list(pkg_tar,
      data_tar,
      method_tar,
      rsd_tar,
      figures_tar,
-     tables_tar)
+     tables_tar,
+     msnbase_tar)
