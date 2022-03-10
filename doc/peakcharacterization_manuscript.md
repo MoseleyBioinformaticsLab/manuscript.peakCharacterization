@@ -1,7 +1,7 @@
 ---
 title: "Novel Methods for Characterizing Peaks from Direct Injection FT-MS Experiments"
 author: "Robert M Flight, Joshua M Mitchell, Hunter NB Moseley"
-date: "2022-03-10 12:34:55"
+date: "2022-03-10 15:11:25"
 output: 
   word_document:
     keep_md: true
@@ -243,7 +243,7 @@ Frequency based points suffer none of these drawbacks, and the conversion from M
 
 
 
-![](peakcharacterization_manuscript_files/figure-docx/Figure_1_mz_frequency_conversion-1.png)<!-- -->
+![](peakcharacterization_manuscript_files/figure-docx/Figure_1_mz_frequency_conversion-1.svg)<!-- -->
 
 Figure 1. **A**: Intensity vs M/Z for a single peak from a single scan. 
 Red lines denote the differences between each point, and red dots the average between the pair of points. 
@@ -259,7 +259,7 @@ Therefore, a single model for all scans based on the median of each term in the 
 
 
 
-![](peakcharacterization_manuscript_files/figure-docx/Figure_2_peak_ordering-1.png)<!-- -->
+![](peakcharacterization_manuscript_files/figure-docx/Figure_2_peak_ordering-1.svg)<!-- -->
 
 Figure 2. Peak ordering in M/Z compared with ordering in frequency space when a single M/Z to frequency model is used or scan specific M/Z to frequency models are used. 
 For a single peak, the scan level peak M/Z's were extracted, and then frequency values for those M/Z generated using a single common model of M/Z to frequency (*single_order*), or models derived from each scan (*scan_order*). 
@@ -278,7 +278,7 @@ By discarding those windows that have a non-zero point density below the 99th pe
 
 
 
-![](peakcharacterization_manuscript_files/figure-docx/Figure_3_slidingwindow_count-1.png)<!-- -->
+![](peakcharacterization_manuscript_files/figure-docx/Figure_3_slidingwindow_count-1.svg)<!-- -->
 
 Figure 3. Histogram of the number of non-zero points across all scans in sliding windows 10 frequency points wide and 1 frequency point apart. 
 The red vertical line denotes the lower 99th percentile of the data, only sliding windows with non-zero counts above the red line will be kept for subsequent use.
@@ -294,7 +294,7 @@ From the fitted model, we can derive the centroided center and the intensity of 
 
 
 
-![](peakcharacterization_manuscript_files/figure-docx/Figure_4_centroided_peaks-1.png)<!-- -->
+![](peakcharacterization_manuscript_files/figure-docx/Figure_4_centroided_peaks-1.svg)<!-- -->
 
 ### Breaking Up Initial Regions
 
@@ -308,7 +308,7 @@ Adjacent non-zero frequency bins are merged to comprise a single peak region.
 Figure 5 shows an example where an initial region is broken up into two regions based on the characterized peak centers. 
 
 
-![](peakcharacterization_manuscript_files/figure-docx/Figure_5_breaking_regions-1.png)<!-- -->
+![](peakcharacterization_manuscript_files/figure-docx/Figure_5_breaking_regions-1.svg)<!-- -->
 
 Figure 5. 
 Splitting a single region into two regions based on the present peaks.
@@ -334,7 +334,10 @@ If *all* peaks are used for normalization, a very different set of normalization
 
 
 
-*caption*: **A**: An example of a peak whose height across scans is correlated with scan number.
+![](peakcharacterization_manuscript_files/figure-docx/Figure_6_intensity_scan-1.svg)<!-- -->
+
+Figure 6. 
+**A**: An example of a peak whose height across scans is correlated with scan number.
 **B**: The peak differences to the same peaks in a reference scan are plotted against peak height.
 Black: Peaks with a height < 0.7 of the maximum. 
 Red: Peaks with a height >= 0.7 of the maximum.
@@ -366,9 +369,9 @@ However, the FSD does not depend on calculating a sliding window based density, 
 Each step in the peak characterization either changes the overall number of peaks coming from each scan (sliding windows and breaking initial regions) or the overall intensity of the points within a scan. 
 Therefore, one way to quantify any potential *improvements* in the characterized peaks is to look at the relative standard deviation (RSD) for the characterized scan level peak intensities (calculated as the standard deviation of peak heights across scans divided by the mean peak height), and compare them as each processing step is introduced. 
 
-![](peakcharacterization_manuscript_files/figure-docx/Figure_6_rsd_method-1.png)<!-- -->
+![](peakcharacterization_manuscript_files/figure-docx/Figure_7_rsd_method-1.svg)<!-- -->
 
-Figure 6. 
+Figure 7. 
 Density plots of relative standard deviations (RSD) of peak heights across scans for each of the processing methods. 
 A peak had to be present in at least three scans for the RSD value to be reported.
 
