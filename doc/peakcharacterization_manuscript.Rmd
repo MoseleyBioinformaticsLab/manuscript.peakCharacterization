@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = FALSE,
                       dev.args = list(png = list(type = "cairo")))
 ```
 
-```{r get_setup}
+```{r get_setup, include = FALSE}
 source("./packages.R")
 lapply(list.files("./R", full.names = TRUE), source)
 
@@ -169,7 +169,7 @@ Frequency based points suffer none of these drawbacks, and the conversion from M
 figure_count$increment("mz_frequency_conversion")
 ```
 
-```{r mz_frequency_conversion, dn_id = figure_count}
+```{r mz_frequency_conversion, dn_id = figure_count, fig.width = 16, fig.height = 10}
 tar_load(frequency_conversion)
 frequency_conversion$all
 ```

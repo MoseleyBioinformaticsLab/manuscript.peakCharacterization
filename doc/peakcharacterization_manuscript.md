@@ -1,7 +1,7 @@
 ---
 title: "Novel Methods for Characterizing Peaks from Direct Injection FT-MS Experiments"
 author: "Robert M Flight, Joshua M Mitchell, Hunter NB Moseley"
-date: "2022-03-10 15:11:25"
+date: "2022-03-10 15:35:13"
 output: 
   word_document:
     keep_md: true
@@ -12,97 +12,6 @@ editor_options:
 
 
 
-```
-## [[1]]
-## [[1]]$value
-## function (region_list) 
-## {
-##     use_list = region_list[[1]]
-##     frequency_point_regions = use_list$points
-##     tiled_regions = use_list$tiles
-##     frequency_point_regions = purrr::map(frequency_point_regions, 
-##         function(in_scan) {
-##             in_scan@elementMetadata$log_int = log(in_scan@elementMetadata$intensity + 
-##                 1e-08)
-##             in_scan
-##         })
-##     reduced_peaks = purrr::map_df(names(frequency_point_regions), 
-##         function(in_scan) {
-##             FTMS.peakCharacterization:::get_reduced_peaks(frequency_point_regions[[in_scan]], 
-##                 peak_method = "lm_weighted", min_points = 4, 
-##                 which = "frequency")
-##         })
-##     frequency_multiplier = use_list$points[[1]]@metadata$multiplier
-##     reduced_points = FTMS.peakCharacterization:::frequency_points_to_frequency_regions(reduced_peaks, 
-##         "ObservedCenter.frequency", frequency_multiplier)
-##     tiled_overlap = IRanges::countOverlaps(tiled_regions, reduced_points)
-##     original_points = purrr::map_df(use_list$points, ~as.data.frame(.x@elementMetadata))
-##     tiled_regions = as.data.frame(use_list$tiles)
-##     tiled_regions$start_freq = tiled_regions$start/frequency_multiplier
-##     tiled_regions$end_freq = tiled_regions$end/frequency_multiplier
-##     tiled_regions$counts = tiled_overlap
-##     tiled_regions$mid_point = tiled_regions$start_freq + 0.25
-##     tiled_regions$intensity = 10000
-##     xmin = min(original_points$frequency - 0.5)
-##     xmax = max(original_points$frequency + 0.5)
-##     p1 = ggplot(original_points, aes(x = frequency, y = intensity, 
-##         group = scan)) + geom_point() + geom_line() + coord_cartesian(xlim = c(xmin, 
-##         xmax)) + labs(x = NULL)
-##     p2 = ggplot(reduced_peaks, aes(x = ObservedCenter.frequency, 
-##         y = Height.frequency)) + geom_point() + geom_segment(data = tiled_regions, 
-##         aes(x = start_freq + 0.05, xend = end_freq - 0.05, y = intensity, 
-##             yend = intensity), color = "red") + coord_cartesian(xlim = c(xmin, 
-##         xmax)) + labs(x = NULL, y = "intensity")
-##     p3 = ggplot(tiled_regions, aes(x = mid_point, y = counts)) + 
-##         geom_col() + coord_cartesian(xlim = c(xmin, xmax)) + 
-##         labs(x = "frequency", y = "no. of peaks")
-##     (p1/p2/p3) + plot_annotation(tag_level = "A")
-## }
-## 
-## [[1]]$visible
-## [1] FALSE
-## 
-## 
-## [[2]]
-## [[2]]$value
-## function (mzml_file) 
-## {
-##     mzml_prof = MSnbase::readMSData(mzml_file, msLevel. = 1, 
-##         centroided. = FALSE)
-##     mzml_info = get_ms_info(mzml_prof)
-##     all_scans_cent = mzml_prof %>% MSnbase::pickPeaks()
-##     all_scans_cent_mz = mz(all_scans_cent)
-##     all_scans_cent_intensity = intensity(all_scans_cent)
-##     all_scans_data = purrr::map_df(seq_len(length(all_scans_cent_mz)), 
-##         function(in_scan) {
-##             data.frame(mz = all_scans_cent_mz[[in_scan]], intensity = all_scans_cent_intensity[[in_scan]], 
-##                 scan = in_scan)
-##         })
-##     comb_prof = MSnbase::combineSpectra(mzml_prof, method = meanMzInts, 
-##         mzd = 0, ppm = 1)
-##     comb_cent = comb_prof %>% MSnbase::pickPeaks()
-##     comb_cent_data = data.frame(mz = mz(comb_cent)[[1]], intensity = intensity(comb_cent)[[1]])
-##     list(scanlevel = all_scans_data, comb = comb_cent_data)
-## }
-## 
-## [[2]]$visible
-## [1] FALSE
-## 
-## 
-## [[3]]
-## [[3]]$value
-## function (...) 
-## {
-##     hpd_data = list(...)
-##     hpd_process = purrr::map_chr(hpd_data, ~.x$processed)
-##     print(hpd_process)
-##     filtersd = hpd_data[[which(grepl("filtersd", hpd_process))]]
-##     sd_cutoff = filtersd$max_sd
-## }
-## 
-## [[3]]$visible
-## [1] FALSE
-```
 
 ## Abstract
 
@@ -243,7 +152,7 @@ Frequency based points suffer none of these drawbacks, and the conversion from M
 
 
 
-![](peakcharacterization_manuscript_files/figure-docx/Figure_1_mz_frequency_conversion-1.svg)<!-- -->
+![](peakcharacterization_manuscript_files/figure-docx/Figure_1_mz_frequency_conversion-1.png)<!-- -->
 
 Figure 1. **A**: Intensity vs M/Z for a single peak from a single scan. 
 Red lines denote the differences between each point, and red dots the average between the pair of points. 
@@ -259,7 +168,7 @@ Therefore, a single model for all scans based on the median of each term in the 
 
 
 
-![](peakcharacterization_manuscript_files/figure-docx/Figure_2_peak_ordering-1.svg)<!-- -->
+![](peakcharacterization_manuscript_files/figure-docx/Figure_2_peak_ordering-1.png)<!-- -->
 
 Figure 2. Peak ordering in M/Z compared with ordering in frequency space when a single M/Z to frequency model is used or scan specific M/Z to frequency models are used. 
 For a single peak, the scan level peak M/Z's were extracted, and then frequency values for those M/Z generated using a single common model of M/Z to frequency (*single_order*), or models derived from each scan (*scan_order*). 
@@ -278,7 +187,7 @@ By discarding those windows that have a non-zero point density below the 99th pe
 
 
 
-![](peakcharacterization_manuscript_files/figure-docx/Figure_3_slidingwindow_count-1.svg)<!-- -->
+![](peakcharacterization_manuscript_files/figure-docx/Figure_3_slidingwindow_count-1.png)<!-- -->
 
 Figure 3. Histogram of the number of non-zero points across all scans in sliding windows 10 frequency points wide and 1 frequency point apart. 
 The red vertical line denotes the lower 99th percentile of the data, only sliding windows with non-zero counts above the red line will be kept for subsequent use.
@@ -294,7 +203,7 @@ From the fitted model, we can derive the centroided center and the intensity of 
 
 
 
-![](peakcharacterization_manuscript_files/figure-docx/Figure_4_centroided_peaks-1.svg)<!-- -->
+![](peakcharacterization_manuscript_files/figure-docx/Figure_4_centroided_peaks-1.png)<!-- -->
 
 ### Breaking Up Initial Regions
 
@@ -308,7 +217,7 @@ Adjacent non-zero frequency bins are merged to comprise a single peak region.
 Figure 5 shows an example where an initial region is broken up into two regions based on the characterized peak centers. 
 
 
-![](peakcharacterization_manuscript_files/figure-docx/Figure_5_breaking_regions-1.svg)<!-- -->
+![](peakcharacterization_manuscript_files/figure-docx/Figure_5_breaking_regions-1.png)<!-- -->
 
 Figure 5. 
 Splitting a single region into two regions based on the present peaks.
@@ -334,7 +243,7 @@ If *all* peaks are used for normalization, a very different set of normalization
 
 
 
-![](peakcharacterization_manuscript_files/figure-docx/Figure_6_intensity_scan-1.svg)<!-- -->
+![](peakcharacterization_manuscript_files/figure-docx/Figure_6_intensity_scan-1.png)<!-- -->
 
 Figure 6. 
 **A**: An example of a peak whose height across scans is correlated with scan number.
@@ -369,7 +278,7 @@ However, the FSD does not depend on calculating a sliding window based density, 
 Each step in the peak characterization either changes the overall number of peaks coming from each scan (sliding windows and breaking initial regions) or the overall intensity of the points within a scan. 
 Therefore, one way to quantify any potential *improvements* in the characterized peaks is to look at the relative standard deviation (RSD) for the characterized scan level peak intensities (calculated as the standard deviation of peak heights across scans divided by the mean peak height), and compare them as each processing step is introduced. 
 
-![](peakcharacterization_manuscript_files/figure-docx/Figure_7_rsd_method-1.svg)<!-- -->
+![](peakcharacterization_manuscript_files/figure-docx/Figure_7_rsd_method-1.png)<!-- -->
 
 Figure 7. 
 Density plots of relative standard deviations (RSD) of peak heights across scans for each of the processing methods. 
