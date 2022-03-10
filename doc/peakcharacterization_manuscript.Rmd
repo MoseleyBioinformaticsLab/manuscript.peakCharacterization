@@ -336,7 +336,7 @@ A peak had to be present in at least three scans for the RSD value to be reporte
 
 ```{r rsd_table, results = 'asis'}
 tar_load(rsd_values)
-knitr::kable(rsd_table_rsd_data, digits = 3)
+knitr::kable(rsd_values, digits = 3)
 ```
 
 ### Difference to Relative Natural Abundance
