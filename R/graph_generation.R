@@ -211,7 +211,8 @@ plot_rsd_differences = function(rsd_values){
 
   rsd_values$processed = forcats::fct_relevel(rsd_values$processed, "noperc_nonorm", "perc99_nonorm", "singlenorm", "singlenorm_int", "doublenorm",  "filtersd")
   rsd_comparison_plot = ggplot(rsd_values, aes(x = rsd, y = processed, fill = processed)) + geom_density_ridges() +
-    coord_cartesian(xlim = c(0, 1)) + theme(legend.position = "none")
+    coord_cartesian(xlim = c(0, 1)) + theme(legend.position = "none") +
+    facet_wrap(~ sample)
   rsd_comparison_plot
 }
 
@@ -430,9 +431,8 @@ plot_peak_fitting = function(processed_obj){
   #processed_obj = method_perc99_nonorm_data
 
   use_peak = processed_obj$char_obj$zip_ms$peak_finder$peak_regions$peak_region_list[[1]]
-  peak_points = as.data.frame(use_peak$points@elementMetadata)
+  peak_points = as.data.frame(use_peak$points[[1]]@elementMetadata)
   use_scan = unique(peak_points$scan)[1]
-  peak_points = dplyr::filter(peak_points, scan %in% use_scan)
 
   w = peak_points$intensity / max(peak_points$intensity)
   peak_points$log_int = log(peak_points$intensity + 1e-8)
@@ -456,33 +456,35 @@ plot_peak_fitting = function(processed_obj){
 }
 
 plot_region_splitting = function(region_list){
-  frequency_point_regions = region_list$points
-  tiled_regions = region_list$tiles
-  frequency_point_regions@elementMetadata$log_int <- log(frequency_point_regions@elementMetadata$intensity + 1e-8)
+  use_list = region_list[[1]]
+  frequency_point_regions = use_list$points
+  tiled_regions = use_list$tiles
 
-  scan_runs = rle(frequency_point_regions@elementMetadata$scan)
-  #if (min(scan_runs$lengths) < min_points + 2) {
-  frequency_point_splitscan <- split(frequency_point_regions, frequency_point_regions@elementMetadata$scan)
-  reduced_peaks <- purrr::map_df(names(frequency_point_splitscan), function(in_scan){
-    FTMS.peakCharacterization:::get_reduced_peaks(frequency_point_splitscan[[in_scan]], peak_method = "lm_weighted", min_points = 4)
+  frequency_point_regions = purrr::map(frequency_point_regions, function(in_scan){
+    in_scan@elementMetadata$log_int = log(in_scan@elementMetadata$intensity + 1e-8)
+    in_scan
   })
 
-  frequency_multiplier = region_list$points@metadata$frequency_multiplier
-  reduced_regions = IRanges::IRanges(start = round(reduced_peaks$ObservedCenter.frequency * frequency_multiplier),
-                                     width = 1)
-  tiled_overlap = IRanges::countOverlaps(tiled_regions, reduced_regions)
+  reduced_peaks = purrr::map_df(names(frequency_point_regions), function(in_scan){
+    #message(in_scan)
+    FTMS.peakCharacterization:::get_reduced_peaks(frequency_point_regions[[in_scan]], peak_method = "lm_weighted", min_points = 4, which = "frequency")
+  })
 
-  point_data = as.data.frame(region_list$points@elementMetadata)
+  frequency_multiplier = use_list$points[[1]]@metadata$multiplier
+  reduced_points = FTMS.peakCharacterization:::frequency_points_to_frequency_regions(reduced_peaks, "ObservedCenter.frequency", frequency_multiplier)
+  tiled_overlap = IRanges::countOverlaps(tiled_regions, reduced_points)
+
+  original_points = purrr::map_df(use_list$points, ~ as.data.frame(.x@elementMetadata))
 
 
-  tiled_regions = as.data.frame(region_list$tiles)
+  tiled_regions = as.data.frame(use_list$tiles)
   tiled_regions$start_freq = tiled_regions$start / frequency_multiplier
   tiled_regions$end_freq = tiled_regions$end / frequency_multiplier
   tiled_regions$counts = tiled_overlap
   tiled_regions$mid_point = tiled_regions$start_freq + 0.25
   tiled_regions$intensity = 10000
 
-  original_points = as.data.frame(frequency_point_regions@elementMetadata)
+  # original_points = as.data.frame(frequency_point_regions@elementMetadata)
 
   xmin = min(original_points$frequency - 0.5)
   xmax = max(original_points$frequency + 0.5)

@@ -5,10 +5,26 @@ date: "`r Sys.time()`"
 output: 
   word_document:
     keep_md: true
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, echo = FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, dpi = 600, dev = "png", dev.args = list(type = "cairo"))
+knitr::opts_chunk$set(echo = FALSE, 
+                      warning = FALSE, 
+                      message = FALSE, 
+                      dpi = 600, 
+                      dev = "png", 
+                      dev.args = list(type = "cairo"),
+                      fig.process = dn_figure_rename)
+```
+
+```{r get_setup}
+source("./packages.R")
+lapply(list.files("./R", full.names = TRUE), source)
+
+
+figure_count = dn_counter$new("Figure ")
 ```
 
 ## Abstract
@@ -55,8 +71,11 @@ The sliding and tiled windows are also converted to IRanges objects the same way
 ### Peak Containing Intervals
 
 To find intervals that contain points that are not just noise, the number of non-zero intensity frequency points in each sliding window are counted.
-The 99th percentile of non-zero counts across 10000 sliding windows are computed over all sliding windows, and then the median value of these 99th percentiles computed. 
-Any sliding window with a non-zero count less than or equal to 1.5 times the median percentile is removed, and the remaining sliding windows are reduced, where overlapping windows are merged together to create the initial peak regions.
+Subsequently, we break these counts into fixed width tiles (default width of 2000) and calculate the 99th percentile of non-zero points for each tile.
+The median value x 1.5 of these 99th percentile values from the fixed width tiles is used as the cutoff value to determine which of the initial sliding regions should be kept as regions that contain potential signal.
+Any sliding window with a non-zero count less than or equal to the cutoff value is removed, and the remaining sliding windows are reduced, where overlapping windows are merged together to create the initial peak regions.
+
+**Hunter talk about issues around non-detection and why we only use non-zero counts, sliding followed by tiles**.
 
 Within each initial interval region, peaks in each scan are detected (see **Peak Detection**), and their centers binned by the tiled windows. Adjacent tiled windows with non-zero peak counts are merged together, and any zero peak count tiled windows split the initial region into multiple peak interval regions. These interval regions should contain a single **real** peak that was detected in one or more scans.
 
@@ -145,12 +164,16 @@ M/Z point-to-point differences are not constant, but can be approximated by a la
 In addition, we would also need to vary the width of sliding windows according to the M/Z difference at a particular M/Z based on the lasso model.
 Frequency based points suffer none of these drawbacks, and the conversion from M/Z can be derived from the raw profile level data itself, which is incredibly useful.
 
-```{r mz_frequency_figure}
-drake::loadd(frequency_conversion)
-frequency_conversion
+```{r increment_mz_frequency}
+figure_count$increment("mz_frequency_conversion")
 ```
 
-*caption*: **A**: Intensity vs M/Z for a single peak from a single scan. 
+```{r mz_frequency_conversion, dn_id = figure_count}
+tar_load(frequency_conversion)
+frequency_conversion$all
+```
+
+`r figure_count$label_text("mz_frequency_conversion")`. **A**: Intensity vs M/Z for a single peak from a single scan. 
 Red lines denote the differences between each point, and red dots the average between the pair of points. 
 The difference over the point is used to derive the frequency values in **B**. 
 **B** plots the intensity vs the converted frequency points derived from **A**. 
@@ -162,12 +185,16 @@ M/Z to frequency models are calculated for each scan, and the square root term f
 While scan specific models **could** be used in the conversion of M/Z to frequency, doing so results in changes to the relative peak ordering compared to M/Z space, as shown in Figure XA. 
 Therefore, a single model for all scans based on the median of each term in the model across scans is used for converting *all* remaining scan level data.
 
-```{r peak_ordering}
-drake::loadd(peak_ordering)
+```{r increment_peak_ordering}
+figure_count$increment("peak_ordering")
+```
+
+```{r peak_ordering, dn_id = figure_count}
+tar_load(peak_ordering)
 peak_ordering
 ```
 
-*caption*: Peak ordering in M/Z compared with ordering in frequency space when a single M/Z to frequency model is used or scan specific M/Z to frequency models are used. 
+`r figure_count$label_text("peak_ordering")`. Peak ordering in M/Z compared with ordering in frequency space when a single M/Z to frequency model is used or scan specific M/Z to frequency models are used. 
 For a single peak, the scan level peak M/Z's were extracted, and then frequency values for those M/Z generated using a single common model of M/Z to frequency (*single_order*), or models derived from each scan (*scan_order*). 
 A subset of the peaks end up out of order using scan specific models, implying that a single model should be used across all the scan level data.
 
@@ -182,12 +209,16 @@ The distribution of counts in sliding windows ten points wide and offset by one 
 The number of peaks detected without applying a cutoff explodes by ..., with the vast majority of the peaks being present in a single scan. 
 By discarding those windows that have a non-zero point density below the 99th percentile, and merging the remaining adjacent windows, the regions most likely to contain actual, informative peaks are rapidly and easily determined.
 
-```{r slidingwindow_count_distribution}
-drake::loadd(sliding_regions)
+```{r increment_slidingwindow}
+figure_count$increment("slidingwindow_count")
+```
+
+```{r slidingwindow_count, dn_id = figure_count}
+tar_load(sliding_regions)
 sliding_regions
 ```
 
-*caption*: Histogram of the number of non-zero points across all scans in sliding windows 10 frequency points wide and 1 frequency point apart. 
+`r figure_count$label_text("slidingwindow_count")`. Histogram of the number of non-zero points across all scans in sliding windows 10 frequency points wide and 1 frequency point apart. 
 The red vertical line denotes the lower 99th percentile of the data, only sliding windows with non-zero counts above the red line will be kept for subsequent use.
 
 For each region initially created, the peaks in each scan within that region can be characterized using a quadratic fit of log(intensity) to M/Z.
@@ -199,27 +230,38 @@ For the peak characterization (centroiding), we use a simple quadratic model of 
 We add a small constant to enable using the zero values, and weight the values by their ratio to the most intense value, which is normally the value closest to the center of peak, helping to ensure that the **true** centroid is determined. 
 From the fitted model, we can derive the centroided center and the intensity of the peak, as shown in Figure X.
 
-```{r centroided_peaks}
+```{r increment_fit}
+figure_count$increment("centroided_peaks")
+```
+
+```{r centroided_peaks, dn_id = figure_count}
 # figure showing fit of quadratic model to actual data points
-drake::loadd(peak_fit_plot)
+tar_load(peak_fit_plot)
 peak_fit_plot
 ```
 
 ### Breaking Up Initial Regions
 
+```{r increment_breaking_regions}
+figure_count$increment("breaking_regions")
+```
+
+
 With the characterized (centroided) peak data from across scans within each region, it is then important to determine if only one or multiple "peaks" are actually present in the region. 
 Our solution to this is to define breaks between **actual** peaks as a single frequency bin with zero characterized peaks within it. 
 The frequency bins are created from tiled windows that are one frequency point difference wide. 
 Adjacent non-zero frequency bins are merged to comprise a single peak region. 
-Figure X shows an example where an initial region is broken up into two regions based on the characterized peak centers. 
+`r figure_count$label_text("breaking_regions")` shows an example where an initial region is broken up into two regions based on the characterized peak centers. 
 
-```{r breaking_regions}
+
+```{r breaking_regions, dn_id = figure_count}
 # figure showing multiple "peaks" in what is initially a single region
-drake::loadd(split_region_plot)
+tar_load(split_region_plot)
 split_region_plot
 ```
 
-*caption*:Splitting a single region into two regions based on the present peaks.
+`r figure_count$label_text("breaking_regions")`. 
+Splitting a single region into two regions based on the present peaks.
 **A**: The full set of raw frequency and intensity data across all scans for the region are shown. 
 Clearly the region has two separate peaks within it.
 **B**: The peak centroids (frequency and intensity) for each peak in black.
@@ -240,9 +282,9 @@ The solution to **2** (peak differences correlated with intensity) is to only us
 The highlighted peaks in Figure XB are those with an intensity greater than 0.7 of the maximum intensity observed in that scan, and at least visually, their differences are **not** correlated with intensity.
 If *all* peaks are used for normalization, a very different set of normalization factors will be generated than by using only the *most intense* peaks, as shown in Figure XA and XB.
 
-```{r normalization_data}
+```{r normalization_data, eval = FALSE}
 # figure showing peak intensity correlation with M/Z, intensity varying with M/Z
-drake::loadd(correlate_scan_height_plot_correlate_scan_height_data)
+tar_load(correlate_scan_height_plot_correlate_scan_height_data)
 correlate_scan_height_plot_correlate_scan_height_data
 ```
 
@@ -252,8 +294,8 @@ Black: Peaks with a height < 0.7 of the maximum.
 Red: Peaks with a height >= 0.7 of the maximum.
 
 
-```{r normalization_factors}
-drake::loadd(normalization_plot_normalization_values_data)
+```{r normalization_factors, eval = FALSE}
+tar_load(normalization_plot_normalization_values_data)
 normalization_plot_normalization_values_data
 ```
 
@@ -276,19 +318,24 @@ However, the FSD does not depend on calculating a sliding window based density, 
 
 ### Changes in Relative Standard Deviation (RSD)
 
+```{r increment_rsd}
+figure_count$increment("rsd_method")
+```
+
 Each step in the peak characterization either changes the overall number of peaks coming from each scan (sliding windows and breaking initial regions) or the overall intensity of the points within a scan. 
 Therefore, one way to quantify any potential *improvements* in the characterized peaks is to look at the relative standard deviation (RSD) for the characterized scan level peak intensities (calculated as the standard deviation of peak heights across scans divided by the mean peak height), and compare them as each processing step is introduced. 
 
-```{r rsd_plots}
-drake::loadd(rsd_plot_rsd_data)
-rsd_plot_rsd_data
+```{r rsd_method, dn_id = figure_count}
+tar_load(rsd_plot)
+rsd_plot
 ```
 
-*caption*: Density plots of relative standard deviations (RSD) of peak heights across scans for each of the processing methods. 
+`r figure_count$label_text("rsd_method")`. 
+Density plots of relative standard deviations (RSD) of peak heights across scans for each of the processing methods. 
 A peak had to be present in at least three scans for the RSD value to be reported.
 
 ```{r rsd_table, results = 'asis'}
-drake::loadd(rsd_table_rsd_data)
+tar_load(rsd_values)
 knitr::kable(rsd_table_rsd_data, digits = 3)
 ```
 

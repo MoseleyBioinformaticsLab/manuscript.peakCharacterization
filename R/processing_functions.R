@@ -26,7 +26,6 @@ reduce_removing_zero <- function(regions, point_regions_list, multiplier = 1.5, 
     nz_counts = nz_counts + nz_counts_iregion
   }
 
-
   regions = regions[nz_counts > 0]
   IRanges::reduce(regions)
 }
@@ -280,20 +279,22 @@ normalization_factors = function(...){
 }
 
 calc_rsd = function(in_char, processing){
-  scan_peaks = purrr::map(in_char$zip_ms$peak_finder$peak_regions$peak_region_list, "peaks")
-  n_peak = purrr::map_int(scan_peaks, nrow)
-  keep_peak = n_peak >= 3
-  scan_peaks = scan_peaks[keep_peak]
-  rsd = purrr::map_df(scan_peaks, function(in_peaks){
-    data.frame(mean = mean(in_peaks$Height),
-               sd = sd(in_peaks$Height),
-               n_peak = nrow(in_peaks),
-               stringsAsFactors = FALSE)
-  })
-  rsd$rsd = rsd$sd / rsd$mean
-  rsd$processed = processing
-  rsd$sample = in_char$zip_ms$peak_finder$sample_id
-  rsd
+  scan_peaks = 10^in_char$zip_ms$peak_finder$peak_regions$scan_level_arrays$Log10Height
+  n_scan = ncol(scan_peaks)
+  mean_peaks = rowMeans(scan_peaks, na.rm = TRUE)
+  sd_peaks = apply(scan_peaks, 1, sd, na.rm = TRUE)
+  n_peak = apply(scan_peaks, 1, function(.x){sum(!is.na(.x))})
+
+  rsd_df = data.frame(mean = mean_peaks,
+                      sd = sd_peaks,
+                      rsd = sd_peaks / mean_peaks,
+                      n = n_peak,
+                      n_perc = n_peak / n_scan,
+                      processed = processing,
+                      sample = in_char$zip_ms$peak_finder$sample_id)
+  rsd_df %>%
+    dplyr::filter(n >= 3)
+
 }
 
 single_rsd = function(char_list){
@@ -321,63 +322,99 @@ summarize_rsd = function(rsd_df){
 }
 
 split_regions = function(p99_nonorm_data){
-  # loadd("method_perc99_nonorm_data")
-  # p99_nonorm_data = method_perc99_nonorm_data
+  # loadd("method_perc99_nonorm_49lipid")
+  # p99_nonorm_data = tar_read(method_perc99_nonorm_49lipid)
 
 
-  self = p99_nonorm_data$char_obj$zip_ms$peak_finder
-  use_regions <- seq_len(length(self$peak_regions$peak_regions))
-  signal_regions = self$peak_regions$peak_regions[use_regions]
-  frequency_point_regions = self$peak_regions$frequency_point_regions
-  tiled_regions = self$peak_regions$tiled_regions
-  min_scan = self$peak_regions$min_scan
-  peak_method = self$peak_method
-  min_points = self$min_points
+  pf1 = p99_nonorm_data$char_obj$zip_ms$peak_finder
+  pf2 = p99_nonorm_data$char_obj$peak_finder
+
+  pf3 = pf2$clone(deep = TRUE)
+  pf3$reduce_sliding_regions()
+  signal_regions = pf3$peak_regions$peak_regions
+
+  frequency_point_regions = pf2$peak_regions$frequency_point_regions
+  tiled_regions = pf1$peak_regions$tiled_regions
+  min_scan = pf1$peak_regions$min_scan
+  peak_method = pf1$peak_method
+  min_points = pf1$min_points
 
   signal_list = as.list(split(signal_regions, seq(1, length(signal_regions))))
-  min_scan2 = floor(min_scan / 2)
+  min_scan2 = min(c(floor(min_scan / 2), 2))
+
 
   set.seed(1234)
   signal_list = signal_list[sample(length(signal_list), 500)]
-  point_regions_list = purrr::map(signal_list, function(in_region){
-    points = IRanges::subsetByOverlaps(frequency_point_regions, in_region)
+  scan_regions_list = purrr::map(frequency_point_regions$frequency, function(in_points){
 
-    nonzero = as.data.frame(points@elementMetadata) %>%
-      dplyr::filter(intensity > 0) %>%
-      dplyr::pull(scan) %>% unique(.) %>% length(.)
-
-    if (nonzero >= min_scan2) {
-      tiles = IRanges::subsetByOverlaps(tiled_regions, in_region)
-      return(list(points = points, tiles = tiles, region = in_region))
-    } else {
-      return(NULL)
-    }
+    points_list = purrr::map(signal_list, function(in_region){
+      IRanges::subsetByOverlaps(in_points, in_region)
+    })
+    null_points = purrr::map_lgl(points_list, ~ length(.x) == 0)
+    points_list[!null_points]
   })
+
+  all_regions = vector("list", length(scan_regions_list))
+  names(all_regions) = names(scan_regions_list)
+  all_points = purrr::map(scan_regions_list, ~ names(.x)) %>% unlist(.) %>% unique(.)
+  point_regions_list = vector("list", length(all_points))
+  names(point_regions_list) = all_points
+
+  pb = knitrProgressBar::progress_estimated(length(point_regions_list))
+
+  for (ipoints in names(point_regions_list)) {
+    tmp_scans = all_regions
+    for (iscan in names(tmp_scans)) {
+      tmp_scans[[iscan]] = scan_regions_list[[iscan]][[ipoints]]
+    }
+    nonzero_scans = purrr::map_dbl(tmp_scans, function(in_points){
+      as.data.frame(in_points@elementMetadata) %>%
+        dplyr::filter(intensity > 0) %>%
+        dplyr::pull(scan) %>% unique(.) %>% length(.)
+    })
+    if (sum(nonzero_scans) >= min_scan2) {
+      tiles = IRanges::subsetByOverlaps(tiled_regions, signal_list[[ipoints]])
+      point_regions_list[[ipoints]] = list(
+        points = tmp_scans[nonzero_scans > 0],
+        tiles = tiles, region = signal_list[[ipoints]]
+      )
+    }
+    knitrProgressBar::update_progress(pb)
+  }
+
 
   not_null = purrr::map_lgl(point_regions_list, ~ !is.null(.x))
   point_regions_list = point_regions_list[not_null]
   point_regions_list = point_regions_list[sample(length(point_regions_list))]
 
+  metadata = frequency_point_regions$metadata
+
   # split_data = purrr::imap(point_regions_list, function(.x, .y){
   #   message(.y)
   #   split_region_by_peaks(.x, peak_method = peak_method, min_points = min_points)
   # })
-  split_data = FTMS.peakCharacterization:::internal_map$map_function(point_regions_list, split_region_by_peaks,
-                                         peak_method = peak_method, min_points = min_points)
+  split_data = FTMS.peakCharacterization:::internal_map$map_function(point_regions_list, FTMS.peakCharacterization:::split_region_by_peaks,
+                                         peak_method = peak_method, min_points = min_points, metadata = metadata)
 
   null_regions = purrr::map_lgl(split_data, ~ is.null(.x[[1]]$points))
   split_data = split_data[!null_regions]
 
-
   n_regions = purrr::map_int(split_data, ~length(.x))
 
-  possible_region = which(n_regions == 2)
-  possible_region = which(n_regions == 2)
+  possible_region = which(n_regions >= 2)
   n_each = purrr::imap_dfr(split_data[possible_region], function(.x, .y){
-    data.frame(region = .y, n_1 = nrow(.x[[1]]$peaks), n_2 = nrow(.x[[2]]$peaks))
+    purrr::map_dfr(seq(.x), function(in_x){
+      data.frame(region = .y, sub_region = in_x,
+                 n_peak = nrow(.x[[in_x]]$peaks))
+    })
   })
-  examine_region = dplyr::filter(n_each, n_1 > 50, n_2 > 50)
-  use_list = point_regions_list[[examine_region[1, "region"]]]
+
+  summary_region = n_each %>%
+    dplyr::group_by(region) %>%
+    dplyr::summarise(min_scan = min(n_peak), n_region = n()) %>%
+    dplyr::filter(min_scan > 40)
+
+  use_list = point_regions_list[summary_region[["region"]]]
 
   use_list
 
