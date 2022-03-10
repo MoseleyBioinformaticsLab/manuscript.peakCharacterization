@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = FALSE,
                       dpi = 600, 
                       dev = "png", 
                       dev.args = list(type = "cairo"),
-                      fig.process = dn_figure_rename)
+                      fig.process = dn_modify_path)
 ```
 
 ```{r get_setup}
