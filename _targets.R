@@ -100,7 +100,9 @@ msnbase_mzml = expand_grid(
 msnbase_tar = tar_map(
   values = msnbase_mzml,
   names = "name",
-  tar_target(msnbase, data_function(mzml))
+  tar_target(msnbase, data_function(mzml)),
+  tar_target(msnbase_only, msnbase_match_scan_combined(msnbase)),
+  tar_target(msnbase_only_zip, msnbase_zip(msnbase_only))
 )
 
 list(pkg_tar,
