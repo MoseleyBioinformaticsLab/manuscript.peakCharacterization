@@ -81,6 +81,7 @@ msnbase_match_scan_combined = function(msnbase_data){
   comb_data = comb_data[n_scan_peak > 0, ]
   scan_mz = scan_mz[n_scan_peak > 0, ]
   scan_intensity = scan_intensity[n_scan_peak > 0, ]
+  n_scan_peak = n_scan_peak[n_scan_peak > 0]
   new_id = paste0("msnbase_", msnbase_data$sample_id)
   new_data = comb_data %>%
     dplyr::transmute(PeakID = PeakID,
