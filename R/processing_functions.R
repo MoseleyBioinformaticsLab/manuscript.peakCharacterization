@@ -270,6 +270,7 @@ normalization_factors = function(...){
   get_factors = function(processed_obj){
     norm_df = processed_obj$char_obj$zip_ms$peak_finder$peak_regions$normalization_factors
     norm_df$processing = processed_obj$processed
+    norm_df$sample_id = processed_obj$char_obj$zip_ms$peak_finder$sample_id
     norm_df
   }
 
