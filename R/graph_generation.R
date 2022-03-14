@@ -233,10 +233,13 @@ proportional_error = function(peak_data){
 normalization_graph = function(normalization_combine){
 
   normalization_combine$sample_id = rename_samples(normalization_combine$sample_id)
+
   split_sample = split(normalization_combine, normalization_combine$sample_id)
 
   out_graphs = purrr::map(split_sample, function(norm_sample){
-    norm_sample = dplyr::filter(norm_sample, !(processing %in% "filtersd"))
+    norm_sample = dplyr::filter(norm_sample, !(processing %in% c("filtersd", "noperc_nonorm", "perc99_nonorm")))
+
+    norm_sample$processing = factor(norm_sample$processing, levels = c("singlenorm", "singlenorm_int", "doublenorm"), ordered = TRUE)
 
     hist_plot = ggplot(norm_sample, aes(x = normalization)) + geom_histogram() +
       facet_wrap(~ processing, ncol = 1)
