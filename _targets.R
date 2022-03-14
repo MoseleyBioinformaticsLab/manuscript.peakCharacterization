@@ -60,6 +60,13 @@ rsd_tar = tar_combine(
   iteration = "list"
 )
 
+normalization_tar = tar_combine(
+  normalization_combine,
+  method_tar[[1]],
+  command = normalization_factors(!!!.x),
+  iteration = "list"
+)
+
 # rsd_tar = tar_combine(
 #   rsd_data,
 #   values = ends_with("97lipid")
@@ -109,6 +116,7 @@ list(pkg_tar,
      data_tar,
      method_tar,
      rsd_tar,
+     normalization_tar,
      figures_tar,
      tables_tar,
      msnbase_tar)
