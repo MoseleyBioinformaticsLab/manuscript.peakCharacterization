@@ -86,6 +86,8 @@ figures_tar = tar_plan(
   tar_target(split_region_plot,
              plot_region_splitting(find_sub_region)
   ),
+  tar_target(compare_normalization,
+             normalization_graph(normalization_combine)),
   tar_render(manuscript, "doc/peakcharacterization_manuscript.Rmd")
 )
 

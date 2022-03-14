@@ -263,9 +263,6 @@ return_file = function(in_file){
 
 normalization_factors = function(...){
   processed_data = list(...)
-  names(processed_data) = purrr::map_chr(processed_data, "processed")
-  normed_samples = grep("nonorm", names(processed_data), value = TRUE, invert = TRUE)
-  processed_data = processed_data[normed_samples]
 
   get_factors = function(processed_obj){
     norm_df = processed_obj$char_obj$zip_ms$peak_finder$peak_regions$normalization_factors
@@ -538,4 +535,13 @@ hpds_compare = function(...){
 
   sd_cutoff = filtersd$max_sd
 
+}
+
+rename_samples = function(sample_id){
+  out_id = dplyr::case_when(
+    grepl("97Cpos", sample_id) ~ "97lipid",
+    grepl("49Cpos", sample_id) ~ "49lipid",
+    grepl("1_ECF", sample_id) ~ "1ecf",
+    grepl("2_ECF", sample_id) ~ "2ecf")
+  out_id
 }

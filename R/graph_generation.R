@@ -230,26 +230,36 @@ proportional_error = function(peak_data){
 }
 
 
-normalization_graph = function(normalization_data){
-  normalization_data = dplyr::filter(normalization_data, !(processing %in% "filtersd"))
+normalization_graph = function(normalization_combine){
 
-  hist_plot = ggplot(normalization_data, aes(x = normalization)) + geom_histogram() +
-    facet_wrap(~ processing, ncol = 1)
+  normalization_combine$sample_id = rename_samples(normalization_combine$sample_id)
+  split_sample = split(normalization_combine, normalization_combine$sample_id)
 
-  split_norm = split(normalization_data, normalization_data$processing)
-  ref_norm = split_norm[["singlenorm"]]
-  diff_norm = purrr::map_df(split_norm, function(in_norm){
-    combine_norm = dplyr::left_join(ref_norm, in_norm, by = "scan", suffix = c(".ref", ".in"))
-    dplyr::mutate(combine_norm, scan = scan, processing = processing.in,
-                  diff = normalization.in - normalization.ref) %>%
-      dplyr::select(scan, diff, processing)
+  out_graphs = purrr::map(split_sample, function(norm_sample){
+    norm_sample = dplyr::filter(norm_sample, !(processing %in% "filtersd"))
+
+    hist_plot = ggplot(norm_sample, aes(x = normalization)) + geom_histogram() +
+      facet_wrap(~ processing, ncol = 1)
+
+    split_norm = split(norm_sample, norm_sample$processing)
+    ref_norm = split_norm[["singlenorm"]]
+    diff_norm = purrr::map_df(split_norm, function(in_norm){
+      combine_norm = dplyr::left_join(ref_norm, in_norm, by = "scan", suffix = c(".ref", ".in"))
+      dplyr::mutate(combine_norm, scan = scan, processing = processing.in,
+                    diff = normalization.in - normalization.ref) %>%
+        dplyr::select(scan, diff, processing)
+    })
+
+    diff_norm = dplyr::filter(diff_norm, !(processing %in% "singlenorm"))
+    diff_plot = ggplot(diff_norm, aes(x = scan, y = diff, color = processing)) + geom_point() + geom_line() +
+      geom_hline(yintercept = 0, color = "black") +
+      theme(legend.position = c(0.4, 0.9)) +
+      labs(x = "Scan Number", y = "Difference to singlenorm")
+
+    (hist_plot | diff_plot) + plot_annotation(tag_levels = "A")
   })
+  out_graphs
 
-  diff_norm = dplyr::filter(diff_norm, !(processing %in% "singlenorm"))
-  diff_plot = ggplot(diff_norm, aes(x = scan, y = diff, color = processing)) + geom_point() + geom_line() +
-    theme(legend.position = c(0.4, 0.9))
-
-  (hist_plot | diff_plot) + plot_annotation(tag_levels = "A")
 }
 
 correlate_scan_height = function(char_list){
