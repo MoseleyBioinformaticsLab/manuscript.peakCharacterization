@@ -89,6 +89,13 @@ tables_tar = tar_plan(
   tar_target(rsd_values, summarize_rsd(rsd_combine))
 )
 
+other_tar = tar_plan(
+  tar_target(
+    nonoise_vs_noise,
+    compare_noise_cutoff(data_97lipid)
+  )
+)
+
 msnbase_mzml = expand_grid(
   data_function = rlang::syms("msnbase_centroid"),
   mzml = use_files
@@ -147,4 +154,5 @@ list(pkg_tar,
      figures_tar,
      tables_tar,
      msnbase_tar,
-     msnbase_pc_tar)
+     msnbase_pc_tar,
+     other_tar)
