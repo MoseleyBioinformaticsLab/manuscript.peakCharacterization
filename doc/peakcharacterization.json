@@ -1,0 +1,293 @@
+[
+	{
+		"id": "rcoreteam_rlanguage_2020",
+		"type": "book",
+		"event-place": "Vienna, Austria",
+		"publisher": "R Foundation for Statistical Computing",
+		"publisher-place": "Vienna, Austria",
+		"title": "R: A language and environment for statistical computing",
+		"version": "4.0",
+		"author": [
+			{
+				"literal": "R Core Team"
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2020"
+				]
+			]
+		},
+		"citation-key": "rcoreteam_rlanguage_2020"
+	},
+	{
+		"id": "moseleyErrorAnalysisPropagation2013",
+		"type": "article-journal",
+		"abstract": "Error analysis plays a fundamental role in describing the uncertainty in experimental results. It has several fundamental uses in metabolomics including experimental design, quality control of experiments, the selection of appropriate statistical methods, and the determination of uncertainty in results. Furthermore, the importance of error analysis has grown with the increasing number, complexity, and heterogeneity of measurements characteristic of ‘omics research. The increase in data complexity is particularly problematic for metabolomics, which has more heterogeneity than other omics technologies due to the much wider range of molecular entities detected and measured. This review introduces the fundamental concepts of error analysis as they apply to a wide range of metabolomics experimental designs and it discusses current methodologies for determining the propagation of uncertainty in appropriate metabolomics data analysis. These methodologies include analytical derivation and approximation techniques, Monte Carlo error analysis, and error analysis in metabolic inverse problems. Current limitations of each methodology with respect to metabolomics data analysis are also discussed.",
+		"container-title": "Computational and Structural Biotechnology Journal",
+		"DOI": "10.5936/csbj.201301006",
+		"ISSN": "2001-0370",
+		"issue": "5",
+		"journalAbbreviation": "Computational and Structural Biotechnology Journal",
+		"language": "en",
+		"page": "e201301006",
+		"source": "ScienceDirect",
+		"title": "Error Analysis and Propagation in Metabolomics Data Analysis",
+		"URL": "https://www.sciencedirect.com/science/article/pii/S2001037014600490",
+		"volume": "4",
+		"author": [
+			{
+				"family": "Moseley",
+				"given": "Hunter N. B."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2021",
+					7,
+					15
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2013",
+					1,
+					1
+				]
+			]
+		},
+		"citation-key": "moseleyErrorAnalysisPropagation2013"
+	},
+	{
+		"id": "mitchellUntargetedLipidomicsNonSmall2021",
+		"type": "article-journal",
+		"abstract": "Lung cancer remains the leading cause of cancer death worldwide and non-small cell lung carcinoma (NSCLC) represents 85% of newly diagnosed lung cancers. In this study, we utilized our untargeted assignment tool Small Molecule Isotope Resolved Formula Enumerator (SMIRFE) and ultra-high-resolution Fourier transform mass spectrometry to examine lipid profile differences between paired cancerous and non-cancerous lung tissue samples from 86 patients with suspected stage I or IIA primary NSCLC. Correlation and co-occurrence analysis revealed significant lipid profile differences between cancer and non-cancer samples. Further analysis of machine-learned lipid categories for the differentially abundant molecular formulas identified a high abundance sterol, high abundance and high m/z sphingolipid, and low abundance glycerophospholipid metabolic phenotype across the NSCLC samples. At the class level, higher abundances of sterol esters and lower abundances of cardiolipins were observed suggesting altered stearoyl-CoA desaturase 1 (SCD1) or acetyl-CoA acetyltransferase (ACAT1) activity and altered human cardiolipin synthase 1 or lysocardiolipin acyltransferase activity respectively, the latter of which is known to confer apoptotic resistance. The presence of a shared metabolic phenotype across a variety of genetically distinct NSCLC subtypes suggests that this phenotype is necessary for NSCLC development and may result from multiple distinct genetic lesions. Thus, targeting the shared affected pathways may be beneficial for a variety of genetically distinct NSCLC subtypes.",
+		"container-title": "Metabolites",
+		"DOI": "10.3390/metabo11110740",
+		"issue": "11",
+		"language": "en",
+		"note": "number: 11\npublisher: Multidisciplinary Digital Publishing Institute",
+		"page": "740",
+		"source": "www.mdpi.com",
+		"title": "Untargeted Lipidomics of Non-Small Cell Lung Carcinoma Demonstrates Differentially Abundant Lipid Classes in Cancer vs. Non-Cancer Tissue",
+		"URL": "https://www.mdpi.com/2218-1989/11/11/740",
+		"volume": "11",
+		"author": [
+			{
+				"family": "Mitchell",
+				"given": "Joshua M."
+			},
+			{
+				"family": "Flight",
+				"given": "Robert M."
+			},
+			{
+				"family": "Moseley",
+				"given": "Hunter N. B."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					1,
+					6
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2021",
+					11
+				]
+			]
+		},
+		"citation-key": "mitchellUntargetedLipidomicsNonSmall2021"
+	},
+	{
+		"id": "vaughanFurrrApplyMapping2021",
+		"type": "report",
+		"genre": "manual",
+		"title": "furrr: Apply mapping functions in parallel using futures",
+		"URL": "https://CRAN.R-project.org/package=furrr",
+		"author": [
+			{
+				"family": "Vaughan",
+				"given": "Davis"
+			},
+			{
+				"family": "Dancho",
+				"given": "Matt"
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2021"
+				]
+			]
+		},
+		"citation-key": "vaughanFurrrApplyMapping2021"
+	},
+	{
+		"id": "mitchellNewMethodsIdentify2018",
+		"type": "article-journal",
+		"abstract": "Direct injection Fourier-transform mass spectrometry (FT-MS) allows for the high-throughput and high-resolution detection of thousands of metabolite-associated isotopologues. However, spectral artifacts can generate large numbers of spectral features (peaks) that do not correspond to known compounds. Misassignment of these artifactual features creates interpretive errors and limits our ability to discern the role of representative features within living systems.",
+		"container-title": "Metabolomics",
+		"DOI": "10.1007/s11306-018-1426-9",
+		"ISSN": "1573-3890",
+		"issue": "10",
+		"journalAbbreviation": "Metabolomics",
+		"language": "en",
+		"page": "125",
+		"source": "Springer Link",
+		"title": "New methods to identify high peak density artifacts in Fourier transform mass spectra and to mitigate their effects on high-throughput metabolomic data analysis",
+		"URL": "https://doi.org/10.1007/s11306-018-1426-9",
+		"volume": "14",
+		"author": [
+			{
+				"family": "Mitchell",
+				"given": "Joshua M."
+			},
+			{
+				"family": "Flight",
+				"given": "Robert M."
+			},
+			{
+				"family": "Wang",
+				"given": "Qing Jun"
+			},
+			{
+				"family": "Higashi",
+				"given": "Richard M."
+			},
+			{
+				"family": "Fan",
+				"given": "Teresa W.-M."
+			},
+			{
+				"family": "Lane",
+				"given": "Andrew N."
+			},
+			{
+				"family": "Moseley",
+				"given": "Hunter N. B."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					3,
+					14
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2018",
+					9,
+					17
+				]
+			]
+		},
+		"citation-key": "mitchellNewMethodsIdentify2018"
+	},
+	{
+		"id": "lawrenceSoftwareComputingAnnotating2013a",
+		"type": "article-journal",
+		"abstract": "We describe Bioconductor infrastructure for representing and computing on annotated genomic ranges and integrating genomic data with the statistical computing features of R and its extensions. At the core of the infrastructure are three packages: IRanges, GenomicRanges, and GenomicFeatures. These packages provide scalable data structures for representing annotated ranges on the genome, with special support for transcript structures, read alignments and coverage vectors. Computational facilities include efficient algorithms for overlap and nearest neighbor detection, coverage calculation and other range operations. This infrastructure directly supports more than 80 other Bioconductor packages, including those for sequence analysis, differential expression analysis and visualization.",
+		"container-title": "PLOS Computational Biology",
+		"DOI": "10.1371/journal.pcbi.1003118",
+		"ISSN": "1553-7358",
+		"issue": "8",
+		"journalAbbreviation": "PLOS Computational Biology",
+		"language": "en",
+		"note": "publisher: Public Library of Science",
+		"page": "e1003118",
+		"source": "PLoS Journals",
+		"title": "Software for Computing and Annotating Genomic Ranges",
+		"URL": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003118",
+		"volume": "9",
+		"author": [
+			{
+				"family": "Lawrence",
+				"given": "Michael"
+			},
+			{
+				"family": "Huber",
+				"given": "Wolfgang"
+			},
+			{
+				"family": "Pagès",
+				"given": "Hervé"
+			},
+			{
+				"family": "Aboyoun",
+				"given": "Patrick"
+			},
+			{
+				"family": "Carlson",
+				"given": "Marc"
+			},
+			{
+				"family": "Gentleman",
+				"given": "Robert"
+			},
+			{
+				"family": "Morgan",
+				"given": "Martin T."
+			},
+			{
+				"family": "Carey",
+				"given": "Vincent J."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					3,
+					14
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2013",
+					8,
+					8
+				]
+			]
+		},
+		"citation-key": "lawrenceSoftwareComputingAnnotating2013a"
+	},
+	{
+		"id": "borchersPracmaPracticalNumerical2021",
+		"type": "report",
+		"genre": "manual",
+		"title": "pracma: Practical numerical math functions",
+		"URL": "https://CRAN.R-project.org/package=pracma",
+		"author": [
+			{
+				"family": "Borchers",
+				"given": "Hans W."
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2021"
+				]
+			]
+		},
+		"citation-key": "borchersPracmaPracticalNumerical2021"
+	}
+]
