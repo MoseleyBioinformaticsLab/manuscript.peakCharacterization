@@ -209,6 +209,8 @@ plot_sliding_window_density = function(peak_data){
 
 plot_rsd_differences = function(rsd_values){
 
+  rsd_values = rsd_values %>%
+    dplyr::filter(n >= 3)
   rsd_values$processed = forcats::fct_relevel(rsd_values$processed,"msnbase_only", "msnbase_pc", "noperc_nonorm", "perc99_nonorm", "singlenorm", "singlenorm_int", "doublenorm",  "filtersd")
   rsd_comparison_plot = ggplot(rsd_values, aes(x = rsd, y = processed, fill = processed)) + geom_density_ridges() +
     coord_cartesian(xlim = c(0, 1)) + theme(legend.position = "none") +

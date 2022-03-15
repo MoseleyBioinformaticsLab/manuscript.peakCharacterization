@@ -290,9 +290,7 @@ calc_rsd = function(in_char, processing){
                       n_perc = n_peak / n_scan,
                       processed = processing,
                       sample = rename_samples( in_char$zip_ms$peak_finder$sample_id))
-  rsd_df %>%
-    dplyr::filter(n >= 3)
-
+  rsd_df
 }
 
 single_rsd = function(char_list){
