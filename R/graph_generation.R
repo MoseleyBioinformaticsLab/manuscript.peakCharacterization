@@ -209,7 +209,7 @@ plot_sliding_window_density = function(peak_data){
 
 plot_rsd_differences = function(rsd_values){
 
-  rsd_values$processed = forcats::fct_relevel(rsd_values$processed, "noperc_nonorm", "perc99_nonorm", "singlenorm", "singlenorm_int", "doublenorm",  "filtersd")
+  rsd_values$processed = forcats::fct_relevel(rsd_values$processed,"msnbase_only", "msnbase_pc", "noperc_nonorm", "perc99_nonorm", "singlenorm", "singlenorm_int", "doublenorm",  "filtersd")
   rsd_comparison_plot = ggplot(rsd_values, aes(x = rsd, y = processed, fill = processed)) + geom_density_ridges() +
     coord_cartesian(xlim = c(0, 1)) + theme(legend.position = "none") +
     facet_wrap(~ sample)
@@ -239,27 +239,40 @@ normalization_graph = function(normalization_combine){
   out_graphs = purrr::map(split_sample, function(norm_sample){
     norm_sample = dplyr::filter(norm_sample, !(processing %in% c("filtersd", "noperc_nonorm", "perc99_nonorm")))
 
-    norm_sample$processing = factor(norm_sample$processing, levels = c("singlenorm", "singlenorm_int", "doublenorm"), ordered = TRUE)
+    norm_sample$`Normalization Type` = factor(norm_sample$processing, levels = c("singlenorm", "singlenorm_int", "doublenorm"), ordered = TRUE)
 
     hist_plot = ggplot(norm_sample, aes(x = normalization)) + geom_histogram() +
-      facet_wrap(~ processing, ncol = 1)
+      facet_wrap(~ `Normalization Type`, ncol = 1) +
+      labs(x = "Normalization Factors", y = "Number of Scans")
 
     split_norm = split(norm_sample, norm_sample$processing)
     ref_norm = split_norm[["singlenorm"]]
     diff_norm = purrr::map_df(split_norm, function(in_norm){
       combine_norm = dplyr::left_join(ref_norm, in_norm, by = "scan", suffix = c(".ref", ".in"))
-      dplyr::mutate(combine_norm, scan = scan, processing = processing.in,
+      dplyr::mutate(combine_norm, scan = scan, `Normalization Type` = processing.in,
                     diff = normalization.in - normalization.ref) %>%
-        dplyr::select(scan, diff, processing)
+        dplyr::select(scan, diff, `Normalization Type`)
     })
 
-    diff_norm = dplyr::filter(diff_norm, !(processing %in% "singlenorm"))
-    diff_plot = ggplot(diff_norm, aes(x = scan, y = diff, color = processing)) + geom_point() + geom_line() +
+    diff_norm = dplyr::filter(diff_norm, !(`Normalization Type` %in% "singlenorm"))
+    diff_plot = ggplot(diff_norm, aes(x = scan, y = diff, color = `Normalization Type`)) + geom_point() + geom_line() +
       geom_hline(yintercept = 0, color = "black") +
       theme(legend.position = c(0.4, 0.9)) +
-      labs(x = "Scan Number", y = "Difference to singlenorm")
+      labs(x = "Scan Number", y = "Difference to singlenorm") +
+      scale_color_discrete()
 
-    (hist_plot | diff_plot) + plot_annotation(tag_levels = "A")
+
+    if (max(abs(diff_norm$diff)) > 0.2) {
+      use_range = boxplot.stats(diff_norm$diff)$stats[c(1, 5)]
+      diff_plot2 = diff_plot +
+        coord_cartesian(ylim = use_range) +
+        theme(legend.position = "none")
+      out_plot = ((hist_plot | diff_plot) / diff_plot2) + plot_annotation(tag_levels = "A")
+    } else {
+      out_plot = (hist_plot | diff_plot) + plot_annotation(tag_levels = "A")
+    }
+
+
   })
   out_graphs
 

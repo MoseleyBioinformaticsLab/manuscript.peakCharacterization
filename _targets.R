@@ -5,7 +5,7 @@ source("./packages.R")
 lapply(list.files("./R", full.names = TRUE), source)
 
 ## debugging stuff
-tar_option_set(debug = "scan_height_correlation")
+#tar_option_set(debug = "scan_height_correlation")
 ## targets::tar_make(callr_function = NULL)
 
 use_files = dir("data/data_input", pattern = "mzML", full.names = TRUE)
@@ -53,12 +53,6 @@ method_tar = tar_map(
   tar_target(assign, assign_files(zip))
 )
 
-rsd_tar = tar_combine(
-  rsd_combine,
-  method_tar[[2]],
-  command = merge_rsd(!!!.x),
-  iteration = "list"
-)
 
 normalization_tar = tar_combine(
   normalization_combine,
@@ -111,8 +105,39 @@ msnbase_tar = tar_map(
   names = "name",
   tar_target(msnbase, data_function(mzml)),
   tar_target(msnbase_only, msnbase_match_scan_combined(msnbase)),
+  tar_target(rsd_msnbase_only, calc_rsd_msnbase(msnbase_only)),
   tar_target(msnbase_only_zip, msnbase_zip(msnbase_only))
 )
+
+msnbase_pc_var = tibble(
+  msnbase = rlang::syms(c("msnbase_1ecf",
+              "msnbase_2ecf",
+              "msnbase_49lipid",
+              "msnbase_97lipid")),
+  pc = rlang::syms(c("method_filtersd_1ecf",
+         "method_filtersd_2ecf",
+         "method_filtersd_49lipid",
+         "method_filtersd_97lipid")),
+  name = c("1ecf",
+           "2ecf",
+           "49lipid",
+           "97lipid")
+)
+
+msnbase_pc_tar = tar_map(
+  values = msnbase_pc_var,
+  names = "name",
+  tar_target(msnbase_pc, msnbase_match_pc(msnbase, pc)),
+  tar_target(rsd_msnbase_pc, calc_rsd_msnbase(msnbase_pc))
+)
+
+rsd_tar = tar_combine(
+  rsd_combine,
+  c(method_tar[[2]], msnbase_tar[[3]], msnbase_pc_tar[[2]]),
+  command = merge_rsd(!!!.x),
+  iteration = "list"
+)
+
 
 list(pkg_tar,
      data_tar,
@@ -121,4 +146,5 @@ list(pkg_tar,
      normalization_tar,
      figures_tar,
      tables_tar,
-     msnbase_tar)
+     msnbase_tar,
+     msnbase_pc_tar)

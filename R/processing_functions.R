@@ -289,7 +289,7 @@ calc_rsd = function(in_char, processing){
                       n = n_peak,
                       n_perc = n_peak / n_scan,
                       processed = processing,
-                      sample = in_char$zip_ms$peak_finder$sample_id)
+                      sample = rename_samples( in_char$zip_ms$peak_finder$sample_id))
   rsd_df %>%
     dplyr::filter(n >= 3)
 
@@ -298,6 +298,27 @@ calc_rsd = function(in_char, processing){
 single_rsd = function(char_list){
   rsd_df = calc_rsd(char_list$char_obj, char_list$processed)
   rsd_df
+}
+
+calc_rsd_msnbase = function(msnbase_list, processing){
+  scan_peaks = 10^msnbase_list$ScanLevel$Log10Height
+  n_scan = ncol(scan_peaks)
+  mean_peaks = rowMeans(scan_peaks, na.rm = TRUE)
+  sd_peaks = apply(scan_peaks, 1, sd, na.rm = TRUE)
+  n_peak = apply(scan_peaks, 1, function(.x){sum(!is.na(.x))})
+
+  rsd_df = data.frame(mean = mean_peaks,
+                      sd = sd_peaks,
+                      rsd = sd_peaks / mean_peaks,
+                      n = n_peak,
+                      n_perc = n_peak / n_scan,
+                      processed = dplyr::case_when(
+                        grepl("pc", msnbase_list$Sample) ~ "msnbase_pc",
+                        TRUE ~ "msnbase_only"
+                      ),
+                      sample = rename_samples(msnbase_list$Sample))
+  rsd_df %>%
+    dplyr::filter(n >= 3)
 }
 
 merge_rsd = function(...) {
@@ -542,6 +563,10 @@ rename_samples = function(sample_id){
     grepl("97Cpos", sample_id) ~ "97lipid",
     grepl("49Cpos", sample_id) ~ "49lipid",
     grepl("1_ECF", sample_id) ~ "1ecf",
-    grepl("2_ECF", sample_id) ~ "2ecf")
+    grepl("2_ECF", sample_id) ~ "2ecf",
+    grepl("1ecf", sample_id) ~ "1ecf",
+    grepl("2ecf", sample_id) ~ "2ecf",
+    grepl("97lipid", sample_id) ~ "97lipid",
+    grepl("49lipid", sample_id) ~ "49lipid")
   out_id
 }
