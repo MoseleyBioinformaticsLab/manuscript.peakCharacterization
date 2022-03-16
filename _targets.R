@@ -113,7 +113,9 @@ msnbase_tar = tar_map(
   tar_target(msnbase, data_function(mzml)),
   tar_target(msnbase_only, msnbase_match_scan_combined(msnbase)),
   tar_target(rsd_msnbase_only, calc_rsd_msnbase(msnbase_only)),
-  tar_target(msnbase_only_zip, msnbase_zip(msnbase_only))
+  tar_target(msnbase_only_zip, msnbase_zip(msnbase_only)),
+  tar_target(msnbase_fake, msnbase_fake_scans(msnbase)),
+  tar_target(msnbase_fake_zip, msnbase_zip(msnbase_fake))
 )
 
 msnbase_pc_var = tibble(
