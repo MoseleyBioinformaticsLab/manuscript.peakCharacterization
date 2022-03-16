@@ -111,38 +111,13 @@ msnbase_tar = tar_map(
   values = msnbase_mzml,
   names = "name",
   tar_target(msnbase, data_function(mzml)),
-  tar_target(msnbase_only, msnbase_match_scan_combined(msnbase)),
-  tar_target(rsd_msnbase_only, calc_rsd_msnbase(msnbase_only)),
-  tar_target(msnbase_only_zip, msnbase_zip(msnbase_only)),
-  tar_target(msnbase_fake, msnbase_fake_scans(msnbase)),
-  tar_target(msnbase_fake_zip, msnbase_zip(msnbase_fake))
-)
-
-msnbase_pc_var = tibble(
-  msnbase = rlang::syms(c("msnbase_1ecf",
-              "msnbase_2ecf",
-              "msnbase_49lipid",
-              "msnbase_97lipid")),
-  pc = rlang::syms(c("method_filtersd_1ecf",
-         "method_filtersd_2ecf",
-         "method_filtersd_49lipid",
-         "method_filtersd_97lipid")),
-  name = c("1ecf",
-           "2ecf",
-           "49lipid",
-           "97lipid")
-)
-
-msnbase_pc_tar = tar_map(
-  values = msnbase_pc_var,
-  names = "name",
-  tar_target(msnbase_pc, msnbase_match_pc(msnbase, pc)),
-  tar_target(rsd_msnbase_pc, calc_rsd_msnbase(msnbase_pc))
+  tar_target(msnbase_scanpeaks, msnbase_match_scan_combined(msnbase)),
+  tar_target(rsd_msnbase_scanpeaks, calc_rsd_msnbase(msnbase_scanpeaks))
 )
 
 rsd_tar = tar_combine(
   rsd_combine,
-  c(method_tar[[2]], msnbase_tar[[3]], msnbase_pc_tar[[2]]),
+  c(method_tar[[2]], msnbase_tar[[3]]),
   command = merge_rsd(!!!.x),
   iteration = "list"
 )
@@ -170,6 +145,5 @@ list(pkg_tar,
      figures_tar,
      tables_tar,
      msnbase_tar,
-     msnbase_pc_tar,
      hpd_tar,
      other_tar)
