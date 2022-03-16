@@ -9,7 +9,7 @@ lapply(list.files("./R", full.names = TRUE), source)
 ## targets::tar_make(callr_function = NULL)
 
 use_files = dir("data/data_input", pattern = "mzML", full.names = TRUE)
-excel_files = dir("data/data_input", pattern = ".xlsx", full.names = TRUE)
+excel_files = dir("data/data_input", pattern = "[ECF|pos].xlsx", full.names = TRUE)
 
 pkg_sha = as.character(utils::packageDescription("FTMS.peakCharacterization")$GithubSHA1)
 
@@ -147,6 +147,20 @@ rsd_tar = tar_combine(
   iteration = "list"
 )
 
+hpd_df = tibble(
+  methods = rlang::syms(c("method_filtersd_1ecf",
+              "method_filtersd_2ecf",
+              "method_filtersd_49lipid",
+              "method_filtersd_97lipid")),
+) %>%
+  dplyr::mutate(names = rename_samples(methods))
+
+hpd_tar = tar_map(
+  values = hpd_df,
+  names = "names",
+  tar_target(hpd, hpds_from_excel(methods, excel_files))
+)
+
 
 list(pkg_tar,
      data_tar,
@@ -157,4 +171,5 @@ list(pkg_tar,
      tables_tar,
      msnbase_tar,
      msnbase_pc_tar,
+     hpd_tar,
      other_tar)
