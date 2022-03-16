@@ -165,7 +165,7 @@ msnbase_match_pc = function(msnbase_data, char_list){
 
   keep_peaks = n_scan_peak > 1
   scan_mz = scan_mz[keep_peaks, ]
-  scan_intensity = scan_intensity[keep_peaks]
+  scan_intensity = scan_intensity[keep_peaks, ]
 
   cent_data = purrr::map_df(matched_peak_list, ~ .x$peaks)
   cent_data = cent_data[keep_peaks, ]
