@@ -82,11 +82,14 @@ msnbase_match_scan_combined = function(msnbase_data){
   scan_mz = scan_mz[n_scan_peak > 1, ]
   scan_intensity = scan_intensity[n_scan_peak > 1, ]
   n_scan_peak = n_scan_peak[n_scan_peak > 1]
+  mz_sd = apply(scan_mz, 1, sd, na.rm = TRUE)
   new_id = paste0("msnbase_", msnbase_data$sample_id)
   new_data = comb_data %>%
     dplyr::transmute(PeakID = PeakID,
                      Height = intensity,
-                     ObservedMZMean = mz,
+                     ObservedMZ = mz,
+                     ObservedMZSD = mz_sd,
+                     Offset = 0,
                      Log10Height = log10(intensity),
                      CorrectedLog10Height = log10(intensity),
                      NScan = n_scan_peak)
@@ -161,19 +164,22 @@ msnbase_match_pc = function(msnbase_data, char_list){
   })
 
   keep_peaks = n_scan_peak > 1
-  scan_mz = scan_mz[keep_peaks]
+  scan_mz = scan_mz[keep_peaks, ]
   scan_intensity = scan_intensity[keep_peaks]
 
   cent_data = purrr::map_df(matched_peak_list, ~ .x$peaks)
   cent_data = cent_data[keep_peaks, ]
   n_scan_peak = n_scan_peak[keep_peaks]
+  mz_sd = apply(scan_mz, 1, sd, na.rm = TRUE)
   new_data = cent_data %>%
     dplyr::transmute(PeakID = PeakID,
                      Height = intensity,
-                     ObservedMZMean = mz,
+                     ObservedMZ = mz,
+                     ObservedMZSD = mz_sd,
                      Log10Height = log10(intensity),
                      CorrectedLog10Height = log10(intensity),
                      NScan = n_scan_peak,
+                     Offset = 0,
                      PeakCharID = PeakCharID)
   scan_level_list = list(Log10Height = log10(scan_intensity),
                          CorrectedLog10Height = log10(scan_intensity),
