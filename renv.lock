@@ -78,6 +78,30 @@
       "Hash": "e57437f82a5c13263a9cf442b9796ba3",
       "Requirements": []
     },
+    "ComplexHeatmap": {
+      "Package": "ComplexHeatmap",
+      "Version": "2.10.0",
+      "Source": "Bioconductor",
+      "git_url": "https://git.bioconductor.org/packages/ComplexHeatmap",
+      "git_branch": "RELEASE_3_14",
+      "git_last_commit": "170df82",
+      "git_last_commit_date": "2021-10-26",
+      "Hash": "964941c376127a2eccfb0d89d43442d2",
+      "Requirements": [
+        "GetoptLong",
+        "GlobalOptions",
+        "IRanges",
+        "RColorBrewer",
+        "circlize",
+        "clue",
+        "colorspace",
+        "digest",
+        "doParallel",
+        "foreach",
+        "matrixStats",
+        "png"
+      ]
+    },
     "FTMS.peakCharacterization": {
       "Package": "FTMS.peakCharacterization",
       "Version": "0.1.102",
@@ -111,6 +135,26 @@
         "tibble",
         "tidyr"
       ]
+    },
+    "GetoptLong": {
+      "Package": "GetoptLong",
+      "Version": "1.0.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "61fac01c73abf03ac72e88dc3952c1e3",
+      "Requirements": [
+        "GlobalOptions",
+        "crayon",
+        "rjson"
+      ]
+    },
+    "GlobalOptions": {
+      "Package": "GlobalOptions",
+      "Version": "0.1.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "c3f7b221e60c28f5f3533d74c6fef024",
+      "Requirements": []
     },
     "IRanges": {
       "Package": "IRanges",
@@ -309,6 +353,18 @@
       "Hash": "6e75b3884423e21eda89b424a98e091d",
       "Requirements": []
     },
+    "ade4": {
+      "Package": "ade4",
+      "Version": "1.7-18",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "c492e20c0e3e8bbb05ce6f57be525897",
+      "Requirements": [
+        "MASS",
+        "pixmap",
+        "sp"
+      ]
+    },
     "affy": {
       "Package": "affy",
       "Version": "1.72.0",
@@ -374,6 +430,26 @@
         "backports"
       ]
     },
+    "broom": {
+      "Package": "broom",
+      "Version": "0.7.11",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "e4487657db580ae1fe0f85237a88ff1f",
+      "Requirements": [
+        "backports",
+        "dplyr",
+        "ellipsis",
+        "generics",
+        "ggplot2",
+        "glue",
+        "purrr",
+        "rlang",
+        "stringr",
+        "tibble",
+        "tidyr"
+      ]
+    },
     "cachem": {
       "Package": "cachem",
       "Version": "1.0.6",
@@ -405,6 +481,18 @@
       "Requirements": [
         "rematch",
         "tibble"
+      ]
+    },
+    "circlize": {
+      "Package": "circlize",
+      "Version": "0.4.13",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "7fe204e42ae9addc35147f8a5a8739fb",
+      "Requirements": [
+        "GlobalOptions",
+        "colorspace",
+        "shape"
       ]
     },
     "cli": {
@@ -508,6 +596,14 @@
       "Requirements": [
         "crayon"
       ]
+    },
+    "dendsort": {
+      "Package": "dendsort",
+      "Version": "0.3.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "348b0cb68eb90e8896fb78a506399c7f",
+      "Requirements": []
     },
     "digest": {
       "Package": "digest",
@@ -1061,6 +1157,14 @@
       "Hash": "cdc87ecd81934679d1557633d8e1fe51",
       "Requirements": []
     },
+    "matrixStats": {
+      "Package": "matrixStats",
+      "Version": "0.61.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "b8e6221fc11247b12ab1b055a6f66c27",
+      "Requirements": []
+    },
     "memoise": {
       "Package": "memoise",
       "Version": "2.0.1",
@@ -1074,17 +1178,26 @@
     },
     "metabolomicsUtilities": {
       "Package": "metabolomicsUtilities",
-      "Version": "0.0.26",
+      "Version": "0.0.62",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "MoseleyBioinformaticsLab",
       "RemoteRepo": "metabolomicsUtilities",
-      "RemoteRef": "master",
-      "RemoteSha": "af0263831a34d44e78aa4e1a25fa84eab1932254",
-      "Hash": "1485a94f68523427fad8fbde169d3eb0",
+      "RemoteRef": "main",
+      "RemoteSha": "a692da0de4c16c854a0caf53f9b9db42ebe61ef7",
+      "Hash": "d3f62bcee2db87baa8cfc1e9f5ef2389",
       "Requirements": [
-        "IRanges"
+        "IRanges",
+        "RColorBrewer",
+        "ade4",
+        "assertthat",
+        "broom",
+        "circlize",
+        "magrittr",
+        "purrr",
+        "stringr",
+        "visualizationQualityControl"
       ]
     },
     "mgcv": {
@@ -1229,6 +1342,14 @@
         "vctrs"
       ]
     },
+    "pixmap": {
+      "Package": "pixmap",
+      "Version": "0.4-12",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "ff0e0b97265ced0db4d13d0005334d78",
+      "Requirements": []
+    },
     "pkgconfig": {
       "Package": "pkgconfig",
       "Version": "2.0.3",
@@ -1246,6 +1367,14 @@
       "Requirements": [
         "Rcpp"
       ]
+    },
+    "png": {
+      "Package": "png",
+      "Version": "0.1-7",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "03b7076c234cb3331288919983326c55",
+      "Requirements": []
     },
     "polyclip": {
       "Package": "polyclip",
@@ -1354,6 +1483,14 @@
       "Hash": "318c703b833089e1bc0c6a198362ca19",
       "Requirements": []
     },
+    "rjson": {
+      "Package": "rjson",
+      "Version": "0.2.21",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "f9da75e6444e95a1baf8ca24909d63b9",
+      "Requirements": []
+    },
     "rlang": {
       "Package": "rlang",
       "Version": "1.0.1",
@@ -1404,6 +1541,14 @@
         "viridisLite"
       ]
     },
+    "shape": {
+      "Package": "shape",
+      "Version": "1.4.6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "9067f962730f58b14d8ae54ca885509f",
+      "Requirements": []
+    },
     "smirfeTools": {
       "Package": "smirfeTools",
       "Version": "0.0.46",
@@ -1429,6 +1574,16 @@
       "Repository": "CRAN",
       "Hash": "40b74690debd20c57d93d8c246b305d4",
       "Requirements": []
+    },
+    "sp": {
+      "Package": "sp",
+      "Version": "1.4-6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "ce8613f4e8c84ef4da9eba65b874ebe9",
+      "Requirements": [
+        "lattice"
+      ]
     },
     "storr": {
       "Package": "storr",
@@ -1634,6 +1789,28 @@
       "Repository": "CRAN",
       "Hash": "55e157e2aa88161bdb0754218470d204",
       "Requirements": []
+    },
+    "visualizationQualityControl": {
+      "Package": "visualizationQualityControl",
+      "Version": "0.4.7",
+      "Source": "Repository",
+      "Repository": "https://moseleybioinformaticslab.r-universe.dev",
+      "Remotes": "github::MoseleyBioinformaticsLab/ICIKendallTau",
+      "RemoteUrl": "https://github.com/MoseleyBioinformaticsLab/visualizationQualityControl",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "ec4d9d66146fb69103c5c1a7404be6ea21a5210e",
+      "Hash": "875dc833b9a1c2084101ca972207f478",
+      "Requirements": [
+        "ComplexHeatmap",
+        "Rcpp",
+        "broom",
+        "colorspace",
+        "dendsort",
+        "dplyr",
+        "ggplot2",
+        "knitrProgressBar",
+        "magrittr"
+      ]
     },
     "vsn": {
       "Package": "vsn",
