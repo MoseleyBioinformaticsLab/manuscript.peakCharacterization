@@ -1,11 +1,14 @@
-msnbase_centroid = function(mzml_file, char_list = NULL){
-  mzml_base = basename(mzml_file)
-  sample_id = dplyr::case_when(
-    grepl("97Cpos", mzml_base) ~ "97lipid",
-    grepl("49Cpos", mzml_base) ~ "49lipid",
-    grepl("1_ECF", mzml_base) ~ "1ecf",
-    grepl("2_ECF", mzml_base) ~ "2ecf"
-  )
+msnbase_centroid = function(mzml_file, sample_id = NULL, char_list = NULL){
+  if (is.null(sample_id)) {
+    mzml_base = basename(mzml_file)
+    sample_id = dplyr::case_when(
+      grepl("97Cpos", mzml_base) ~ "97lipid",
+      grepl("49Cpos", mzml_base) ~ "49lipid",
+      grepl("1_ECF", mzml_base) ~ "1ecf",
+      grepl("2_ECF", mzml_base) ~ "2ecf"
+    )
+  }
+
 
   if (!is.null(char_list)) {
     # get the scans from the normalization object,
