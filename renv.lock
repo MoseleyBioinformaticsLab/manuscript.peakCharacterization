@@ -597,6 +597,14 @@
         "rlang"
       ]
     },
+    "english": {
+      "Package": "english",
+      "Version": "1.2-6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "eae5ce5432c3e995bc4aab2e612df7a5",
+      "Requirements": []
+    },
     "evaluate": {
       "Package": "evaluate",
       "Version": "0.15",
@@ -1064,6 +1072,21 @@
         "rlang"
       ]
     },
+    "metabolomicsUtilities": {
+      "Package": "metabolomicsUtilities",
+      "Version": "0.0.26",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "MoseleyBioinformaticsLab",
+      "RemoteRepo": "metabolomicsUtilities",
+      "RemoteRef": "master",
+      "RemoteSha": "af0263831a34d44e78aa4e1a25fa84eab1932254",
+      "Hash": "1485a94f68523427fad8fbde169d3eb0",
+      "Requirements": [
+        "IRanges"
+      ]
+    },
     "mgcv": {
       "Package": "mgcv",
       "Version": "1.8-39",
@@ -1379,6 +1402,24 @@
         "lifecycle",
         "munsell",
         "viridisLite"
+      ]
+    },
+    "smirfeTools": {
+      "Package": "smirfeTools",
+      "Version": "0.0.46",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "MoseleyBioinformaticsLab",
+      "RemoteRepo": "smirfeTools",
+      "RemoteRef": "main",
+      "RemoteSha": "bceb961c1fefe676dc9bcb56e0b4f789748e0db8",
+      "Hash": "c357fdcb868196147daf1102fd6ea75a",
+      "Requirements": [
+        "dplyr",
+        "magrittr",
+        "mgcv",
+        "purrr"
       ]
     },
     "snow": {
