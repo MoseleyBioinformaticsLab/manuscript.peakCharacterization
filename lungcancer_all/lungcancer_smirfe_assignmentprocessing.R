@@ -85,6 +85,6 @@ mz_cutoff = fit_predict_mz_cutoff(grouped_mz)
 
 all_vote = extract_assigned_data(assigned_data, difference_cutoff = mz_cutoff,
                                  difference_measure = "ObservedMZ", progress = TRUE)
-saveRDS(all_vote, file = "lung_voted_all_2022-03-08.rds")
+saveRDS(all_vote, file = "data/data_output/lung_data/lung_voted_all_2022-03-08.rds")
 
-textme::textme("Lung is all done!")
+#textme::textme("Lung is all done!")
