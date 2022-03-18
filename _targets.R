@@ -147,6 +147,12 @@ hpd_width_tar = tar_combine(
   command = combine_hpd_width(!!!.x)
 )
 
+hpd_chisq_tar = tar_combine(
+  hpd_chisq_all,
+  hpd_tar[[2]],
+  command = dplyr::bind_rows(!!!.x)
+)
+
 
 list(pkg_tar,
      data_tar,
@@ -158,4 +164,5 @@ list(pkg_tar,
      msnbase_tar,
      hpd_tar,
      hpd_width_tar,
+     hpd_chisq_tar,
      other_tar)

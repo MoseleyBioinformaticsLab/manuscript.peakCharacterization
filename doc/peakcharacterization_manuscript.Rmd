@@ -35,6 +35,7 @@ lapply(list.files(here::here("./R"), full.names = TRUE), source)
 
 
 figure_count = dn_counter$new("Figure ")
+table_count = dn_counter$new("Table ")
 ```
 
 
@@ -55,125 +56,9 @@ We introduce a novel method for characterizing peaks from direct injection FT-MS
 Our method incorporates several aspects designed to make the derived intensities trustworthy, and suitable for use in our previously published peak assignment algorithm SMIRFE. 
 Notably, the inclusion of an intensity independent noise removal, and normalization of scan level data results in a reduction of median relative standard deviation from **X** to **Y**, and much better fit of peak intensities to relative natural abundances of assigned isotopologues.
 
+## Keywords
+
 ## Introduction
-
-
-## Methods
-
-### Conversion of m/z to Frequency
-
-The data consists of profile mode m/z spectra from multiple scans encoded as m/z and intensity values for each scan. 
-There is no information about the original frequency values available in either the `raw` files or the `mzML` files. 
-However, the frequency values can be approximated by averaging the m/z of adjacent points, and dividing the m/z by the difference. 
-Ideally, the difference between subsequent points in frequency space is constant, in practice there is a range of differences in frequency space.
-The *true, constant* difference can be obtained by examining the median of the mean frequency differences, and then constraining *useful* points (those that can be used for generating a model of frequency to m/z) to be within 2% of the mode value. 
-These *useful* points can be used to construct a linear model relating m/z to frequency for individual scans based on the formula:
-
-$$frequency = intercept + x* \frac{1}{\sqrt{mz}} + y * \frac{1}{\sqrt[3]{mz}}$$
-From the known physical properties of the Orbitrap, only the square root term should be necessary.
-Practically, we have found the combination of square and cube-roots to provide a better fit, likely due to issues with slight imperfections in the orbitrap geometry, control of the magnetic fields, and the Fourier-like transform conversion used by the spectrometer. 
-A frequency model is generated for each scan, and then a single model using the scan with the square-root slope closest to the median of the square-root slopes from all scans.
-The single model is used to convert the m/z values to frequency for all scans.
-A single model rather than scan specific models is used for conversion because this was found to maintain the relative ordering of the peaks in m/z and frequency space (see Results). 
-
-To convert m/z back into frequency, we can use a similar model without the roots.
-
-$$mz = intercept + x* \frac{1}{frequency} + y*\frac{1}{frequency^2} + z*\frac{1}{frequency^3}$$
-
-### Frequency Intervals
-
-Two types of frequency intervals are used, sliding and tiled windows. 
-In this work, the sliding windows are 10 points wide and offset by one point.
-The tiled windows are one point wide and offset by one point.
-
-### Interval Range Based Data
-
-To enable interval algebra, the frequency points are converted to single width intervals by multiplying and rounding (a multiplier of 400 in this work) and storing them as IRanges objects from the IRanges Bioconductor package [@lawrenceSoftwareComputingAnnotating2013a]. 
-The sliding and tiled windows are also converted to IRanges objects the same way.
-
-### Peak Containing Intervals
-
-To find intervals that contain points that represent actual signal and not just random noise, the number of non-zero intensity points in each sliding window are counted.
-Subsequently, we break these counts into fixed width tiles (default width of 2000) and calculate the 99th percentile of non-zero points for each tile.
-The median value x 1.5 of these 99th percentile values from the fixed width tiles is used as the cutoff value to determine which of the initial sliding regions should be kept as regions that contain potential signal.
-Any sliding window with a non-zero count less than or equal to the cutoff value is removed, and the remaining sliding windows are reduced, where overlapping windows are merged together to create the initial peak regions.
-The presence of zero intensity points are due to flooring implemented by the spectrometer when local spectral quality falls below a certain threshold.
-When this flooring is unstable and incomplete, a partial ringing phenomenom is observed [@mitchellNewMethodsIdentify2018]. **aside: I'm not sure how this actually relates to the density noise cutoff**.
-
-Within each initial interval region, peaks in each scan are detected (see **Peak Detection**), and their centers are binned by the tiled windows. Adjacent tiled windows with non-zero peak counts are merged together, and any zero peak count tiled windows split the initial region into multiple peak interval regions. These interval regions should contain a single **real** peak that was detected in one or more scans.
-
-### Peak Detection and Centroided Values
-
-On a single scan level, possible peaks are detected by simple bump-hunting for two increasing points followed by two decreasing points using the `find_peaks` function in the pracma package [@borchersPracmaPracticalNumerical2021]. 
-These possible peaks are then characterized using a weighted parabolic fit of log-intensity to position (where position is either m/z or frequency), and the weights for each point are the relative log-intensity compared to the maximum log-intensity for the peak.
-
-$$\ln{intensity} = intercept + a*position+b*position^2$$
-From this weighted parabolic fit, the center, intensity, integrated area and sum-of-square residuals can be extracted for the peak. 
-These characteristics are equivalent to the centroided peak center and intensity.
-
-Before further processing, the regions are verified to have only one peak from each scan. 
-If a scan has two or more peaks, then the scan level data in that region is discarded. 
-Any regions that subsequently contain zero peaks are removed.
-
-### Scan to Scan Normalization
-
-Scans are normalized to a single *reference* scan based on the log-intensity differences of a subset of peaks that are present in at least the same number of scans as the 95th percentile of scan counts for the peaks. 
-In addition, only those peaks that have an intensity greater than 0.7 times the highest intensity peak in the scan are used. 
-Pairwise scan-to-scan distances are calculated by taking the cartesian distances between log peak intensities present in both scans, and then the cartesian distance is summed across the scan-to-scan distance to provide an overall difference of each scan to all other scans. 
-The scan with the lowest summed overall distance is chosen as the *reference* scan, and normalization factors for each scan are calculated as the median log peak intensity differences in $scan_i$ compared to the reference scan. 
-This normalization is done twice, once using all possible peaks, after which the correlation of peak intensity with scan order is checked, and those peaks with correlation of greater than 0.5 with scan order are removed, and the normalization factors are calculated again, and then applied to both the centroided peak height and the raw point intensities.
-Peaks correlated to scan order represent an artifact that we speculate results from a gradient in the sample well.
-
-### Full Characterization
-
-Based on the previously detected peaks, the full set of raw data points for each peak in each scan within a region is known. 
-The non-zero intensity, normalized raw data points across scans can be combined, and then characterized again using the weighted parabolic fit previously described. 
-In addition to the data from the full set of raw points, means and standard deviations of the peak height and location can be derived from the scan level peak characteristics previously calculated.
-
-In addition to these values, the frequency point-to-point median difference is calculated across all of the raw data points for those points that could be used for modeling frequency to m/z, and this difference of a single point from the peak center is calculated in frequency space, and converted to m/z space to provide an "offset" value that is useful to define the search space around the peak for any assignment algorithm.
-
-### Correction of Height and Standard Deviation
-
-Ideally, each peak would be observed in every scan. 
-However, in some scans, some peaks are not likely to be observed due to the number of ions falling below the detection threshold. 
-This results in a left-censored normal distribution of peak intensities across scans, which is expected for analytical measurements with detection limits [@flightInformationContentInformedKendalltauCorrelation2022].
-To correct these, either a correction based on a model of the truncated normal distribution can be used, or the differences can be simulated by sampling from data that is present in most of the scans. 
-To simulate the effect of peaks missing from some scans on the standard deviations, the peaks present in all scans are used. 
-For each peak, a sample of the heights across scans are taken (ranging from 5% to 95% of scans), and a new standard deviation calculated for that fraction, and a ratio of the fractional standard deviation to the "true" standard deviation calculated. 
-The ratio standard deviation across peaks can then be fitted to a cubic model of the fraction used, and a correction factor predicted for those peaks that are present in fewer scans. 
-The corrected standard deviations can then be used to correct the mean height assuming that it is the result of a left-censored normal distribution [@TruncatedNormalDistribution2022].
-
-### Frequency Standard Deviation Filtering
-
-High-peak-density (HPD) artifacts [Mitchell et al., 2018] present as singular peaks with higher than expected frequency standard deviations (FSDs) calculated from the scan-to-scan frequency peak locations. Outliers are detected by calculating the interquartile range (IQR) of the distribution of FSDs across the entire spectrum, and those FSD that are greater than the median plus 1.5 times the IQR (as implemented in boxplot.stats) are removed.
-The HPD detection algorithm from Mitchell et al. was re-implemented in R for this work to allow comparisons between it and the use of the FSD.
-For HPD detection, the peaks in excel output from Xcalibur were used after converting the m/z peak centers into frequency space. 
-Sliding windows that are 1000 frequency points wide and offset by 100 points were used for the density calculations.
-
-### Multi-Class F-Statistics
-
-To evaluate the F-statistic between multi-class samples, a much larger set of samples was used. In this case, 181 matched non-cancer and cancer samples that were previously used in the HPD detection manuscript [ref]. All 181 samples were peak characterized using the most stringent method below as well as peaks generated from the xcms R package [ref], assigned using SMIRFE, and then peaks matched by shared EMFs across samples (see Supplemental materials for a description of peak matching and deciding the most likely EMF). For each matched peak across samples, we kept the peaks present in at least 25% of samples in both classes of sample (disease, non-disease), and calculated the F-statistic for peaks generated using our peak-characterization and those from xcms.
-
-### Samples and Overall Processing
-
-Samples included two ethyl-chloroformate (ECF) derivatized amino-acid samples [reference] and two samples where lipid extracts were extracted from lung tumors [reference]. 
-All four samples are positive mode, were converted from raw to mzML using msconvert from ProteoWizard (profile mode) and ThermoRawFileParser (centroided).
-
-For each raw data file in profile mzML format, they were processed in these six ways:
-
-  1. No noise removal, no normalization, no frequency SD filtering (noperc_nonorm)
-  1. Noise removal, no normalization, no frequency SD filtering (perc99_nonorm)
-  1. Noise removal, single pass normalization with all peaks, no frequency SD filtering (singlenorm)
-  1. Noise removal, single pass normalization with high ratio peaks, no frequency SD filtering (singlenorm_int)
-  1. Noise removal, two pass normalization, no frequency SD filtering (doublenorm)
-  1. Noise removal, two pass normalization, frequency SD filtering (filtersd)
-  1. Scan level peak centroids generated by MSnbase
-  1. Scans merged and then centroids generated by MSnbase
-  
-For the two sets of MSnbase peaks, we also matched scan level peaks to merged peaks via two methods:
-
-  1. All scan level peaks within a 2ppm window are associated with the *merged* peak
-  1. Using the *filtersd* peaks, merged and scan level peaks are associated if they are within the start and stop m/z of the *filtersd* peaks
 
 ## Results
 
@@ -359,6 +244,10 @@ compare_normalization[[1]]
 
 ### Removal of High Peak Density Artefacts
 
+```{r increment_hpd}
+figure_count$increment("hpd_fsd")
+```
+
 We have previously described the presence of high peak density (HPD) artefacts in FT-MS spectra [@mitchellNewMethodsIdentify2018]. 
 Ideally, the peak characterization procedure should reduce their presence in the resultant reported peaks. 
 Their presence should be minimized by removing noise peaks, and removing regions that have multiple reported peaks in the same scan. 
@@ -367,9 +256,38 @@ These peaks can be detected by simply examining the distribution of frequency SD
 To verify the removal of HPD regions, we converted centroided m/z's from XCalibur to frequency values using the previously calculated values for that sample.
 Peak density was measured using a sliding window 10 points wide and offset by one point.
 
-Figure X compares the HPD regions detected using the method from Mitchell et al., and their correspondence with high FSD peaks for one sample (the other comparisons are in Supplemental materials).
+`r figure_count$label_text("hpd_fsd")` compares the HPD regions detected using the method from Mitchell et al., and their correspondence with high FSD peaks for one sample (the other comparisons are in Supplemental materials).
+`r table_count$label_text("hpd_fsd")` summarizes the results of Chi-square tests using contingency tables of HPD and high FSD peaks.
 Based on this comparison, the high FSD peaks are indeed HPD sites and should be removed before assignment.
 However, the FSD does not depend on calculating a sliding window based density, but is merely a product of those peaks across multiple scans that span a wider range frequency range than expected based on the peaks in the data. We also note that we do expect higher m/z standard deviations at higher m/z, but the frequency based method does not suffer the same effect, due to the offsets of frequency points being constant.
+
+```{r hpd_fsd, dn_id = figure_count}
+tar_load(hpd_plots_49lipid)
+hpd_plots_49lipid
+```
+
+`r figure_count$label_text("hpd_fsn")`.
+Comparison of HPD and high FSD sites in the lipid 49 sample.
+Black are the original fully characterized peaks.
+Red indicates peaks within HPD sites detected using the XCalibur peak sets.
+Blue indicates peaks that had abnormally high FSD values.
+
+`r table_count$label_text("hpd_fsn")`.
+Chi-square statistics from contingency tables of shared presence and absence of peaks in HPD sites and labeled as high FSD.
+
+```{r hpd_fsd_table}
+tar_load(hpd_chisq_all)
+sci_formatter = 
+hpd_chisq_table = hpd_chisq_all %>%
+  dplyr::select(sample, p.value, statistic) %>%
+  flextable() %>%
+  set_formatter(p.value = function(x){
+    formatC(x, format = "e", digits = 2)
+  }) %>%
+  colformat_double(digits = 1, j = 3) %>%
+  autofit()
+```
+
 
 ### Changes in Relative Standard Deviation (RSD)
 
@@ -409,6 +327,128 @@ To compare relative NAP to relative abundances, we only examined the assignments
 
 For large datasets, we expect that more correct peak intensities will result in better agreement between sample normalized peak intensities within a sample class. 
 If incorrect peak intensities are being reported, then we would expect between class to within class variances to be very random, resulting in F-statistics close to 1.
+
+## Discussion
+
+## Materials and Methods
+
+### Conversion of m/z to Frequency
+
+The data consists of profile mode m/z spectra from multiple scans encoded as m/z and intensity values for each scan. 
+There is no information about the original frequency values available in either the `raw` files or the `mzML` files. 
+However, the frequency values can be approximated by averaging the m/z of adjacent points, and dividing the m/z by the difference. 
+Ideally, the difference between subsequent points in frequency space is constant, in practice there is a range of differences in frequency space.
+The *true, constant* difference can be obtained by examining the median of the mean frequency differences, and then constraining *useful* points (those that can be used for generating a model of frequency to m/z) to be within 2% of the mode value. 
+These *useful* points can be used to construct a linear model relating m/z to frequency for individual scans based on the formula:
+
+$$frequency = intercept + x* \frac{1}{\sqrt{mz}} + y * \frac{1}{\sqrt[3]{mz}}$$
+From the known physical properties of the Orbitrap, only the square root term should be necessary.
+Practically, we have found the combination of square and cube-roots to provide a better fit, likely due to issues with slight imperfections in the orbitrap geometry, control of the magnetic fields, and the Fourier-like transform conversion used by the spectrometer. 
+A frequency model is generated for each scan, and then a single model using the scan with the square-root slope closest to the median of the square-root slopes from all scans.
+The single model is used to convert the m/z values to frequency for all scans.
+A single model rather than scan specific models is used for conversion because this was found to maintain the relative ordering of the peaks in m/z and frequency space (see Results). 
+
+To convert m/z back into frequency, we can use a similar model without the roots.
+
+$$mz = intercept + x* \frac{1}{frequency} + y*\frac{1}{frequency^2} + z*\frac{1}{frequency^3}$$
+
+### Frequency Intervals
+
+Two types of frequency intervals are used, sliding and tiled windows. 
+In this work, the sliding windows are 10 points wide and offset by one point.
+The tiled windows are one point wide and offset by one point.
+
+### Interval Range Based Data
+
+To enable interval algebra, the frequency points are converted to single width intervals by multiplying and rounding (a multiplier of 400 in this work) and storing them as IRanges objects from the IRanges Bioconductor package [@lawrenceSoftwareComputingAnnotating2013a]. 
+The sliding and tiled windows are also converted to IRanges objects the same way.
+
+### Peak Containing Intervals
+
+To find intervals that contain points that represent actual signal and not just random noise, the number of non-zero intensity points in each sliding window are counted.
+Subsequently, we break these counts into fixed width tiles (default width of 2000) and calculate the 99th percentile of non-zero points for each tile.
+The median value x 1.5 of these 99th percentile values from the fixed width tiles is used as the cutoff value to determine which of the initial sliding regions should be kept as regions that contain potential signal.
+Any sliding window with a non-zero count less than or equal to the cutoff value is removed, and the remaining sliding windows are reduced, where overlapping windows are merged together to create the initial peak regions.
+The presence of zero intensity points are due to flooring implemented by the spectrometer when local spectral quality falls below a certain threshold.
+When this flooring is unstable and incomplete, a partial ringing phenomenom is observed [@mitchellNewMethodsIdentify2018]. **aside: I'm not sure how this actually relates to the density noise cutoff**.
+
+Within each initial interval region, peaks in each scan are detected (see **Peak Detection**), and their centers are binned by the tiled windows. Adjacent tiled windows with non-zero peak counts are merged together, and any zero peak count tiled windows split the initial region into multiple peak interval regions. These interval regions should contain a single **real** peak that was detected in one or more scans.
+
+### Peak Detection and Centroided Values
+
+On a single scan level, possible peaks are detected by simple bump-hunting for two increasing points followed by two decreasing points using the `find_peaks` function in the pracma package [@borchersPracmaPracticalNumerical2021]. 
+These possible peaks are then characterized using a weighted parabolic fit of log-intensity to position (where position is either m/z or frequency), and the weights for each point are the relative log-intensity compared to the maximum log-intensity for the peak.
+
+$$\ln{intensity} = intercept + a*position+b*position^2$$
+From this weighted parabolic fit, the center, intensity, integrated area and sum-of-square residuals can be extracted for the peak. 
+These characteristics are equivalent to the centroided peak center and intensity.
+
+Before further processing, the regions are verified to have only one peak from each scan. 
+If a scan has two or more peaks, then the scan level data in that region is discarded. 
+Any regions that subsequently contain zero peaks are removed.
+
+### Scan to Scan Normalization
+
+Scans are normalized to a single *reference* scan based on the log-intensity differences of a subset of peaks that are present in at least the same number of scans as the 95th percentile of scan counts for the peaks. 
+In addition, only those peaks that have an intensity greater than 0.7 times the highest intensity peak in the scan are used. 
+Pairwise scan-to-scan distances are calculated by taking the cartesian distances between log peak intensities present in both scans, and then the cartesian distance is summed across the scan-to-scan distance to provide an overall difference of each scan to all other scans. 
+The scan with the lowest summed overall distance is chosen as the *reference* scan, and normalization factors for each scan are calculated as the median log peak intensity differences in $scan_i$ compared to the reference scan. 
+This normalization is done twice, once using all possible peaks, after which the correlation of peak intensity with scan order is checked, and those peaks with correlation of greater than 0.5 with scan order are removed, and the normalization factors are calculated again, and then applied to both the centroided peak height and the raw point intensities.
+Peaks correlated to scan order represent an artifact that we speculate results from a gradient in the sample well.
+
+### Full Characterization
+
+Based on the previously detected peaks, the full set of raw data points for each peak in each scan within a region is known. 
+The non-zero intensity, normalized raw data points across scans can be combined, and then characterized again using the weighted parabolic fit previously described. 
+In addition to the data from the full set of raw points, means and standard deviations of the peak height and location can be derived from the scan level peak characteristics previously calculated.
+
+In addition to these values, the frequency point-to-point median difference is calculated across all of the raw data points for those points that could be used for modeling frequency to m/z, and this difference of a single point from the peak center is calculated in frequency space, and converted to m/z space to provide an "offset" value that is useful to define the search space around the peak for any assignment algorithm.
+
+### Correction of Height and Standard Deviation
+
+Ideally, each peak would be observed in every scan. 
+However, in some scans, some peaks are not likely to be observed due to the number of ions falling below the detection threshold. 
+This results in a left-censored normal distribution of peak intensities across scans, which is expected for analytical measurements with detection limits [@flightInformationContentInformedKendalltauCorrelation2022].
+To correct these, either a correction based on a model of the truncated normal distribution can be used, or the differences can be simulated by sampling from data that is present in most of the scans. 
+To simulate the effect of peaks missing from some scans on the standard deviations, the peaks present in all scans are used. 
+For each peak, a sample of the heights across scans are taken (ranging from 5% to 95% of scans), and a new standard deviation calculated for that fraction, and a ratio of the fractional standard deviation to the "true" standard deviation calculated. 
+The ratio standard deviation across peaks can then be fitted to a cubic model of the fraction used, and a correction factor predicted for those peaks that are present in fewer scans. 
+The corrected standard deviations can then be used to correct the mean height assuming that it is the result of a left-censored normal distribution [@TruncatedNormalDistribution2022].
+
+### Frequency Standard Deviation Filtering
+
+High-peak-density (HPD) artifacts [Mitchell et al., 2018] present as singular peaks with higher than expected frequency standard deviations (FSDs) calculated from the scan-to-scan frequency peak locations. Outliers are detected by calculating the interquartile range (IQR) of the distribution of FSDs across the entire spectrum, and those FSD that are greater than the median plus 1.5 times the IQR (as implemented in boxplot.stats) are removed.
+The HPD detection algorithm from Mitchell et al. was re-implemented in R for this work to allow comparisons between it and the use of the FSD.
+For HPD detection, the peaks in excel output from Xcalibur were used after converting the m/z peak centers into frequency space. 
+Sliding windows that are 1000 frequency points wide and offset by 100 points were used for the density calculations.
+
+### Multi-Class F-Statistics
+
+To evaluate the F-statistic between multi-class samples, a much larger set of samples was used. In this case, 181 matched non-cancer and cancer samples that were previously used in the HPD detection manuscript [ref]. All 181 samples were peak characterized using the most stringent method below as well as peaks generated from the xcms R package [ref], assigned using SMIRFE, and then peaks matched by shared EMFs across samples (see Supplemental materials for a description of peak matching and deciding the most likely EMF). For each matched peak across samples, we kept the peaks present in at least 25% of samples in both classes of sample (disease, non-disease), and calculated the F-statistic for peaks generated using our peak-characterization and those from xcms.
+
+### Samples and Overall Processing
+
+Samples included two ethyl-chloroformate (ECF) derivatized amino-acid samples [reference] and two samples where lipid extracts were extracted from lung tumors [reference]. 
+All four samples are positive mode, were converted from raw to mzML using msconvert from ProteoWizard (profile mode) and ThermoRawFileParser (centroided).
+
+For each raw data file in profile mzML format, they were processed in these six ways:
+
+  1. No noise removal, no normalization, no frequency SD filtering (noperc_nonorm)
+  1. Noise removal, no normalization, no frequency SD filtering (perc99_nonorm)
+  1. Noise removal, single pass normalization with all peaks, no frequency SD filtering (singlenorm)
+  1. Noise removal, single pass normalization with high ratio peaks, no frequency SD filtering (singlenorm_int)
+  1. Noise removal, two pass normalization, no frequency SD filtering (doublenorm)
+  1. Noise removal, two pass normalization, frequency SD filtering (filtersd)
+  1. Scan level peak centroids generated by MSnbase
+  1. Scans merged and then centroids generated by MSnbase
+  
+For the two sets of MSnbase peaks, we also matched scan level peaks to merged peaks via two methods:
+
+  1. All scan level peaks within a 2ppm window are associated with the *merged* peak
+  1. Using the *filtersd* peaks, merged and scan level peaks are associated if they are within the start and stop m/z of the *filtersd* peaks
+
+## Conclusions
+
 
 ## References
 
