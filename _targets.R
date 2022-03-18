@@ -133,7 +133,18 @@ hpd_df = tibble(
 hpd_tar = tar_map(
   values = hpd_df,
   names = "names",
-  tar_target(hpd, hpds_from_excel(methods, excel_files))
+  unlist = FALSE,
+  tar_target(hpd, hpds_from_excel(methods, excel_files)),
+  tar_target(hpd_chisq, chisq_hpds(hpd)),
+  tar_target(hpd_plots, plot_hpds(hpd)),
+  tar_target(hpd_width_sd, width_sd_hpds(hpd))
+)
+
+hpd_width_tar = tar_combine(
+  hpd_width_all,
+  hpd_tar[[4]],
+  iteration = "list",
+  command = combine_hpd_width(!!!.x)
 )
 
 
@@ -146,4 +157,5 @@ list(pkg_tar,
      tables_tar,
      msnbase_tar,
      hpd_tar,
+     hpd_width_tar,
      other_tar)
