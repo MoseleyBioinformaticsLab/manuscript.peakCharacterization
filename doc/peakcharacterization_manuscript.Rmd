@@ -2,9 +2,11 @@
 title: "Scan-Centric, Frequency-Based Method for Characterizing Peaks from Direct Injection FT-MS Experiments"
 author:
   - Robert M Flight:
+      email: robert.flight@uky.edu
       institute: [markey, biochem, rcsirm]
   - Joshua M Mitchell:
-      institute: lab
+      email: jmmi243@uky.edu
+      institute: [markey, biochem, rcsirm, ibi]
   - Hunter NB Moseley:
       email: hunter.moseley@uky.edu
       correspondence: true
@@ -15,7 +17,6 @@ institute:
   - rcsirm: Resource Center for Stable Isotope Resolved Metabolomics, University of Kentucky, Lexington, KY 40536, USA
   - ibi: Institute for Biomedical Informatics, University of Kentucky, Lexington, KY 40536, USA
   - tox: Department of Toxicology and Cancer Biology, University of Kentucky, Lexington, KY 40536, USA
-  - lab: Somewhere over the rainbow
 date: "`r Sys.time()`"
 output: 
   word_document:
@@ -306,6 +307,10 @@ rsd_plot
 `r figure_count$label_text("rsd_method")`. 
 Density plots of relative standard deviations (RSD) of peak heights across scans for each of the processing methods. 
 A peak had to be present in at least three scans for the RSD value to be reported.
+
+
+`r table_count$label_text("rsd_method")`.
+Relative standard deviation means, medians, modes and maximum observed values for each sample with different overall processing.
 
 ```{r rsd_table, results = 'asis'}
 tar_load(rsd_values)

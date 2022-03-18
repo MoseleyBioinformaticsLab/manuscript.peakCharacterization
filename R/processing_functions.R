@@ -30,6 +30,32 @@ reduce_removing_zero <- function(regions, point_regions_list, multiplier = 1.5, 
   IRanges::reduce(regions)
 }
 
+find_signal_98 <- function(regions, point_regions_list, multiplier = 1.5, n_point_region = 2000){
+  nz_counts = FTMS.peakCharacterization:::count_overlaps(regions, point_regions_list[[1]])
+  n_region = seq(2, length(point_regions_list))
+  for (iregion in n_region) {
+    nz_counts_iregion = FTMS.peakCharacterization:::count_overlaps(regions, point_regions_list[[iregion]])
+    nz_counts = nz_counts + nz_counts_iregion
+  }
+
+  chunk_indices = seq(1, length(nz_counts), by = n_point_region)
+
+  chunk_perc = purrr::map_dbl(chunk_indices, function(in_index){
+    use_counts = nz_counts[seq(in_index, min(in_index + (n_point_region - 1), length(nz_counts)))]
+    if (max(use_counts) > 0) {
+      return(stats::quantile(use_counts, 0.98))
+    } else {
+      return(0)
+    }
+  })
+
+  cutoff_value = ceiling(median(chunk_perc) * multiplier)
+
+  regions = regions[nz_counts > cutoff_value]
+  IRanges::reduce(regions)
+}
+
+
 single_adjustable_normalization = function(peak_regions, min_ratio = 0){
   intensity_measure = c("RawHeight", "Height")
   summary_function = median
@@ -174,6 +200,26 @@ filtersd = function(use_char){
   in_char$zip_ms$peak_finder$sort_ascending_mz()
   in_char$zip_ms$peak_finder$model_mzsd()
   list(char_obj = in_char, processed = "filtersd")
+}
+
+filtersd98 = function(use_char){
+  in_char = use_char$clone(deep = TRUE)
+  in_char$zip_ms$peak_finder$zero_normalization = FALSE
+  in_char$zip_ms$peak_finder$peak_regions$peak_regions =
+    find_signal_98(in_char$peak_finder$peak_regions$sliding_regions,
+                         in_char$peak_finder$peak_regions$frequency_point_regions$frequency,
+                         in_char$peak_finder$quantile_multiplier,
+                         in_char$peak_finder$n_point_region)
+  in_char$zip_ms$peak_finder$reduce_sliding_regions()
+  in_char$zip_ms$peak_finder$split_peak_regions()
+  in_char$zip_ms$peak_finder$remove_double_peaks_in_scans()
+  in_char$zip_ms$peak_finder$normalize_data()
+  in_char$zip_ms$peak_finder$find_peaks_in_regions()
+  in_char$zip_ms$peak_finder$indicate_high_frequency_sd()
+  in_char$zip_ms$peak_finder$add_offset()
+  in_char$zip_ms$peak_finder$sort_ascending_mz()
+  in_char$zip_ms$peak_finder$model_mzsd()
+  list(char_obj = in_char, processed = "filtersd98")
 }
 
 write_peaks_for_assignment <- function(in_data){

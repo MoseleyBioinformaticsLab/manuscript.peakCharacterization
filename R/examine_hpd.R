@@ -151,10 +151,55 @@ plot_hpds = function(hpd_res){
     dplyr::filter(HPD) %>%
     dplyr::mutate(Height = Height + 100000)
 
-  ggplot(peak_data, aes(x = ObservedMZ, xend = ObservedMZ, y = 0, yend = log10(Height))) +
+  plot_all = ggplot(peak_data, aes(x = ObservedMZ, xend = ObservedMZ, y = 0, yend = log10(Height))) +
     geom_segment() +
     geom_segment(data = highsd, aes(y = 6), color = "red") +
     geom_segment(data = hpd, aes(y = 7), color = "blue")
+
+  n_both = peak_data %>%
+    dplyr::filter(!is.na(HPDID)) %>%
+    dplyr::filter(HighSD | HPD) %>%
+    dplyr::group_by(HPDID) %>%
+    dplyr::summarise(hisd = sum(HighSD), scanlevel = sum(HPD)) %>%
+    dplyr::arrange(dplyr::desc(hisd))
+
+  n_xcal = purrr::imap_dfr(hpd_res$hpd_ranges, function(in_range, range_id){
+    xcal_in = hpd_res$xl_data %>%
+      dplyr::filter(dplyr::between(frequency, in_range[1], in_range[2]))
+    data.frame(xcal = nrow(xcal_in), HPDID = range_id)
+  })
+
+  peak_compare = dplyr::left_join(n_both, n_xcal, by = "HPDID")
+
+  use_group = n_both %>%
+    dplyr::slice(1) %>%
+    dplyr::pull(HPDID)
+
+  pc_in_group = peak_data %>%
+    dplyr::filter(HPDID %in% use_group)
+  xl_in_group = hpd_res$xl_data %>%
+    dplyr::filter(dplyr::between(frequency, hpd_res$hpd_ranges[[use_group]][1], hpd_res$hpd_ranges[[use_group]][2]))
+
+  use_range = range(c(pc_in_group$ObservedFrequency, xl_in_group$frequency))
+  pc_mode = metabolomicsUtilities::calculate_mode(pc_in_group$Height)
+  xl_mode = metabolomicsUtilities::calculate_mode(xl_in_group$intensity)
+  pc_plot = pc_in_group %>%
+    ggplot(aes(x = ObservedFrequency, xend = ObservedFrequency,
+               y = 0, yend = Height)) +
+    geom_segment() +
+    geom_segment(data = dplyr::filter(pc_in_group, HighSD), color = 'red') +
+    coord_cartesian(ylim = c(NA, (pc_mode + 5000)), xlim = use_range) +
+    labs(x = "Frequency", y = "Intensity")
+
+  xl_plot = xl_in_group %>%
+    ggplot(aes(x = frequency, xend = frequency,
+               y = 0, yend = intensity)) +
+    geom_segment() +
+    coord_cartesian(ylim = c(NA, (xl_mode + 5000)), xlim = use_range) +
+    labs(x = "Frequency", y = "Intensity")
+
+  pc_plot / xl_plot
+
 }
 
 
