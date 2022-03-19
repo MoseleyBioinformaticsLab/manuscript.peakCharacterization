@@ -60,27 +60,27 @@ density_calculate = function(frequency_values, metadata, frequency_range = NULL)
 }
 
 
-hpds_from_excel = function(in_data, excel_files){
-  sample = in_data$char_obj$zip_ms$id
+hpds_from_excel = function(scanlevel_99, scanlevel_98, msnbase, excel_files){
+  sample = scanlevel_99$char_obj$zip_ms$id
   match_excel = grep(sample, excel_files, value = TRUE)
 
   xl_data = readxl::read_excel(match_excel, skip = 8, col_names = FALSE)
   xl_data = xl_data[, 1:2]
   names(xl_data) = c("mz", "intensity")
   message("got xl data")
-  frequency_coefficients = in_data$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions$metadata$frequency_coefficients
-  frequency_description = in_data$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions$metadata$frequency_fit_description
-  mz_coefficients = in_data$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions$metadata$mz_coefficients
-  mz_description = in_data$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions$metadata$mz_fit_description
-  org_frequency_peaks = purrr::map_df(seq_len(length(in_data$char_obj$zip_ms$peak_finder$peak_regions$peak_region_list)),
+  frequency_coefficients = scanlevel_99$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions$metadata$frequency_coefficients
+  frequency_description = scanlevel_99$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions$metadata$frequency_fit_description
+  mz_coefficients = scanlevel_99$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions$metadata$mz_coefficients
+  mz_description = scanlevel_99$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions$metadata$mz_fit_description
+  org_frequency_peaks = purrr::map_df(seq_len(length(scanlevel_99$char_obj$zip_ms$peak_finder$peak_regions$peak_region_list)),
                                       function(.x){
-                                        tmp = as.data.frame(in_data$char_obj$zip_ms$peak_finder$peak_regions$peak_region_list[[.x]]$peaks[, c("ObservedMZ", "ObservedFrequency", "scan")])
+                                        tmp = as.data.frame(scanlevel_99$char_obj$zip_ms$peak_finder$peak_regions$peak_region_list[[.x]]$peaks[, c("ObservedMZ", "ObservedFrequency", "scan")])
                                         tmp$region = .x
                                         tmp
                                       })
   xl_data$frequency = FTMS.peakCharacterization:::predict_exponentials(xl_data$mz, frequency_coefficients, frequency_description)
 
-  sliding_metadata = in_data$char_obj$zip_ms$peak_finder$peak_regions$sliding_regions@metadata
+  sliding_metadata = scanlevel_99$char_obj$zip_ms$peak_finder$peak_regions$sliding_regions@metadata
 
   freq_diff = 1000
   sliding_metadata$point_spacing = round(freq_diff / 10)
@@ -91,28 +91,48 @@ hpds_from_excel = function(in_data, excel_files){
 
   xl_hpd = density_calculate(xl_data, sliding_metadata, frequency_range)
 
-  peak_data = in_data$char_obj$zip_ms$peak_finder$peak_regions$peak_data
-  scan_level = in_data$char_obj$zip_ms$peak_finder$peak_regions$scan_level_arrays
+  peak_99 = scanlevel_99$char_obj$zip_ms$peak_finder$peak_regions$peak_data %>%
+    dplyr::select(ObservedMZ, ObservedFrequency, Height, HighSD) %>%
+    dplyr::mutate(source = "scanlevel_99")
+  peak_98 = scanlevel_98$char_obj$zip_ms$peak_finder$peak_regions$peak_data %>%
+    dplyr::select(ObservedMZ, ObservedFrequency, Height, HighSD) %>%
+    dplyr::mutate(source = "scanlevel_98")
+  peak_msnbase = msnbase$comb %>%
+    dplyr::transmute(ObservedMZ = mz,
+                     ObservedFrequency = FTMS.peakCharacterization:::predict_exponentials(ObservedMZ, frequency_coefficients, frequency_description),
+                     Height = intensity,
+                     HighSD = FALSE,
+                     source = "msnbase")
+  peak_xcal = xl_data %>%
+    dplyr::transmute(ObservedMZ = mz,
+                     ObservedFrequency = frequency,
+                     Height = intensity,
+                     HighSD = FALSE,
+                     source = "xcalibur")
+
   split_xl = split(xl_hpd$hpd_points, xl_hpd$hpd_points$region)
   xl_ranges = purrr::map(split_xl, ~ range(.x$frequency))
-  message("got hpd sites")
-  message(nrow(peak_data))
+
   inside_peaks = purrr::imap_dfr(xl_ranges, function(in_range, range_id){
-    tmp_df = dplyr::filter(peak_data, dplyr::between(ObservedFrequency, in_range[1], in_range[2]))
-    if (nrow(tmp_df) > 0) {
-      tmp_df$HPD = TRUE
-      tmp_df$HPDID = range_id
-      return(tmp_df[, c("PeakID", "HPD", "HPDID")])
-    } else {
-      return(NULL)
-    }
+    tmp_99 = peak_99 %>%
+      dplyr::filter(dplyr::between(ObservedFrequency, in_range[1], in_range[2])) %>%
+      dplyr::mutate(HPDID = range_id)
+    tmp_98 = peak_98 %>%
+      dplyr::filter(dplyr::between(ObservedFrequency, in_range[1], in_range[2])) %>%
+      dplyr::mutate(HPDID = range_id)
+    tmp_msn = peak_msnbase %>%
+      dplyr::filter(dplyr::between(ObservedFrequency, in_range[1], in_range[2])) %>%
+      dplyr::mutate(HPDID = range_id)
+    tmp_xcal = peak_xcal %>%
+      dplyr::filter(dplyr::between(ObservedFrequency, in_range[1], in_range[2])) %>%
+      dplyr::mutate(HPDID = range_id)
+    dplyr::bind_rows(tmp_99,
+                     tmp_98,
+                     tmp_msn,
+                     tmp_xcal)
   })
-  peak_data2 = dplyr::left_join(peak_data, inside_peaks, by = "PeakID")
-  peak_data2[is.na(peak_data2$HPD), "HPD"] = FALSE
-  #message("inside")
-  max_sd = max(peak_data2$ObservedFrequencySD)
-  list(peak_data = peak_data2, xl_data = xl_data, hpd = xl_hpd, hpd_ranges = xl_ranges,
-       sample_id = rename_samples(sample))
+  list(peak_data = dplyr::bind_rows(peak_99, peak_98, peak_msnbase, peak_xcal),
+       hpd_data = inside_peaks)
 }
 
 
