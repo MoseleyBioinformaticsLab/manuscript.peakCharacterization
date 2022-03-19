@@ -108,6 +108,7 @@ noperc_nonorm = function(use_char){
   in_char$zip_ms$peak_finder$remove_double_peaks_in_scans()
   in_char$zip_ms$peak_finder$normalize_data()
   in_char$zip_ms$peak_finder$find_peaks_in_regions()
+  in_char$zip_ms$peak_finder$indicate_high_frequency_sd()
   in_char$zip_ms$peak_finder$add_offset()
   in_char$zip_ms$peak_finder$sort_ascending_mz()
   in_char$zip_ms$peak_finder$model_mzsd()
@@ -124,6 +125,7 @@ perc99_nonorm = function(use_char){
   in_char$zip_ms$peak_finder$remove_double_peaks_in_scans()
   in_char$zip_ms$peak_finder$normalize_data()
   in_char$zip_ms$peak_finder$find_peaks_in_regions()
+  in_char$zip_ms$peak_finder$indicate_high_frequency_sd()
   in_char$zip_ms$peak_finder$add_offset()
   in_char$zip_ms$peak_finder$sort_ascending_mz()
   in_char$zip_ms$peak_finder$model_mzsd()
@@ -142,6 +144,7 @@ singlenorm = function(use_char){
 
   in_char$zip_ms$peak_finder$peak_regions = single_adjustable_normalization(in_char$zip_ms$peak_finder$peak_regions, 0)
   in_char$zip_ms$peak_finder$find_peaks_in_regions()
+  in_char$zip_ms$peak_finder$indicate_high_frequency_sd()
   in_char$zip_ms$peak_finder$add_offset()
   in_char$zip_ms$peak_finder$sort_ascending_mz()
   in_char$zip_ms$peak_finder$model_mzsd()
@@ -160,6 +163,7 @@ intsinglenorm = function(use_char){
   # do single pass normalization with considering intensity
   in_char$zip_ms$peak_finder$peak_regions = single_adjustable_normalization(in_char$zip_ms$peak_finder$peak_regions, 0.7)
   in_char$zip_ms$peak_finder$find_peaks_in_regions()
+  in_char$zip_ms$peak_finder$indicate_high_frequency_sd()
   in_char$zip_ms$peak_finder$add_offset()
   in_char$zip_ms$peak_finder$sort_ascending_mz()
   in_char$zip_ms$peak_finder$model_mzsd()
@@ -178,6 +182,7 @@ doublenorm = function(use_char){
 
   in_char$zip_ms$peak_finder$normalize_data()
   in_char$zip_ms$peak_finder$find_peaks_in_regions()
+  in_char$zip_ms$peak_finder$indicate_high_frequency_sd()
   in_char$zip_ms$peak_finder$add_offset()
   in_char$zip_ms$peak_finder$sort_ascending_mz()
   in_char$zip_ms$peak_finder$model_mzsd()
