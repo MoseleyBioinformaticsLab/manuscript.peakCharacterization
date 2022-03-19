@@ -60,7 +60,7 @@ density_calculate = function(frequency_values, metadata, frequency_range = NULL)
 }
 
 
-hpds_from_excel = function(scanlevel_99, scanlevel_98, msnbase, excel_files){
+hpds_from_excel = function(scanlevel_99, scanlevel_00, msnbase, excel_files){
   sample = scanlevel_99$char_obj$zip_ms$id
   match_excel = grep(sample, excel_files, value = TRUE)
 
@@ -94,9 +94,9 @@ hpds_from_excel = function(scanlevel_99, scanlevel_98, msnbase, excel_files){
   peak_99 = scanlevel_99$char_obj$zip_ms$peak_finder$peak_regions$peak_data %>%
     dplyr::select(ObservedMZ, ObservedFrequency, Height, HighSD) %>%
     dplyr::mutate(source = "scanlevel_99")
-  peak_98 = scanlevel_98$char_obj$zip_ms$peak_finder$peak_regions$peak_data %>%
+  peak_00 = scanlevel_00$char_obj$zip_ms$peak_finder$peak_regions$peak_data %>%
     dplyr::select(ObservedMZ, ObservedFrequency, Height, HighSD) %>%
-    dplyr::mutate(source = "scanlevel_98")
+    dplyr::mutate(source = "scanlevel_00")
   peak_msnbase = msnbase$comb %>%
     dplyr::transmute(ObservedMZ = mz,
                      ObservedFrequency = FTMS.peakCharacterization:::predict_exponentials(ObservedMZ, frequency_coefficients, frequency_description),
@@ -117,7 +117,7 @@ hpds_from_excel = function(scanlevel_99, scanlevel_98, msnbase, excel_files){
     tmp_99 = peak_99 %>%
       dplyr::filter(dplyr::between(ObservedFrequency, in_range[1], in_range[2])) %>%
       dplyr::mutate(HPDID = range_id)
-    tmp_98 = peak_98 %>%
+    tmp_00 = peak_00 %>%
       dplyr::filter(dplyr::between(ObservedFrequency, in_range[1], in_range[2])) %>%
       dplyr::mutate(HPDID = range_id)
     tmp_msn = peak_msnbase %>%
@@ -127,7 +127,7 @@ hpds_from_excel = function(scanlevel_99, scanlevel_98, msnbase, excel_files){
       dplyr::filter(dplyr::between(ObservedFrequency, in_range[1], in_range[2])) %>%
       dplyr::mutate(HPDID = range_id)
     dplyr::bind_rows(tmp_99,
-                     tmp_98,
+                     tmp_00,
                      tmp_msn,
                      tmp_xcal)
   })
@@ -169,10 +169,24 @@ plot_hpds = function(hpd_res){
 
   n_any = peak_data %>%
     dplyr::group_by(source, HPDID) %>%
-    dplyr::summarise(n = n())
+    dplyr::summarise(n = n(),
+                     n_lowsd = n - sum(HighSD))
   n_wide = n_any %>%
     tidyr::pivot_wider(id_cols = HPDID, names_from = source, values_from = n) %>%
     dplyr::arrange(dplyr::desc(scanlevel_99))
+  n_wide_lowsd = n_any %>%
+    tidyr::pivot_wider(id_cols = HPDID, names_from = source, values_from = n_lowsd) %>%
+    dplyr::arrange(dplyr::desc(scanlevel_99)) %>%
+    dplyr::transmute(HPDID = HPDID,
+                     scanlevel_00_lowsd = scanlevel_00,
+                     scanlevel_99_lowsd = scanlevel_99)
+
+  all_n_wide = dplyr::left_join(n_wide, n_wide_lowsd, by = "HPDID")
+  all_n_long = all_n_wide %>%
+    tidyr::pivot_longer(cols = !(c(HPDID, xcalibur)),
+                        names_to = "method",
+                        values_to = "count")
+
 
   use_hpdid = n_wide %>%
     dplyr::slice(1) %>%
@@ -207,21 +221,13 @@ plot_hpds = function(hpd_res){
       labs(y = "Intensity", subtitle = in_type$source[1])
     new_plot
   })
-  plots_type = plots_type[c("xcalibur", "scanlevel_99",
-                            "scanlevel_98",
+  plots_type = plots_type[c("xcalibur", "scanlevel_00",
+                            "scanlevel_99",
                             "msnbase")]
 
-  peak_frac = purrr::map_dfc(c("scanlevel_99",
-                               "scanlevel_98",
-                               "msnbase"), function(in_col){
-     n_wide[[in_col]] / n_wide$xcalibur
-                               })
-  names(peak_frac) = c("scanlevel_99",
-                       "scanlevel_98",
-                       "msnbase")
 
-  list(frac = peak_frac,
-       n = n_wide,
+
+  list(n = all_n_long,
        plots = plots_type)
 
 }
