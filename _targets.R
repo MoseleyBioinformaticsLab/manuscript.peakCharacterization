@@ -124,18 +124,26 @@ rsd_tar = tar_combine(
 )
 
 hpd_df = tibble(
-  methods = rlang::syms(c("method_filtersd_1ecf",
+  method1 = rlang::syms(c("method_filtersd_1ecf",
               "method_filtersd_2ecf",
               "method_filtersd_49lipid",
               "method_filtersd_97lipid")),
+  method2 = rlang::syms(c("method_filtersd98_1ecf",
+                          "method_filtersd98_2ecf",
+                          "method_filtersd98_49lipid",
+                          "method_filtersd98_97lipid")),
+  method3 = rlang::syms(c("msnbase_1ecf",
+                          "msnbase_2ecf",
+                          "msnbase_49lipid",
+                          "msnbase_97lipid"))
 ) %>%
-  dplyr::mutate(names = rename_samples(methods))
+  dplyr::mutate(names = rename_samples(method1))
 
 hpd_tar = tar_map(
   values = hpd_df,
   names = "names",
   unlist = FALSE,
-  tar_target(hpd, hpds_from_excel(methods, excel_files)),
+  tar_target(hpd, hpds_from_excel(method1, method2, method3, excel_files)),
   tar_target(hpd_chisq, chisq_hpds(hpd)),
   tar_target(hpd_plots, plot_hpds(hpd)),
   tar_target(hpd_width_sd, width_sd_hpds(hpd))
