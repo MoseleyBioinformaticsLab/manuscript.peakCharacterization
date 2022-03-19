@@ -144,23 +144,22 @@ hpd_tar = tar_map(
   names = "names",
   unlist = FALSE,
   tar_target(hpd, hpds_from_excel(method1, method2, method3, excel_files)),
-  tar_target(hpd_chisq, chisq_hpds(hpd)),
-  tar_target(hpd_plots, plot_hpds(hpd)),
-  tar_target(hpd_width_sd, width_sd_hpds(hpd))
+  #tar_target(hpd_chisq, chisq_hpds(hpd)),
+  tar_target(hpd_plots, plot_hpds(hpd))
 )
 
-hpd_width_tar = tar_combine(
-  hpd_width_all,
-  hpd_tar[[4]],
-  iteration = "list",
-  command = combine_hpd_width(!!!.x)
-)
-
-hpd_chisq_tar = tar_combine(
-  hpd_chisq_all,
-  hpd_tar[[2]],
-  command = dplyr::bind_rows(!!!.x)
-)
+# hpd_width_tar = tar_combine(
+#   hpd_width_all,
+#   hpd_tar[[4]],
+#   iteration = "list",
+#   command = combine_hpd_width(!!!.x)
+# )
+#
+# hpd_chisq_tar = tar_combine(
+#   hpd_chisq_all,
+#   hpd_tar[[2]],
+#   command = dplyr::bind_rows(!!!.x)
+# )
 
 
 list(pkg_tar,
@@ -172,6 +171,4 @@ list(pkg_tar,
      tables_tar,
      msnbase_tar,
      hpd_tar,
-     hpd_width_tar,
-     hpd_chisq_tar,
      other_tar)

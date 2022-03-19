@@ -132,12 +132,14 @@ hpds_from_excel = function(scanlevel_99, scanlevel_98, msnbase, excel_files){
                      tmp_xcal)
   })
   list(peak_data = dplyr::bind_rows(peak_99, peak_98, peak_msnbase, peak_xcal),
-       hpd_data = inside_peaks)
+       hpd_data = inside_peaks,
+       sample_id = rename_samples(sample))
 }
 
 
 chisq_hpds = function(hpd_res){
-  peak_data = hpd_res$peak_data
+  peak_data = hpd_res$hpd_data %>%
+    dplyr::filter(source %in% "scanlevel_99")
   cont_table = table(peak_data[, c("HighSD", "HPD")])
   chisq_res = broom::tidy(chisq.test(cont_table))
   chisq_res$sample = hpd_res$sample
@@ -163,62 +165,64 @@ width_sd_hpds = function(hpd_res){
 }
 
 plot_hpds = function(hpd_res){
-  peak_data = hpd_res$peak_data
-  highsd = peak_data %>%
-    dplyr::filter(HighSD) %>%
-    dplyr::mutate(Height = Height + 10000)
-  hpd = peak_data %>%
-    dplyr::filter(HPD) %>%
-    dplyr::mutate(Height = Height + 100000)
+  peak_data = hpd_res$hpd_data
 
-  plot_all = ggplot(peak_data, aes(x = ObservedMZ, xend = ObservedMZ, y = 0, yend = log10(Height))) +
-    geom_segment() +
-    geom_segment(data = highsd, aes(y = 6), color = "red") +
-    geom_segment(data = hpd, aes(y = 7), color = "blue")
+  n_any = peak_data %>%
+    dplyr::group_by(source, HPDID) %>%
+    dplyr::summarise(n = n())
+  n_wide = n_any %>%
+    tidyr::pivot_wider(id_cols = HPDID, names_from = source, values_from = n) %>%
+    dplyr::arrange(dplyr::desc(scanlevel_99))
 
-  n_both = peak_data %>%
-    dplyr::filter(!is.na(HPDID)) %>%
-    dplyr::filter(HighSD | HPD) %>%
-    dplyr::group_by(HPDID) %>%
-    dplyr::summarise(hisd = sum(HighSD), scanlevel = sum(HPD)) %>%
-    dplyr::arrange(dplyr::desc(hisd))
-
-  n_xcal = purrr::imap_dfr(hpd_res$hpd_ranges, function(in_range, range_id){
-    xcal_in = hpd_res$xl_data %>%
-      dplyr::filter(dplyr::between(frequency, in_range[1], in_range[2]))
-    data.frame(xcal = nrow(xcal_in), HPDID = range_id)
-  })
-
-  peak_compare = dplyr::left_join(n_both, n_xcal, by = "HPDID")
-
-  use_group = n_both %>%
+  use_hpdid = n_wide %>%
     dplyr::slice(1) %>%
     dplyr::pull(HPDID)
 
-  pc_in_group = peak_data %>%
-    dplyr::filter(HPDID %in% use_group)
-  xl_in_group = hpd_res$xl_data %>%
-    dplyr::filter(dplyr::between(frequency, hpd_res$hpd_ranges[[use_group]][1], hpd_res$hpd_ranges[[use_group]][2]))
+  peaks_use = peak_data %>%
+    dplyr::filter(HPDID %in% use_hpdid)
 
-  use_range = range(c(pc_in_group$ObservedFrequency, xl_in_group$frequency))
-  pc_mode = metabolomicsUtilities::calculate_mode(pc_in_group$Height)
-  xl_mode = metabolomicsUtilities::calculate_mode(xl_in_group$intensity)
-  pc_plot = pc_in_group %>%
-    ggplot(aes(x = ObservedFrequency, xend = ObservedFrequency,
-               y = 0, yend = Height)) +
-    geom_segment() +
-    geom_segment(data = dplyr::filter(pc_in_group, HighSD), color = 'red') +
-    coord_cartesian(ylim = c(NA, (pc_mode + 5000)), xlim = use_range) +
-    labs(x = "Frequency", y = "Intensity")
+  peaks_type = split(peaks_use, peaks_use$source)
+  plot_range = range(peaks_use$ObservedFrequency)
 
-  xl_plot = xl_in_group %>%
-    ggplot(aes(x = frequency, xend = frequency,
-               y = 0, yend = intensity)) +
-    geom_segment() +
-    coord_cartesian(ylim = c(NA, (xl_mode + 5000)), xlim = use_range) +
-    labs(x = "Frequency", y = "Intensity")
+  plots_type = purrr::map(peaks_type, function(in_type){
+    mode_height = metabolomicsUtilities::calculate_mode(in_type$Height) + 10000
 
-  pc_plot / xl_plot
+    base_plot = in_type %>%
+      ggplot(aes(x = ObservedFrequency,
+                 xend = ObservedFrequency,
+                 y = 0,
+                 yend = Height)) +
+      geom_segment()
+    if (grepl("scanlevel", in_type$source[1])) {
+      hi_sd = in_type %>%
+        dplyr::filter(HighSD)
+      new_plot = base_plot +
+        geom_segment(data = hi_sd, color = "red")
+    } else {
+      new_plot = base_plot
+    }
+    new_plot = new_plot +
+      coord_cartesian(xlim = plot_range,
+                      ylim = c(NA, mode_height)) +
+      labs(y = "Intensity", subtitle = in_type$source[1])
+    new_plot
+  })
+  plots_type = plots_type[c("xcalibur", "scanlevel_99",
+                            "scanlevel_98",
+                            "msnbase")]
+
+  peak_frac = purrr::map_dfc(c("scanlevel_99",
+                               "scanlevel_98",
+                               "msnbase"), function(in_col){
+     n_wide[[in_col]] / n_wide$xcalibur
+                               })
+  names(peak_frac) = c("scanlevel_99",
+                       "scanlevel_98",
+                       "msnbase")
+
+  list(frac = peak_frac,
+       n = n_wide,
+       plots = plots_type)
 
 }
 
