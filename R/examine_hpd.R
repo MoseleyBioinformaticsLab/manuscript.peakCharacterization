@@ -131,7 +131,7 @@ hpds_from_excel = function(scanlevel_99, scanlevel_00, msnbase, excel_files){
                      tmp_msn,
                      tmp_xcal)
   })
-  list(peak_data = dplyr::bind_rows(peak_99, peak_98, peak_msnbase, peak_xcal),
+  list(peak_data = dplyr::bind_rows(peak_99, peak_00, peak_msnbase, peak_xcal),
        hpd_data = inside_peaks,
        sample_id = rename_samples(sample))
 }
