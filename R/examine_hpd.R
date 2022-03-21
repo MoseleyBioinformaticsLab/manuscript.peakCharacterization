@@ -167,18 +167,18 @@ width_sd_hpds = function(hpd_res){
 plot_hpds = function(hpd_res){
   peak_data = hpd_res$hpd_data
 
+
   n_any = peak_data %>%
     dplyr::group_by(source, HPDID) %>%
     dplyr::summarise(n = n(),
                      n_lowsd = n - sum(HighSD))
   n_wide = n_any %>%
-    tidyr::pivot_wider(id_cols = HPDID, names_from = source, values_from = n) %>%
+    tidyr::pivot_wider(id_cols = HPDID, names_from = source, values_from = n, values_fill = 0) %>%
     dplyr::arrange(dplyr::desc(scanlevel_99))
   n_wide_lowsd = n_any %>%
-    tidyr::pivot_wider(id_cols = HPDID, names_from = source, values_from = n_lowsd) %>%
+    tidyr::pivot_wider(id_cols = HPDID, names_from = source, values_from = n_lowsd, values_fill = 0) %>%
     dplyr::arrange(dplyr::desc(scanlevel_99)) %>%
     dplyr::transmute(HPDID = HPDID,
-                     scanlevel_00_lowsd = scanlevel_00,
                      scanlevel_99_lowsd = scanlevel_99)
 
   all_n_wide = dplyr::left_join(n_wide, n_wide_lowsd, by = "HPDID")
@@ -196,6 +196,9 @@ plot_hpds = function(hpd_res){
     dplyr::filter(HPDID %in% use_hpdid)
 
   peaks_type = split(peaks_use, peaks_use$source)
+  peaks_type$scanlevel_99_lowsd = peaks_type$scanlevel_99 %>%
+    dplyr::filter(!HighSD) %>%
+    dplyr::mutate(source = "scanlevel_99_lowsd")
   plot_range = range(peaks_use$ObservedFrequency)
 
   plots_type = purrr::map(peaks_type, function(in_type){
@@ -206,26 +209,16 @@ plot_hpds = function(hpd_res){
                  xend = ObservedFrequency,
                  y = 0,
                  yend = Height)) +
-      geom_segment()
-    if (grepl("scanlevel", in_type$source[1])) {
-      hi_sd = in_type %>%
-        dplyr::filter(HighSD)
-      new_plot = base_plot +
-        geom_segment(data = hi_sd, color = "red")
-    } else {
-      new_plot = base_plot
-    }
-    new_plot = new_plot +
+      geom_segment() +
       coord_cartesian(xlim = plot_range,
                       ylim = c(NA, mode_height)) +
       labs(y = "Intensity", subtitle = in_type$source[1])
-    new_plot
+    base_plot
   })
   plots_type = plots_type[c("xcalibur", "scanlevel_00",
                             "scanlevel_99",
+                            "scanlevel_99_lowsd",
                             "msnbase")]
-
-
 
   list(n = all_n_long,
        plots = plots_type)

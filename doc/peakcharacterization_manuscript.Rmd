@@ -246,7 +246,7 @@ compare_normalization[[1]]
 ### Removal of High Peak Density Artefacts
 
 ```{r increment_hpd}
-figure_count$increment("hpd_fsd")
+figure_count$increment("hpd_compare_fsd")
 ```
 
 We have previously described the presence of high peak density (HPD) artefacts in FT-MS spectra [@mitchellNewMethodsIdentify2018]. 
@@ -254,40 +254,38 @@ Ideally, the peak characterization procedure should reduce their presence in the
 Their presence should be minimized by removing noise peaks, and removing regions that have multiple reported peaks in the same scan. 
 We expect they may present as characterized peaks that have larger than expected frequency standard deviations (FSD) when calculated across scans.
 These peaks can be detected by simply examining the distribution of frequency SDs and removing those that are outliers.
-To verify the removal of HPD regions, we converted centroided m/z's from XCalibur to frequency values using the previously calculated values for that sample.
+To verify the removal of HPD peaks, we converted centroided m/z's from XCalibur to frequency values using the previously calculated values for that sample.
 Peak density was measured using a sliding window 10 points wide and offset by one point.
 
-`r figure_count$label_text("hpd_fsd")` compares the HPD regions detected using the method from Mitchell et al., and their correspondence with high FSD peaks for one sample (the other comparisons are in Supplemental materials).
-`r table_count$label_text("hpd_fsd")` summarizes the results of Chi-square tests using contingency tables of HPD and high FSD peaks.
-Based on this comparison, the high FSD peaks are indeed HPD sites and should be removed before assignment.
-However, the FSD does not depend on calculating a sliding window based density, but is merely a product of those peaks across multiple scans that span a wider range frequency range than expected based on the peaks in the data. We also note that we do expect higher m/z standard deviations at higher m/z, but the frequency based method does not suffer the same effect, due to the offsets of frequency points being constant.
+`r figure_count$label_text("hpd_compare_fsd")` shows a single HPD site detected in the ECF 2 sample, with the peaks from Xcalibur, as well as various scan-level processing and the peaks from centroiding using MSnbase.
+From this figure, we can see that the point density based noise filtering removes a large number of the peaks in the HPD site, while the frequency standard deviation removes further peaks that may be suspect.
+After removing the high FSD peaks, the number of peaks left in the HPD site are the same or less than those from MSnbase, and at least in this example, look more likely to be real peaks compared to those from MSnbase.
+Therefore, scan-level characterization allows us to keep what are likely **real** peaks in HPD sites, without consideration of peak intensity.
 
-```{r hpd_fsd, dn_id = figure_count}
-tar_load(hpd_plots_49lipid)
-hpd_plots_49lipid
+```{r hpd_compare_fsd, dn_id = figure_count, fig.width = 16, fig.height = 8}
+tar_load(hpd_plots_2ecf)
+
+hpd_left_panel = wrap_plots(hpd_plots_2ecf$plots, ncol = 1)
+hpd_right_panel = hpd_plots_2ecf$n %>%
+  ggplot(aes(x = xcalibur,
+             y = count,
+             color = method)) +
+  geom_point(size = 3) +
+  labs(x = "Xcalibur peak count",
+       y = "peak count") +
+  theme(legend.position = c(0.1, 0.8))
+hpd_left_panel | hpd_right_panel
 ```
 
-`r figure_count$label_text("hpd_fsn")`.
-Comparison of HPD and high FSD sites in the lipid 49 sample.
-Black are the original fully characterized peaks.
-Red indicates peaks within HPD sites detected using the XCalibur peak sets.
-Blue indicates peaks that had abnormally high FSD values.
-
-`r table_count$label_text("hpd_fsn")`.
-Chi-square statistics from contingency tables of shared presence and absence of peaks in HPD sites and labeled as high FSD.
-
-```{r hpd_fsd_table}
-tar_load(hpd_chisq_all)
-sci_formatter = 
-hpd_chisq_table = hpd_chisq_all %>%
-  dplyr::select(sample, p.value, statistic) %>%
-  flextable() %>%
-  set_formatter(p.value = function(x){
-    formatC(x, format = "e", digits = 2)
-  }) %>%
-  colformat_double(digits = 1, j = 3) %>%
-  autofit()
-```
+`r figure_count$label_text("hpd_compare_fsd")`.
+Comparison of HPD and high FSD sites in the ECF 2 sample.
+Left: Peak plots for various peak processing modalities in a single HPD site. 
+*xcalibur*: peaks exported from Thermo Xcalibur after averaging scans.
+*scalevel_00*: Scan-level peak characterization without any density based filtering (see noperc_nonorm in Methods).
+*scanlevel_99*: Scan-level peak characterization using the default point density filtering (see filtersd in Methods).
+*scanlevel_99_lowsd*: Same as *scanlevel_99*, but removing any peaks marked as having a high frequency standard deviation.
+*msnbase*: peak centroids generated from *MSnbase*.
+Right: Scatterplot of peak counts across all of the HPDs detected in the ECF 2 sample against the Xcalibur peak counts.
 
 
 ### Changes in Relative Standard Deviation (RSD)
