@@ -274,24 +274,25 @@ hpd_right_panel = hpd_plots_2ecf$n %>%
   labs(x = "Xcalibur peak count",
        y = "peak count") +
   theme(legend.position = c(0.1, 0.8))
-hpd_left_panel | hpd_right_panel
+(hpd_left_panel | hpd_right_panel) + plot_annotation(tag_levels = "A")
 ```
 
 `r figure_count$label_text("hpd_compare_fsd")`.
 Comparison of HPD and high FSD sites in the ECF 2 sample.
-Left: Peak plots for various peak processing modalities in a single HPD site. 
-*xcalibur*: peaks exported from Thermo Xcalibur after averaging scans.
-*scalevel_00*: Scan-level peak characterization without any density based filtering (see noperc_nonorm in Methods).
-*scanlevel_99*: Scan-level peak characterization using the default point density filtering (see filtersd in Methods).
-*scanlevel_99_lowsd*: Same as *scanlevel_99*, but removing any peaks marked as having a high frequency standard deviation.
-*msnbase*: peak centroids generated from *MSnbase*.
-Right: Scatterplot of peak counts across all of the HPDs detected in the ECF 2 sample against the Xcalibur peak counts.
+**A** - **E**:Peak plots for various peak processing modalities in a single HPD site. 
+**A**:*xcalibur* peaks exported from Thermo Xcalibur after averaging scans.
+**B**:*scalevel_00*: Scan-level peak characterization without any density based filtering (see noperc_nonorm in Methods).
+**C**:*scanlevel_99*: Scan-level peak characterization using the default point density filtering (see filtersd in Methods).
+**D**:*scanlevel_99_lowsd*: Same as *scanlevel_99*, but removing any peaks marked as having a high frequency standard deviation.
+**E**:*msnbase*: peak centroids generated from *MSnbase*.
+**F**: Scatterplot of peak counts across all of the HPDs detected in the ECF 2 sample against the Xcalibur peak counts.
 
 
 ### Changes in Relative Standard Deviation (RSD)
 
 ```{r increment_rsd}
 figure_count$increment("rsd_method")
+table_count$increment("rsd_method")
 ```
 
 Each step in the peak characterization either changes the overall number of peaks coming from each scan (sliding windows and breaking initial regions) or the overall intensity of the points within a scan. 
