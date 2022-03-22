@@ -162,50 +162,6 @@ plot_peak_ordering = function(data_obj){
   peak_ordering_plot
 }
 
-plot_sliding_window_density = function(peak_data){
-  sliding_regions = peak_data$zip_ms$peak_finder$peak_regions$sliding_regions
-  point_region_list = peak_data$zip_ms$peak_finder$peak_regions$frequency_point_regions$frequency
-  multiplier = peak_data$zip_ms$peak_finder$quantile_multiplier
-  n_point_region = peak_data$zip_ms$peak_finder$n_point_region
-
-  nz_counts = FTMS.peakCharacterization:::count_overlaps(sliding_regions, point_region_list[[1]])
-  n_region = seq(2, length(point_region_list))
-  for (iregion in n_region) {
-    nz_counts_iregion = FTMS.peakCharacterization:::count_overlaps(sliding_regions, point_region_list[[iregion]])
-    nz_counts = nz_counts + nz_counts_iregion
-  }
-
-  chunk_indices = seq(1, length(nz_counts), by = n_point_region)
-
-  chunk_perc = purrr::map_dbl(chunk_indices, function(in_index){
-    use_counts = nz_counts[seq(in_index, min(in_index + (n_point_region - 1), length(nz_counts)))]
-    if (max(use_counts) > 0) {
-      return(stats::quantile(use_counts, 0.99))
-    } else {
-      return(0)
-    }
-  })
-
-  single_chunk = data.frame(use_counts = nz_counts[
-    seq(chunk_indices[1], (chunk_indices[2] - 1))])
-  single_99 = stats::quantile(single_chunk$use_counts, 0.99)
-
-  all_99 = data.frame(perc_99 = chunk_perc,
-                           index = seq(1, length(chunk_perc)))
-  all_cut = 1.5 * median(all_99$perc_99)
-  single_plot = ggplot(single_chunk, aes(x = use_counts)) +
-    geom_histogram(bins = 100) +
-    geom_vline(xintercept = single_99, color = "blue") +
-    scale_y_log10(expand = c(0, 0), limits = c(1, NA)) +
-    labs(x = "Number of non-zero points",
-         y = "Log10(counts)")
-  all_plot = ggplot(all_99, aes(x = perc_99)) +
-    geom_histogram(bins = 100) +
-    geom_vline(xintercept = all_cut, color = "red") +
-    scale_y_continuous(expand = c(0, 0)) +
-    labs(x = "99th percentiles across segments")
-  (single_plot | all_plot) + plot_annotation(tag_levels = "A")
-}
 
 plot_rsd_differences = function(rsd_values){
 
