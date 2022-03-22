@@ -50,7 +50,9 @@ method_tar = tar_map(
   tar_target(method, method_sym(data_sym)),
   tar_target(rsd, single_rsd(method)),
   tar_target(zip, write_peaks_for_assignment(method)),
-  tar_target(assign, assign_files(zip))
+  tar_target(assign, assign_files(zip)),
+  tar_target(n_peak, n_final_peak(method)),
+  tar_target(emf, get_assignments(assign))
 )
 
 
@@ -59,6 +61,37 @@ normalization_tar = tar_combine(
   method_tar[[1]],
   command = normalization_factors(!!!.x),
   iteration = "list"
+)
+
+n_peak_tar = tar_combine(
+  n_peak_combine,
+  method_tar[[5]],
+  command = dplyr::bind_rows(!!!.x)
+)
+
+noise_tar = tibble(
+  data_name = (c(
+    "data_97lipid",
+    "data_49lipid",
+    "data_1ecf",
+    "data_2ecf"
+  ))
+) %>%
+  dplyr::mutate(
+    data_syms = rlang::syms(data_name),
+    data_id = rename_samples(data_name)
+  )
+
+compare_noise_tar = tar_map(
+  values = noise_tar,
+  names = "data_id",
+  tar_target(noise, compare_noise_cutoffs(data_syms))
+)
+
+combine_noise_tar = tar_combine(
+  noise_combine,
+  compare_noise_tar,
+  command = dplyr::bind_rows(!!!.x)
 )
 
 # rsd_tar = tar_combine(
@@ -82,6 +115,10 @@ figures_tar = tar_plan(
   ),
   tar_target(compare_normalization,
              normalization_graph(normalization_combine)),
+  tar_target(noise_plot,
+             create_noise_plot(noise_combine)),
+  tar_target(mn_ratios,
+             calculate_m_n_ratio(noise_combine)),
   tar_render(manuscript, "doc/peakcharacterization_manuscript.Rmd")
 )
 
@@ -89,12 +126,12 @@ tables_tar = tar_plan(
   tar_target(rsd_values, summarize_rsd(rsd_combine))
 )
 
-other_tar = tar_plan(
-  tar_target(
-    nonoise_vs_noise,
-    compare_noise_cutoff(data_97lipid)
-  )
-)
+# other_tar = tar_plan(
+#   tar_target(
+#     nonoise_vs_noise,
+#     compare_noise_cutoff(data_97lipid)
+#   )
+# )
 
 msnbase_mzml = expand_grid(
   data_function = rlang::syms("msnbase_centroid"),
@@ -164,10 +201,12 @@ hpd_tar = tar_map(
 list(pkg_tar,
      data_tar,
      method_tar,
+     n_peak_tar,
+     compare_noise_tar,
+     combine_noise_tar,
      rsd_tar,
      normalization_tar,
      figures_tar,
      tables_tar,
      msnbase_tar,
-     hpd_tar,
-     other_tar)
+     hpd_tar)
