@@ -126,8 +126,9 @@ Although the original model is created from only those points that had frequency
 
 ```{r increment_slidingwindow}
 figure_count$increment("slidingwindow_count")
-tar_load(nonoise_vs_noise)
-nn_n_ratio = english::as.english(round(nonoise_vs_noise["noperc"] / nonoise_vs_noise["perc99"]))
+tar_load(mn_ratios)
+tar_load(sliding_regions)
+tar_load(noise_plot)
 ```
 
 In a dataset of this nature, we expect that much of the data is really just noise, and doesn't contribute that much to the analysis. 
@@ -138,16 +139,19 @@ A histogram of sliding window counts in a single tiled region is shown in `r fig
 The distribution of 99th percentiles across all of the tiled regions for a single sample is shown in `r figure_count$label_text("slidingwindow_count")`B.
 We can use the median (50th percentile) value of all the 99th percentiles from all of the tiled regions to determine a cutoff value above which we think any non-zero points are potentially **signal** and not just noise.
 In the example below, the median of the tiled windows is 5, resulting in a cutoff of 7.5.
-The number of peaks detected without applying a cutoff explodes `r nn_n_ratio`-fold (from `r format(nonoise_vs_noise["perc99"], big.mark = ",")` to `r format(nonoise_vs_noise["noperc"], big.mark = ",")` in the 97lipid sample), with a vast majority of the peaks being present in a single scan. 
+The number of peaks detected without applying a cutoff explodes anywhere from `r mn_ratios[["97lipid"]]$ratio`-fold (from `r format(mn_ratios[["97lipid"]]$count_99, big.mark = ",")` to `r format(mn_ratios[["97lipid"]]$count_0, big.mark = ",")` in the 97lipid sample), to `r mn_ratios[["2ecf"]]$ratio`-fold (from `r format(mn_ratios[["2ecf"]]$count_99, big.mark = ",")` to `r format(mn_ratios[["2ecf"]]$count_0, big.mark = ",")` in the 2ecf sample) with a vast majority of the peaks being present in a single scan. 
 By discarding those windows that have a non-zero point density below 1.5x the median of 99th percentiles, and merging the remaining adjacent windows, the regions most likely to contain actual, informative peaks are rapidly and easily determined.
 
-```{r slidingwindow_count, dn_id = figure_count}
-tar_load(sliding_regions)
-sliding_regions
+```{r slidingwindow_count, dn_id = figure_count, fig.width = 8, fig.height = 8}
+(sliding_regions / noise_plot) + plot_annotation(tag_levels = "A")
 ```
 
-`r figure_count$label_text("slidingwindow_count")`. Histogram of the number of non-zero points across all scans in sliding windows 10 frequency points wide and 1 frequency point apart. 
-The red vertical line denotes the lower 99th percentile of the data, only sliding windows with non-zero counts above the red line will be kept for subsequent use.
+`r figure_count$label_text("slidingwindow_count")`. 
+**A**: Histogram of the number of non-zero points from sliding windows 10 frequency points wide and 1 frequency point apart, from a single tiled window 2000 points wide.
+Blue line is the 99th percentile.
+**B**: Histogram of the 99th percentile cutoffs from all of the tiled windows.
+Red line is the median x 1.5.
+**C** and **D** show the number of initial regions as a function of the percentile cutoff used for either the AA ECF (C) or lipid (D) samples.
 
 For each region initially created, the peaks in each scan within that region can be characterized using a quadratic fit of log(intensity) to m/z.
 
