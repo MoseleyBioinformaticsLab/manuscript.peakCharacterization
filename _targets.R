@@ -196,6 +196,40 @@ hpd_tar = tar_map(
 #   hpd_tar[[2]],
 #   command = dplyr::bind_rows(!!!.x)
 # )
+#
+aa_methods = expand_grid(
+  assign = "emf",
+  method = c("noperc_nonorm",
+              "perc99_nonorm",
+              "singlenorm",
+              "intsinglenorm",
+              "doublenorm",
+              "filtersd"),
+  sample = c("1ecf",
+             "2ecf")
+) %>%
+  dplyr::mutate(in_assign = rlang::syms(paste0(assign, "_", method, "_", sample)),
+                name = paste0(method, "_", sample))
+
+formula_tar = tar_target(aa_formula,
+                         get_expected_formulas())
+
+aa_tar = tar_map(
+  values = aa_methods,
+  names = "name",
+  tar_target(aa, find_aa_assignments(in_assign, aa_formula))
+)
+
+xcalibur_df = tibble(
+  files = excel_files,
+  name = rename_samples(excel_files)
+)
+
+xcalibur_tar = tar_map(
+  values = xcalibur_df,
+  names = "name",
+  tar_target(xcalibur, get_xcalibur_peaks(files))
+)
 
 
 list(pkg_tar,
@@ -209,4 +243,7 @@ list(pkg_tar,
      figures_tar,
      tables_tar,
      msnbase_tar,
-     hpd_tar)
+     hpd_tar,
+     formula_tar,
+     xcalibur_tar,
+     aa_tar)

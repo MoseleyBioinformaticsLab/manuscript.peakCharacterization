@@ -230,3 +230,9 @@ combine_hpd_width = function(...){
   all_width = list(...)
   purrr::map_df(all_width, ~ .x)
 }
+
+
+get_xcalibur_peaks = function(in_file){
+  xl_data = readxl::read_excel(in_file, skip = 8, col_names = FALSE)
+  xl_data
+}
