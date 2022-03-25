@@ -234,5 +234,10 @@ combine_hpd_width = function(...){
 
 get_xcalibur_peaks = function(in_file){
   xl_data = readxl::read_excel(in_file, skip = 8, col_names = FALSE)
-  xl_data
+  xl_data2 = xl_data %>%
+    dplyr::transmute(mz = ...1,
+                     intensity = ...2)
+  out_data = list(comb = xl_data2,
+                  sample_id = rename_samples(in_file))
+  out_data
 }
