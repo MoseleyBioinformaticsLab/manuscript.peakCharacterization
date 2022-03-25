@@ -14,9 +14,14 @@ check_nap_intensity = function(nap_df){
   nap_int_ratios = calculate_log_ratio_differences(nap_df)
 }
 
-find_aa_assignments = function(assign_data, aa_formulas){
-  scored_assignments = smirfeTools::score_filter_assignments(assign_data, filter_conditions = e_value <= 0.5)
-  within_emfs = smirfeTools:::get_sample_emfs(scored_assignments$assignments, assign_data$sample, evalue_cutoff = 0.5, use_corroborating = TRUE)
+find_aa_assignments = function(assign_data, aa_formulas, e_cutoff = NULL){
+  if (is.null(e_cutoff)) {
+    scored_assignments = smirfeTools::score_filter_assignments(assign_data)
+  } else {
+    scored_assignments = smirfeTools::score_filter_assignments(assign_data, filter_conditions = e_value <= e_cutoff)
+  }
+
+  within_emfs = smirfeTools:::get_sample_emfs(scored_assignments$assignments, assign_data$sample, evalue_cutoff = 0.98, use_corroborating = TRUE)
 
   possible_aa = purrr::map_lgl(within_emfs, function(in_emf){
     if (any(aa_formulas$complete_EMF %in% in_emf$complete_EMF)) {
@@ -28,11 +33,22 @@ find_aa_assignments = function(assign_data, aa_formulas){
   within_aa = within_emfs[possible_aa]
   all_aa = purrr::map_df(within_aa, ~ .x)
   all_aa = dplyr::left_join(all_aa, dplyr::select(aa_formulas, -isotopologue_EMF), by = "complete_EMF")
+  all_aa = dplyr::left_join(dplyr::select(all_aa, -PeakID, -Sample, -ObservedMZ), scored_assignments$data, by = "Sample_Peak")
 
   split_aa = split(all_aa, all_aa$AA)
   list(aa = split_aa,
        aa_formulas = aa_formulas,
        scored = scored_assignments)
+}
+
+get_number_sample_peak = function(sample_str){
+  # sample_str = "161212_unlabeledAAs_1_ECF_1805"
+  split_str = strsplit(sample_str, "_", fixed = TRUE)
+  num_id = purrr::map_chr(split_str, function(.x){
+    .x[length(.x)]
+  })
+
+  num_id
 }
 
 calculate_log_ratio_differences = function(nap_df){
@@ -59,6 +75,14 @@ calculate_log_ratio_differences = function(nap_df){
   }
   comp_df = comp_df %>%
     dplyr::mutate(nap_intensity_diff = nap_ratio - intensity_ratio)
+  p1 = get_number_sample_peak(comp_df$i)
+  p2 = get_number_sample_peak(comp_df$j)
+
+  out_id = rep(NA, n_comp)
+  for (i in seq_len(n_comp)) {
+    out_id[i] = paste(sort(c(p1[i], p2[i])), collapse = ":")
+  }
+  comp_df$p1p2 = out_id
   comp_df
 }
 
@@ -69,7 +93,97 @@ process_imf = function(imf_string){
   data.frame(isotopes = isotopes, count = counts)
 }
 
-aa_motivation = function(filtersd, xcalibur, msnbase){
+
+check_serine = function(filtersd){
+  # filtersd = tar_read(aa_filtersd_1ecf)
+  #
+  use_aa = filtersd$aa$Serine
+  aa_data = dplyr::left_join(dplyr::select(use_aa, -PeakID, -Sample, -ObservedMZ), filtersd$scored$data, by = "Sample_Peak")
+
+  tmp_data = aa_data %>%
+    dplyr::select(Sample_Peak, NAP, Height, e_value, isotopologue_IMF, lbl.type, lbl.count, ObservedMZ, CorrectedLog10Height)
+  tmp_data$AltNAP = tmp_data$NAP
+  tmp_data$AltNAP[1] = 1
+
+  nap_df = tmp_data %>%
+    dplyr::mutate(intensity = 10^CorrectedLog10Height,
+                  NAP = NAP)
+
+  nap_ratio = calculate_log_ratio_differences(nap_df)
+
+  nap_org = nap_df
+  nap_org$NAP = tmp_data$NAP
+  nap_org_ratio = calculate_log_ratio_differences(nap_org)
+  write.table(tmp_data, file = "serine_example.csv", sep = ",",
+              col.names = TRUE, row.names = FALSE)
+  write.table(nap_ratio, file = "")
+
+}
+
+calculate_comparisons_matrix = function(in_matrix){
+  n_sample = ncol(in_matrix)
+  peaks_comp = colnames(in_matrix)
+  n_comp = n_sample * (n_sample - 1) / 2
+  comp_matrix = matrix(NA, nrow = nrow(in_matrix), ncol = n_comp)
+  comp_df = data.frame(p1 = rep(NA, n_comp),
+                       p2 = rep(NA, n_comp))
+  i_comp = 1
+  for (i in seq_len(n_sample - 1)) {
+    for (j in seq(i + 1, n_sample)) {
+      comp_matrix[, i_comp] = in_matrix[, i] - in_matrix[, j]
+      comp_df$p1[i_comp] = peaks_comp[i]
+      comp_df$p2[i_comp] = peaks_comp[j]
+
+      i_comp = i_comp + 1
+    }
+  }
+  list(matrix = comp_matrix, peaks = comp_df)
+}
+
+aa_height_nap_scanlevel = function(aa_data){
+  # aa_data = tar_read(aa_filtersd_1ecf)
+  scan_level = aa_data$scored$scan_level
+  # make sure to purrr::map here
+  aa_peak_data = aa_data$aa$Alanine
+
+  aa_peak_data = aa_peak_data %>%
+    dplyr::mutate(complete_label = paste0(complete_EMF, "_", lbl.type, "_", lbl.count))
+
+  split_aa = split(aa_peak_data, aa_peak_data$complete_label)
+  split_big = purrr::map_lgl(split_aa, ~ nrow(.x) > 1)
+  split_aa = split_aa[split_big]
+
+  # and purrr::map again here
+  split_use = split_aa[[1]]
+  intensity_use = scan_level$Log10Height[split_use$Sample_Peak]
+  intensity_matrix = log(10^as.matrix(dplyr::bind_rows(intensity_use)))
+
+  nap_matrix = matrix(log(split_use$NAP),
+                      nrow = nrow(intensity_matrix),
+                      ncol = ncol(intensity_matrix),
+                      byrow = TRUE)
+  colnames(nap_matrix) = colnames(intensity_matrix)
+
+  nap_comparisons = calculate_comparisons_matrix(nap_matrix)
+  intensity_comparisons = calculate_comparisons_matrix(intensity_matrix)
+
+  nap_intensity = abs(nap_comparisons$matrix - intensity_comparisons$matrix)
+  rownames(nap_intensity) = seq(1, nrow(nap_intensity))
+
+  no_na = apply(nap_intensity, 1, function(.x){
+    sum(is.na(.x)) == 0
+  })
+  nap_intensity = nap_intensity[no_na, ]
+  nap_intensity_max = rowMax(abs(nap_intensity))
+  nap_intensity_median = rowMedians(abs(nap_intensity))
+
+  order_max = order(nap_intensity_max)
+  nap_intensity_bymax = nap_intensity[order_max, ]
+  order_median = order(nap_intensity_median)
+  nap_intensity = nap_intensity[order_median, ]
+}
+
+aa_height_nap_all = function(filtersd, xcalibur, msnbase){
   # filtersd = tar_read(aa_filtersd_1ecf)
   # xcalibur = tar_read(xcalibur_1ecf)
   # msnbase = tar_read(msnbase_1ecf)
@@ -82,50 +196,16 @@ aa_motivation = function(filtersd, xcalibur, msnbase){
   msnbase_peaks$Sample_Peak = paste0("msnbase_", seq_len(nrow(msnbase_peaks)))
 
   aa_info = purrr::imap(filtersd$aa, function(use_aa, aa_id){
-    # Glutamine is buggy here and not being split up correctly
+    # use_aa = filtersd$aa[["Glutamine"]]
+    # aa_id = "Glutamine"
     message(aa_id)
 
-    imf_n14n15 = purrr::map_df(use_aa$complete_IMF, function(.x){
-      #message(.x)
-      iso_data = process_imf(.x)
-      if (any(grepl("15N", iso_data$isotopes))) {
-        n15_count = as.numeric(iso_data[iso_data$isotopes %in% "15N", "count"])
-      } else {
-        n15_count = 0
-      }
-      if (any(grepl("14N", iso_data$isotopes))) {
-        n14_count = as.numeric(iso_data[iso_data$isotopes %in% "14N", "count"])
-      } else {
-        n14_count = 0
-      }
-      out_data = data.frame(N.15 = n15_count,
-                            N.14 = n14_count)
-      out_data
-    })
-    imf_n14n15 = imf_n14n15 %>%
-      dplyr::mutate(pattern = paste0(N.14, "_", N.15))
-    imf_n14n15$complete_IMF = use_aa$complete_IMF
-    use_aa = dplyr::left_join(use_aa, imf_n14n15, by = "complete_IMF")
     use_aa = use_aa %>%
       dplyr::mutate(complete_label = paste0(complete_EMF, ".", lbl.type, ".", lbl.count))
 
-
-    n15n14_rle = rle(use_aa$pattern)
-    label_rle = rle(use_aa$complete_label)
-
-    if (!isTRUE(all.equal(n15n14_rle$lengths, label_rle$lengths))) {
-      message("N14 / N15 pattern didn't match labeling!")
-    }
-
-    aa_data = dplyr::left_join(dplyr::select(use_aa, -PeakID, -Sample, -ObservedMZ), filtersd$scored$data, by = "Sample_Peak")
-
-    if (aa_id %in% c("Glutamine")) {
-      aa_complete = split(aa_data, aa_data$pattern)
-    } else {
-      aa_complete = split(aa_data, aa_data$complete_label)
-    }
-
-
+    aa_complete = split(use_aa, use_aa$complete_label)
+    aa_hasenough = purrr::map_lgl(aa_complete, ~ (nrow(.x) > 1))
+    aa_complete = aa_complete[aa_hasenough]
     aa_ratios = purrr::imap(aa_complete, function(in_complete, split_id){
       message(split_id)
       use_intensities = c("CorrectedLog10Height",
@@ -172,7 +252,8 @@ aa_motivation = function(filtersd, xcalibur, msnbase){
             dplyr::transmute(ObservedMZ = mz,
                              NAP = theoretical_peaks$NAP[in_row],
                              intensity = intensity,
-                             Sample_Peak = Sample_Peak,
+                             Their_Peak = Sample_Peak,
+                             Sample_Peak = theoretical_peaks$Sample_Peak[in_row],
                              isotopologue_IMF = theoretical_peaks$isotopologue_IMF[in_row])
         })
         matched
