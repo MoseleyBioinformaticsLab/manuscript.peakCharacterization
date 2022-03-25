@@ -217,7 +217,8 @@ formula_tar = tar_target(aa_formula,
 aa_tar = tar_map(
   values = aa_methods,
   names = "name",
-  tar_target(aa, find_aa_assignments(in_assign, aa_formula))
+  tar_target(aa_high, find_aa_assignments(in_assign, aa_formula)),
+  tar_target(aa, find_aa_assignments(in_assign, aa_formula, 0.1))
 )
 
 xcalibur_df = tibble(
