@@ -51,13 +51,18 @@ get_number_sample_peak = function(sample_str){
   num_id
 }
 
+#' log ratio differences
+#'
+#' @param nap_df
+#'
+#' @details nap_df should be a data.frame containing:
+#'   NAP: log10 transformed NAP values
+#'   intensity: log10 transformed intensity values
+#'   Sample_Peak: the peak identifier
 calculate_log_ratio_differences = function(nap_df){
-  nap_df = nap_df %>%
-    dplyr::arrange(dplyr::desc(NAP))
-
   n_comp = nrow(nap_df) * (nrow(nap_df) - 1) / 2
-  comp_df = data.frame(i = rep(NA, n_comp),
-                       j = rep(NA, n_comp),
+  comp_df = data.frame(p1 = rep(NA, n_comp),
+                       p2 = rep(NA, n_comp),
                        nap_ratio = rep(NA, n_comp),
                        intensity_ratio = rep(NA, n_comp))
   comp_count = 1
@@ -65,18 +70,18 @@ calculate_log_ratio_differences = function(nap_df){
 
     for (j in seq(i + 1, nrow(nap_df))) {
       #message(paste0(i, "_", j))
-      comp_df[comp_count, "nap_ratio"] = log(nap_df$NAP[i]) - log(nap_df$NAP[j])
-      comp_df[comp_count, "intensity_ratio"] = log(nap_df$intensity[i]) - log(nap_df$intensity[j])
-      comp_df[comp_count, "i"] = nap_df$Sample_Peak[i]
-      comp_df[comp_count, "j"] = nap_df$Sample_Peak[j]
+      comp_df[comp_count, "nap_ratio"] = (nap_df$NAP[i]) - (nap_df$NAP[j])
+      comp_df[comp_count, "intensity_ratio"] = (nap_df$intensity[i]) - (nap_df$intensity[j])
+      comp_df[comp_count, "p1"] = nap_df$Sample_Peak[i]
+      comp_df[comp_count, "p2"] = nap_df$Sample_Peak[j]
       comp_count = comp_count + 1
     }
 
   }
   comp_df = comp_df %>%
-    dplyr::mutate(nap_intensity_diff = nap_ratio - intensity_ratio)
-  p1 = get_number_sample_peak(comp_df$i)
-  p2 = get_number_sample_peak(comp_df$j)
+    dplyr::mutate(nap_intensity_diff = abs(nap_ratio - intensity_ratio))
+  p1 = get_number_sample_peak(comp_df$p1)
+  p2 = get_number_sample_peak(comp_df$p2)
 
   out_id = rep(NA, n_comp)
   for (i in seq_len(n_comp)) {
@@ -140,25 +145,13 @@ calculate_comparisons_matrix = function(in_matrix){
   list(matrix = comp_matrix, peaks = comp_df)
 }
 
-aa_height_nap_scanlevel = function(aa_data){
+aa_height_nap_scanlevel = function(nap_df, scan_level){
   # aa_data = tar_read(aa_filtersd_1ecf)
-  scan_level = aa_data$scored$scan_level
-  # make sure to purrr::map here
-  aa_peak_data = aa_data$aa$Alanine
 
-  aa_peak_data = aa_peak_data %>%
-    dplyr::mutate(complete_label = paste0(complete_EMF, "_", lbl.type, "_", lbl.count))
+  intensity_use = scan_level[nap_df$Sample_Peak]
+  intensity_matrix = as.matrix(dplyr::bind_rows(intensity_use))
 
-  split_aa = split(aa_peak_data, aa_peak_data$complete_label)
-  split_big = purrr::map_lgl(split_aa, ~ nrow(.x) > 1)
-  split_aa = split_aa[split_big]
-
-  # and purrr::map again here
-  split_use = split_aa[[1]]
-  intensity_use = scan_level$Log10Height[split_use$Sample_Peak]
-  intensity_matrix = log(10^as.matrix(dplyr::bind_rows(intensity_use)))
-
-  nap_matrix = matrix(log(split_use$NAP),
+  nap_matrix = matrix(nap_df$NAP,
                       nrow = nrow(intensity_matrix),
                       ncol = ncol(intensity_matrix),
                       byrow = TRUE)
@@ -170,35 +163,50 @@ aa_height_nap_scanlevel = function(aa_data){
   nap_intensity = abs(nap_comparisons$matrix - intensity_comparisons$matrix)
   rownames(nap_intensity) = seq(1, nrow(nap_intensity))
 
-  no_na = apply(nap_intensity, 1, function(.x){
-    sum(is.na(.x)) == 0
-  })
-  nap_intensity = nap_intensity[no_na, ]
-  nap_intensity_max = rowMax(abs(nap_intensity))
-  nap_intensity_median = rowMedians(abs(nap_intensity))
+  list(nap = nap_comparisons$matrix,
+       intensity = intensity_comparisons$matrix,
+       nap_intensity = nap_intensity,
+       peaks = nap_comparisons$peaks)
+}
 
-  order_max = order(nap_intensity_max)
-  nap_intensity_bymax = nap_intensity[order_max, ]
-  order_median = order(nap_intensity_median)
-  nap_intensity = nap_intensity[order_median, ]
+match_peaks = function(theoretical_peaks, other_peaks){
+  # theoretical_peaks = complete_theory
+  # other_peaks = xcalibur_peaks
+  matched = purrr::map_df(seq(1, nrow(theoretical_peaks)), function(in_row){
+    possible_match = other_peaks %>%
+      dplyr::filter(dplyr::between(mz, theoretical_peaks[in_row, "lowermz"],
+                                   theoretical_peaks[in_row, "highmz"]))
+    if (nrow(possible_match) == 0) {
+      return(NULL)
+    } else if (nrow(possible_match) == 1) {
+      possible_match = possible_match[which.min(abs(possible_match$mz - theoretical_peaks[in_row, "theoreticalmz"])), ]
+    }
+    possible_match %>%
+      dplyr::transmute(ObservedMZ = mz,
+                       NAP = theoretical_peaks$NAP[in_row],
+                       intensity = intensity,
+                       Their_Peak = Sample_Peak,
+                       Sample_Peak = theoretical_peaks$Sample_Peak[in_row],
+                       isotopologue_IMF = theoretical_peaks$isotopologue_IMF[in_row])
+  })
+  matched
 }
 
 aa_height_nap_all = function(filtersd, xcalibur, msnbase){
   # filtersd = tar_read(aa_filtersd_1ecf)
   # xcalibur = tar_read(xcalibur_1ecf)
   # msnbase = tar_read(msnbase_1ecf)
-  xcalibur_peaks = xcalibur %>%
-    dplyr::transmute(mz = ...1,
-                  intensity = ...2)
+  scan_level_data = filtersd$scored$scan_level
+  xcalibur_peaks = xcalibur$comb
   xcalibur_peaks$Sample_Peak = paste0("xcalibur_", seq_len(nrow(xcalibur_peaks)))
 
   msnbase_peaks = msnbase$comb
   msnbase_peaks$Sample_Peak = paste0("msnbase_", seq_len(nrow(msnbase_peaks)))
 
   aa_info = purrr::imap(filtersd$aa, function(use_aa, aa_id){
-    # use_aa = filtersd$aa[["Glutamine"]]
-    # aa_id = "Glutamine"
-    message(aa_id)
+    # use_aa = filtersd$aa[["Alanine"]]
+    # aa_id = "Alanine"
+    #message(aa_id)
 
     use_aa = use_aa %>%
       dplyr::mutate(complete_label = paste0(complete_EMF, ".", lbl.type, ".", lbl.count))
@@ -206,62 +214,50 @@ aa_height_nap_all = function(filtersd, xcalibur, msnbase){
     aa_complete = split(use_aa, use_aa$complete_label)
     aa_hasenough = purrr::map_lgl(aa_complete, ~ (nrow(.x) > 1))
     aa_complete = aa_complete[aa_hasenough]
-    aa_ratios = purrr::imap(aa_complete, function(in_complete, split_id){
-      message(split_id)
-      use_intensities = c("CorrectedLog10Height",
-                      "Height")
 
-      char_level = purrr::map(use_intensities, function(intensity){
-        tmp_df = in_complete[, c("Sample_Peak", "NAP", intensity)]
-        if (grepl("Log10", intensity)) {
-          tmp_df$intensity = 10^tmp_df[[intensity]]
-        } else {
-          tmp_df$intensity = tmp_df[[intensity]]
-        }
+
+    aa_ratios = purrr::imap(aa_complete, function(in_complete, split_id){
+      #message(split_id)
+      use_intensities = c("CorrectedLog10Height",
+                      "Log10Height")
+
+      char_level = purrr::map(use_intensities, function(in_intensity){
+        tmp_df = in_complete %>%
+          dplyr::transmute(NAP = log10(NAP),
+                          intensity = .data[[in_intensity]],
+                          Sample_Peak = Sample_Peak)
+
         peak_ratios = calculate_log_ratio_differences(tmp_df)
-        peak_ratios$intensity_measure = intensity
-        peak_ratios$source = "characterized"
+        peak_ratios$source = in_intensity
         peak_ratios
       })
+      names(char_level) = use_intensities
 
-      # we should be able to do this at the individual scan level
-      # as well, but that's more work.
-      scan_level = NULL
+      scan_level = purrr::map(use_intensities, function(in_intensity){
+        tmp_df = in_complete %>%
+          dplyr::transmute(NAP = log10(NAP),
+                           Sample_Peak = Sample_Peak)
+        scan_ratios = aa_height_nap_scanlevel(tmp_df, scan_level_data[[in_intensity]])
+        scan_ratios$source = in_intensity
+        scan_ratios
+      })
+      names(scan_level) = use_intensities
 
       complete_theory = in_complete %>%
-        dplyr::transmute(NAP = NAP,
+        dplyr::transmute(NAP = log10(NAP),
                          theoreticalmz = ObservedMZ - mass_error,
                          Sample_Peak = Sample_Peak,
                          isotopologue_IMF = isotopologue_IMF,
                          lowermz = theoreticalmz - (theoreticalmz * 2e-6),
                          highmz = theoreticalmz + (theoreticalmz * 2e-6))
 
-      match_peaks = function(theoretical_peaks, other_peaks){
-        # theoretical_peaks = complete_theory
-        # other_peaks = xcalibur_peaks
-        matched = purrr::map_df(seq(1, nrow(theoretical_peaks)), function(in_row){
-          possible_match = other_peaks %>%
-            dplyr::filter(dplyr::between(mz, theoretical_peaks[in_row, "lowermz"],
-                                         theoretical_peaks[in_row, "highmz"]))
-          if (nrow(possible_match) == 0) {
-            return(NULL)
-          } else if (nrow(possible_match) == 1) {
-            possible_match = possible_match[which.min(abs(possible_match$mz - theoretical_peaks[in_row, "theoreticalmz"])), ]
-          }
-          possible_match %>%
-            dplyr::transmute(ObservedMZ = mz,
-                             NAP = theoretical_peaks$NAP[in_row],
-                             intensity = intensity,
-                             Their_Peak = Sample_Peak,
-                             Sample_Peak = theoretical_peaks$Sample_Peak[in_row],
-                             isotopologue_IMF = theoretical_peaks$isotopologue_IMF[in_row])
-        })
-        matched
-      }
+
 
       xcal_matched = match_peaks(complete_theory, xcalibur_peaks)
 
+
       if (nrow(xcal_matched) > 1) {
+        xcal_matched$intensity = log10(xcal_matched$intensity)
         xcal_ratios = calculate_log_ratio_differences(xcal_matched[, c("Sample_Peak", "NAP", "intensity")])
         xcal_ratios$source = "xcalibur"
       } else {
@@ -269,16 +265,19 @@ aa_height_nap_all = function(filtersd, xcalibur, msnbase){
       }
 
       msnbase_matched = match_peaks(complete_theory, msnbase_peaks)
-
       if (nrow(msnbase_matched) > 1) {
+        msnbase_matched$intensity = log10(msnbase_matched$intensity)
         msnbase_ratios = calculate_log_ratio_differences(msnbase_matched[, c("Sample_Peak", "NAP", "intensity")])
         msnbase_ratios$source = "msnbase"
+
       } else {
         msnbase_ratios = NULL
       }
 
       list(characterized = list(ratios = char_level,
                                 peaks = in_complete),
+           scanlevel = list(ratios = scan_level,
+                            peaks = in_complete),
            xcalibur = list(ratios = xcal_ratios,
                            peaks = xcal_matched),
            msnbase = list(ratios = msnbase_ratios,
@@ -286,6 +285,51 @@ aa_height_nap_all = function(filtersd, xcalibur, msnbase){
 
     })
   })
-
+  aa_info
 }
 
+scan_level_10th = function(scan_level_data, which = c("complete")){
+  # aa_ratios = tar_read(nap_height_1ecf)
+  # scan_level_data = aa_ratios$Alanine$C8H15N1Na1O4.15N.0$scanlevel$ratios$Log10Height
+  ratio_diffs = scan_level_data$nap_intensity
+  n_na = apply(ratio_diffs, 1, function(.x){
+    sum(is.na(.x))
+  })
+  median_diffs = rowMedians(ratio_diffs, na.rm = TRUE)
+
+  ratio_nona = ratio_diffs[n_na == 0, ]
+  median_nona = median_diffs[n_na == 0]
+
+  median_order = order(median_nona, decreasing = FALSE)
+  ratio_nona = ratio_nona[median_order, ]
+  median_nona = median_nona[median_order]
+
+  n_scan = nrow(ratio_diffs)
+  scan_10th = round(0.1 * n_scan)
+
+  ratio_nona[seq(1, scan_10th), ]
+}
+
+diff_vector_2_df = function(diffs){
+  data.frame(ratio = seq_len(length(diffs)),
+             diff = diffs)
+}
+
+compare_peak_ratios = function(aa_ratios){
+  # aa_ratios = tar_read(nap_height_1ecf)
+
+  use_aa = aa_ratios$Alanine$C8H15N1Na1O4.15N.0
+
+  corrected_scan_10 = scan_level_10th(use_aa$scanlevel$ratios$CorrectedLog10Height)
+  corrected_scan10_max = apply(corrected_scan_10, 2, max)
+  corrected_scan10_max = data.frame(diff = corrected_scan10_max, ratio = seq(1, length(corrected_scan10_max)))
+
+  corrected_char = use_aa$characterized$ratios$CorrectedLog10Height$nap_intensity_diff %>%
+    diff_vector_2_df()
+
+  raw_scan_10 = scan_level_10th(use_aa$scanlevel$ratios$Log10Height)
+  raw_scan10_max = apply(raw_scan_10, 2, max) %>%
+    diff_vector_2_df()
+  raw_char = use_aa$characterized$ratios$Log10Height$nap_intensity_diff %>%
+    diff_vector_2_df()
+}
