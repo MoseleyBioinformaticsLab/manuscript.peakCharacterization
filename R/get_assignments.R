@@ -297,39 +297,111 @@ scan_level_10th = function(scan_level_data, which = c("complete")){
   })
   median_diffs = rowMedians(ratio_diffs, na.rm = TRUE)
 
-  ratio_nona = ratio_diffs[n_na == 0, ]
+  ratio_nona = ratio_diffs[n_na == 0, , drop = FALSE]
   median_nona = median_diffs[n_na == 0]
 
   median_order = order(median_nona, decreasing = FALSE)
-  ratio_nona = ratio_nona[median_order, ]
+  ratio_nona = ratio_nona[median_order, , drop = FALSE]
   median_nona = median_nona[median_order]
 
   n_scan = nrow(ratio_diffs)
   scan_10th = round(0.1 * n_scan)
 
-  ratio_nona[seq(1, scan_10th), ]
+  if (nrow(ratio_nona) >= (2 * scan_10th)) {
+    return(ratio_nona[seq(1, scan_10th), , drop = FALSE])
+  } else {
+    return(NULL)
+  }
+
+
 }
 
-diff_vector_2_df = function(diffs){
-  data.frame(ratio = seq_len(length(diffs)),
-             diff = diffs)
+diff_vector_2_df = function(diffs, source = "none"){
+  out_df = data.frame(ratio = seq_len(length(diffs)),
+             diff = diffs) %>%
+    dplyr::mutate(source = source)
+  out_df
+}
+
+diff_matrix_2_df = function(diffs, source = "none"){
+  ids = seq_len(ncol(diffs))
+  scans = rownames(diffs)
+  diff_df = as.data.frame(diffs)
+  names(diff_df) = ids
+  diff_df$scan = scans
+  diff_df_out = tidyr::pivot_longer(diff_df, cols = !scan, names_to = "ratio",
+                      values_to = "diff") %>%
+    dplyr::mutate(source = source)
+
+  diff_df_out
 }
 
 compare_peak_ratios = function(aa_ratios){
   # aa_ratios = tar_read(nap_height_1ecf)
 
-  use_aa = aa_ratios$Alanine$C8H15N1Na1O4.15N.0
+  purrr::imap(aa_ratios, function(in_aa, aa_id){
+    message(aa_id)
+    purrr::imap(in_aa, function(aa_formula, formula_id){
+      #aa_formula = aa_ratios$Glycine$C7H13N1Na1O4.15N.0
+      message(formula_id)
+      corrected_scan_10 = scan_level_10th(aa_formula$scanlevel$ratios$CorrectedLog10Height)
 
-  corrected_scan_10 = scan_level_10th(use_aa$scanlevel$ratios$CorrectedLog10Height)
-  corrected_scan10_max = apply(corrected_scan_10, 2, max)
-  corrected_scan10_max = data.frame(diff = corrected_scan10_max, ratio = seq(1, length(corrected_scan10_max)))
+      if (is.null(corrected_scan_10)) {
+        return(NULL)
+      }
+      corrected_scan10_max = apply(corrected_scan_10, 2, max) %>%
+        diff_vector_2_df(source = "scan_max_corrected")
 
-  corrected_char = use_aa$characterized$ratios$CorrectedLog10Height$nap_intensity_diff %>%
-    diff_vector_2_df()
+      corrected_char = aa_formula$characterized$ratios$CorrectedLog10Height$nap_intensity_diff %>%
+        diff_vector_2_df(source = "char_corrected")
 
-  raw_scan_10 = scan_level_10th(use_aa$scanlevel$ratios$Log10Height)
-  raw_scan10_max = apply(raw_scan_10, 2, max) %>%
-    diff_vector_2_df()
-  raw_char = use_aa$characterized$ratios$Log10Height$nap_intensity_diff %>%
-    diff_vector_2_df()
+      raw_scan_10 = scan_level_10th(aa_formula$scanlevel$ratios$Log10Height)
+      raw_scan10_max = apply(raw_scan_10, 2, max) %>%
+        diff_vector_2_df(source = "scan_max_raw")
+      raw_char = aa_formula$characterized$ratios$Log10Height$nap_intensity_diff %>%
+        diff_vector_2_df(source = "char_height")
+
+      xcal = aa_formula$xcalibur$ratios$nap_intensity_diff %>%
+        diff_vector_2_df(source = "xcalibur")
+
+      msnbase = aa_formula$msnbase$ratios$nap_intensity_diff %>%
+        diff_vector_2_df(source = "msnbase")
+
+      all_data = rbind(corrected_scan10_max,
+                       corrected_char,
+                       raw_scan10_max,
+                       raw_char,
+                       xcal,
+                       msnbase)
+
+      do_differences = list(xcal_raw_char = c("xcalibur", "char_height"),
+                            xcal_raw_scan10 = c("xcalibur", "scan_max_raw"),
+                            xcal_corrected_char = c("xcalibur",
+                                                    "char_corrected"),
+                            xcal_corrected_scan10 = c("xcalibur",
+                                                      "scan_max_corrected"),
+                            char_raw_corrected = c("char_height", "char_corrected"),
+                            scan_raw_corrected = c("scan_max_raw", "scan_max_corrected"))
+
+      method_differences = purrr::imap_dfr(do_differences,
+                                           function(in_diffs, diff_name){
+                                             d_denom = all_data %>%
+                                               dplyr::filter(source %in% in_diffs[2])
+                                             d_num = all_data %>%
+                                               dplyr::filter(source %in% in_diffs[1])
+
+                                             out_diff = data.frame(ratio = d_denom$ratio,
+                                                                   diff = d_num$diff - d_denom$diff,
+                                                                   source = diff_name)
+                                             out_diff
+                                           })
+
+      list(data_ratios = all_data,
+           method_differences = method_differences)
+
+    })
+
+  })
+
+
 }

@@ -234,7 +234,9 @@ xcalibur_tar = tar_map(
 
 height_nap_tar = list(
   tar_target(nap_height_1ecf, aa_height_nap_all(aa_filtersd_1ecf, xcalibur_1ecf, msnbase_1ecf)),
-  tar_target(nap_height_2ecf, aa_height_nap_all(aa_filtersd_2ecf, xcalibur_2ecf, msnbase_2ecf))
+  tar_target(nap_height_2ecf, aa_height_nap_all(aa_filtersd_2ecf, xcalibur_2ecf, msnbase_2ecf)),
+  tar_target(aa_compared_filtersd_1ecf, compare_peak_ratios(nap_height_1ecf)),
+  tar_target(aa_compared_filtersd_2ecf, compare_peak_ratios(nap_height_2ecf))
 )
 
 list(pkg_tar,
