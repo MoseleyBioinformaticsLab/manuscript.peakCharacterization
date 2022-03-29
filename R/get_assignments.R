@@ -405,3 +405,63 @@ compare_peak_ratios = function(aa_ratios){
 
 
 }
+
+find_large_diffs = function(aa_diffs){
+  check_largish = purrr::imap(aa_diffs, function(in_diff, diff_id){
+    #message(diff_id)
+    purrr::imap(in_diff, function(check_diff, in_id){
+      if (is.null(check_diff)) {
+        return(NULL)
+      }
+      #message(in_id)
+      check_diff$method_differences %>%
+        dplyr::arrange(dplyr::desc(diff)) %>%
+        dplyr::slice_head(n = 1)
+    })
+  })
+  check_largish
+}
+
+large_figure = function(difference_data, nap_height_data, xcalibur_data, aa_id = "Threonine", formula_id = "C9H17N1Na1O5.15N.0", use_data = "raw"){
+  # difference_data = tar_read(aa_compared_filtersd_1ecf)
+  # nap_height_data = tar_read(nap_height_1ecf)
+  # aa_id = "Threonine"
+  # formula_id = "C9H17N1Na1O5.15N.0"
+  diff_formula = difference_data[[aa_id]][[formula_id]]
+  nap_height_formula = nap_height_data[[aa_id]][[formula_id]]
+
+  scan_level = nap_height_formula$scanlevel$ratios$Log10Height$nap_intensity
+  n_na = data.frame(ratio = seq(1, ncol(scan_level)),
+                    n_missing = apply(scan_level, 2, function(.x){
+                      sum(is.na(.x))
+                    })) %>%
+    dplyr::arrange(n_missing) %>%
+    dplyr::mutate(miss_order = seq(1, nrow(.)))
+
+  raw_ratios_char = nap_height_formula$characterized$ratios$Log10Height$nap_intensity_diff %>%
+      diff_vector_2_df(source = "Log10Height")
+  raw_ratios_xcal = nap_height_formula$xcalibur$ratios$nap_intensity_diff %>%
+      diff_vector_2_df(source = "xcalibur")
+  raw_ratios_diff = dplyr::left_join(raw_ratios_char,
+                                     raw_ratios_xcal, by = "ratio", suffix = c(".char", ".xcal")) %>%
+    dplyr::mutate(xcal_char = diff.xcal - diff.char)
+
+  raw_ratios_diff = dplyr::left_join(raw_ratios_diff, n_na, by = "ratio")
+
+  raw_ratios_long = rbind(raw_ratios_char,
+                          raw_ratios_xcal) %>%
+    dplyr::left_join(., n_na, by = "ratio")
+
+  threonine_rawplot = ggplot(raw_ratios_long, aes(x = ratio, y = diff, color = source, size = n_missing)) +
+    geom_point() +
+    theme(legend.position = c(0.7, 0.8)) +
+    labs(x = "Pairwise Comparison",
+         y = "Peak-Peak NAP - Height Difference")
+
+  threonine_diffplot = ggplot(raw_ratios_diff, aes(x = n_missing, y = xcal_char)) +
+    geom_point(size = 2) +
+    labs(x = "Number of Missing Scans",
+         y = "Xcalibur - Characterized NAP - Height Difference")
+
+
+}
