@@ -336,14 +336,31 @@ diff_matrix_2_df = function(diffs, source = "none"){
   diff_df_out
 }
 
+count_missing_scans = function(scan_level_data){
+  # scan_level_data = aa_formula$scanlevel$ratios$CorrectedLog10Height
+  scan_level_ratios = scan_level_data$nap_intensity
+  n_missing = apply(scan_level_ratios,
+                    2,
+                    function(.x){
+    sum(is.na(.x))
+                    })
+  n_missing
+}
+
 compare_peak_ratios = function(aa_ratios){
   # aa_ratios = tar_read(nap_height_1ecf)
 
   purrr::imap(aa_ratios, function(in_aa, aa_id){
+    # in_aa = aa_ratios[[1]]
     message(aa_id)
     purrr::imap(in_aa, function(aa_formula, formula_id){
-      #aa_formula = aa_ratios$Glycine$C7H13N1Na1O4.15N.0
+      # aa_formula = aa_ratios$Glycine$C7H13N1Na1O4.15N.0
+      # aa_formula = in_aa[[1]]
       message(formula_id)
+      n_missing = count_missing_scans(aa_formula$scanlevel$ratios$CorrectedLog10Height) %>%
+        diff_vector_2_df() %>%
+        dplyr::transmute(ratio = ratio,
+                         n_missing = diff)
       corrected_scan_10 = scan_level_10th(aa_formula$scanlevel$ratios$CorrectedLog10Height)
 
       if (is.null(corrected_scan_10)) {
@@ -374,6 +391,8 @@ compare_peak_ratios = function(aa_ratios){
                        xcal,
                        msnbase)
 
+      all_data = dplyr::left_join(all_data, n_missing, by = "ratio")
+
       do_differences = list(xcal_raw_char = c("xcalibur", "char_height"),
                             xcal_raw_scan10 = c("xcalibur", "scan_max_raw"),
                             xcal_corrected_char = c("xcalibur",
@@ -395,6 +414,8 @@ compare_peak_ratios = function(aa_ratios){
                                                                    source = diff_name)
                                              out_diff
                                            })
+
+      method_differences = dplyr::left_join(method_differences, n_missing, by = "ratio")
 
       list(data_ratios = all_data,
            method_differences = method_differences)
@@ -462,6 +483,8 @@ large_figure = function(difference_data, nap_height_data, xcalibur_data, aa_id =
     geom_point(size = 2) +
     labs(x = "Number of Missing Scans",
          y = "Xcalibur - Characterized NAP - Height Difference")
+
+
 
 
 }
