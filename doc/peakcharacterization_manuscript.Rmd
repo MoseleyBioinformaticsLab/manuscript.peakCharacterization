@@ -177,58 +177,57 @@ The number of peaks detected without applying a cutoff explodes anywhere from `r
 By discarding those windows with a non-zero point density below 1.5x the median of 99th percentiles, and merging the remaining adjacent windows, the regions most likely to contain actual, informative peaks are rapidly and easily determined.
 :::
 
-```{=html}
-<div custom-style="MDPI_5.2_figure>
+
+::: {custom-style="MDPI_5.2_figure"}
 
 ```{r slidingwindow_count, dn_id = figure_count, fig.width = 8, fig.height = 8}
 (sliding_regions / noise_plot) + plot_annotation(tag_levels = "A")
 ```
 
-</div>
+:::
 
-<div custom-style="MDPI_5.1_figure_caption">
+::: {custom-style="MDPI_5.1_figure_caption"}
 **`r figure_count$label_text("slidingwindow_count")`.**
 **A**: Histogram of the number of non-zero points from sliding windows ten frequency points wide and a stride of one point, from a single tiled window 2000 points wide.
 Blue line is the 99th percentile.
 **B**: Histogram of the 99th percentile cutoffs from all of the tiled windows.
 Red line is the median x 1.5.
 **C** and **D** show the number of initial regions as a function of the percentile cutoff used for either the AA ECF (C) or lipid (D) samples.
-</div>
-```
+:::
+
 ::: {custom-style="MDPI_3.1_text"}
 For each region initially created, the peaks in each scan within that region can be characterized using a quadratic fit of log(intensity) to m/z.
 :::
 
-```{=html}
-<div custom-style="MDPI_2.2_heading2>
+
+::: {custom-style="MDPI_2.2_heading2"}
 ### Peak Characterization Using Quadratic Fit
-</div>
+:::
 
 ```{r increment_fit}
 figure_count$increment("centroided_peaks")
 ```
 
-<div custom-style="MDPI_3.1_text">
+::: {custom-style="MDPI_3.1_text"}
 Although many other types of mass-spectrometry data suffer from a variable and noisy baseline, the scan-level profile data from the Thermo Fusion has a baseline of 0 due to manipulations in the Thermo firmware, making the determination of the centroided values considerably easier. 
 For the peak characterization (centroiding), we use a simple quadratic model of log(intensity) to m/z. 
 We add a small constant to enable using the zero values, and weight the values by their ratio to the most intense value, which is normally the value closest to the center of peak, helping to ensure that the **true** centroid is determined. 
 From the fitted model, we can derive the centroided center and the intensity of the peak, as shown in `r figure_count$label_text("centroided_peaks")`.
-</div>
-```
-```{=html}
-<div custom-style="MDPI_5.2_figure>
+:::
+
+::: {custom-style="MDPI_5.2_figure"}
 ```{r centroided_peaks, dn_id = figure_count}
 # figure showing fit of quadratic model to actual data points
 tar_load(peak_fit_plot)
 peak_fit_plot
 ```
-</div>
+:::
 
-<div custom-style="MDPI_5.1_figure_caption">
+::: {custom-style="MDPI_5.1_figure_caption"}
 **`r figure_count$label_text("centroided_peaks")`.**
 Log-intensity (A) and Intensity (B) of points for a single peak against frequency. Black points are the original data points, and the blue point represents the calculated centroid.
-</div>
-```
+:::
+
 ::: {custom-style="MDPI_2.2_heading2"}
 ### Breaking Up Initial Regions
 :::
@@ -377,18 +376,26 @@ Each step in the peak characterization either changes the overall number of peak
 Therefore, one way to quantify any potential *improvements* in the characterized peaks is to look at the relative standard deviation (RSD) for the characterized scan level peak intensities (calculated as the standard deviation of peak heights across scans divided by the mean peak height), and compare them as each processing step is introduced.
 :::
 
+::: {custom-style="MDPI_5.2_figure"}
 ```{r rsd_method, dn_id = figure_count}
 tar_load(rsd_plot)
 rsd_plot
 ```
+:::
 
+::: {custom-style="MDPI_5.1_figure_caption"}
 `r figure_count$label_text("rsd_method")`.
 Density plots of relative standard deviations (RSD) of peak heights across scans for each of the processing methods.
 A peak had to be present in at least three scans for the RSD value to be reported.
+:::
 
+::: {custom-style="MDPI_4.1_table_caption"}
 `r table_count$label_text("rsd_method")`.
 Relative standard deviation means, medians, modes and maximum observed values for each sample with different overall processing.
+:::
 
+
+::: {custom-style="MDPI_4.2_table_body"}
 ```{r rsd_table, results = 'asis'}
 tar_load(rsd_values)
 rsd_values = rsd_values %>%
@@ -398,18 +405,27 @@ rsd_ft = flextable(rsd_values) %>%
   autofit()
 rsd_ft
 ```
+:::
 
 ::: {custom-style="MDPI_2.2_heading2"}
 ### Difference to Relative Natural Abundance
 :::
 
+```{r nap_intensity_increment}
+figure_count$increment("nap_intensity")
+```
+
 ::: {custom-style="MDPI_3.1_text"}
 As an alternative to RSD, we can also compare the fit of relative intensities after assignment using SMIRFE [reference] to the theoretical relative natural abundances (relNAP) of the assigned isotopic molecular formula's (IMFs) within the assigned elemental molecular formula's (EMFs).
 Theoretically, we expect that lower quality data will have both lower numbers of assignments, and that for those things that are assigned, the fit between relative intensity and relNAP will be worse.
 To compare relative NAP to relative abundances, we only examined the assignments from the two samples containing ECF derivatized amino-acids, as we can limit the assignments to those that match expected derivatizations of the known amino-acids (see Supplemental for the expected EMFs, and expected relative NAPs for the individual IMFs).
+
+`r figure_count$label_text("nap_intensity")` compares the peak - peak natural abundance and height log-ratio differences generated using heights from Xcalibur and from our scan-level peak characterization.
 :::
 
-```{r nap_intensity}
+::: {custom-style="MDPI_5.2_figure"}
+```{r nap_intensity, dn_id = figure_count, fig.width = 16, fig.height = 8}
+nap_fontsize = 12
 tar_load(aa_diffs_filtersd_1ecf)
 tar_load(aa_diffs_filtersd_2ecf)
 
@@ -427,21 +443,34 @@ threonine_ratioplot = ggplot(threonine_ratios, aes(x = ratio, y = diff, color = 
     geom_point() +
     theme(legend.position = c(0.7, 0.8)) +
     labs(x = "Pairwise Comparison",
-         y = "Peak-Peak NAP - Height Difference")
+         y = "Peak-Peak NAP - Height Differences") +
+  theme(axis.title.y = element_text(size = nap_fontsize))
 
 threonine_diffplot = ggplot(threonine_diffs, aes(x = n_missing, y = diff)) +
     geom_point(size = 2) +
     labs(x = "Number of Missing Scans",
-         y = "Xcalibur - Scan-Level NAP - Height Difference")
+         y = "Xcalibur - Scan-Level NAP - Height Differences")+
+  theme(axis.title.y = element_text(size = nap_fontsize))
 
 aa_diffplot = all_diffs %>%
   dplyr::filter(source %in% "xcal_raw_char") %>%
   ggplot(aes(x = n_missing, y = diff)) +
   geom_point() +
   labs(x = "Number of Missing Scans",
-         y = "Xcalibur - Scan-Level NAP - Height Difference")
-  
+         y = "Xcalibur - Scan-Level NAP - Height Differences") +
+  theme(axis.title.y = element_text(size = nap_fontsize))
+
+out_plot = (threonine_ratioplot | threonine_diffplot) / aa_diffplot + plot_annotation(tag_levels = "A")
+out_plot
 ```
+:::
+
+::: {custom-style="MDPI_5.1_figure_caption"}
+`r figure_count$label_text("nap_intensity")`.
+**A**. Peak - peak NAP - intensity differences from scan-level peak heights (red) and Xcalibur peak heights (blue) from the threonine amino acid assignments with Na adduct, with point size reflecting how many peaks were missing across scans.
+**B**. The difference of Xcalibur to scan-level ratios plotted directly as a function of the number of scans the peak was not found in.
+**C**. The differences of Xcalibur to scan-level ratios for all of the amino acid assignments in EMFs with more than a single peak in both ECF samples.
+:::
 
 ::: {custom-style="MDPI_2.2_heading2"}
 ### Changes in Variance Across a Large Dataset
