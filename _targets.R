@@ -119,7 +119,11 @@ figures_tar = tar_plan(
              create_noise_plot(noise_combine)),
   tar_target(mn_ratios,
              calculate_m_n_ratio(noise_combine)),
-  tar_render(manuscript, "doc/peakcharacterization_manuscript.Rmd")
+  tar_render(manuscript, "doc/peakcharacterization_manuscript.Rmd"),
+  tar_target(rmd_no_mdpi, strip_mdpi("doc/peakcharacterization_manuscript.Rmd")),
+  tar_target(rmd_mdpi, strip_headers("doc/peakcharacterization_manuscript.Rmd")),
+  tar_render(manuscript_mdpi, "doc/peakcharacterization_mdpi.Rmd"),
+  tar_render(manuscript_nostyle, "doc/peakcharacterization_nostyle.Rmd")
 )
 
 tables_tar = tar_plan(
