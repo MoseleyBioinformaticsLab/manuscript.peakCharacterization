@@ -480,3 +480,37 @@ ratio_diffs_extracted = function(difference_data, aa_id = "Threonine", formula_i
                               diffs = raw_ratios_diff),
        all_diffs = all_diffs)
 }
+
+motivating_plot = function(nap_height_1ecf, aa_id = "Threonine", formula_id = "C9H17N1Na1O5.15N.0"){
+  #tar_load(nap_height_1ecf)
+  use_nap_height = nap_height_1ecf[[aa_id]][[formula_id]]
+
+  peak_data = use_nap_height$xcalibur$peaks %>%
+    dplyr::arrange(ObservedMZ)
+  peak_data$ObservedMZ[4] = peak_data$ObservedMZ[4] + 0.01
+  peak_data = peak_data %>%
+    dplyr::mutate(NAP = 10^NAP,
+                  intensity = 10^intensity,
+                  relNAP = NAP / max(NAP),
+                  intNAP = relNAP * max(intensity),
+                  log10intNAP = log10(intNAP),
+                  log10intensity = log10(intensity),
+                  mzNAP = ObservedMZ + 0.05)
+
+  peak_data = dplyr::left_join(peak_data, nap_height_1ecf[[aa_id]][[formula_id]]$characterized$peaks[, c("Sample_Peak", "complete_IMF")], by = "Sample_Peak")
+
+  out_plot = peak_data %>%
+    ggplot(aes(x = ObservedMZ, xend = ObservedMZ,
+               y = 0, yend = log10intensity)) +
+    geom_segment() +
+    geom_segment(aes(x = mzNAP, xend = mzNAP,
+                     y = 0, yend = log10intNAP),
+                 color = "red") +
+    annotate("text", x = 242.45, y = 7, label = peak_data$complete_IMF[1]) +
+    annotate("text", x = 243.3, y = 6.1, label = peak_data$complete_IMF[2]) +
+    annotate("text", x = 243.7, y = 5, label = peak_data$complete_IMF[3]) +
+    annotate("text", x = 243.75, y = 4.2, label = peak_data$complete_IMF[3]) +
+    labs(x = "m/z", y = "Log10(Intensity)") +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
+  out_plot
+}

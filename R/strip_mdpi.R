@@ -1,4 +1,4 @@
-strip_mdpi = function(in_rmd = "doc/peakcharacterization_manuscript.Rmd", out_rmd = "doc/peakcharacterization_nostyle.Rmd"){
+strip_mdpi_render = function(in_rmd = "doc/peakcharacterization_manuscript.Rmd", out_rmd = "doc/peakcharacterization_nostyle.Rmd"){
   rmd_doc = readLines(in_rmd)
 
   template_line = grepl("metabolites-template", rmd_doc)
@@ -8,17 +8,21 @@ strip_mdpi = function(in_rmd = "doc/peakcharacterization_manuscript.Rmd", out_rm
   rmd_nostyle = rmd_notemplate[!has_style]
 
   cat(rmd_nostyle, file = out_rmd, sep = "\n")
+  rmarkdown::render(out_rmd, knit_root_dir = getwd(), quiet = TRUE)
   out_rmd
 }
 
-strip_headers = function(in_rmd = "doc/peakcharacterization_manuscript.Rmd",
+strip_headers_render = function(in_rmd = "doc/peakcharacterization_manuscript.Rmd",
                          out_rmd = "doc/peakcharacterization_mdpi.Rmd"){
 
   rmd_doc = readLines(in_rmd)
 
   has_header = grepl("^##+ \\w+", rmd_doc)
+  has_bullet = grepl("^\\* ", rmd_doc)
   doc_out = rmd_doc
   doc_out[has_header] = gsub("^##+ ", "", rmd_doc[has_header])
+  doc_out[has_bullet] = gsub("^\\* ", "", rmd_doc[has_bullet])
   cat(doc_out, file = out_rmd, sep = "\n")
+  rmarkdown::render(out_rmd, knit_root_dir = getwd(), quiet = TRUE)
   out_rmd
 }
