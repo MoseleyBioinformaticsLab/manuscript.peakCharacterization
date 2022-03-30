@@ -294,8 +294,9 @@
 		"id": "flightInformationContentInformedKendalltauCorrelation2022",
 		"type": "article-journal",
 		"abstract": "Almost all correlation measures currently available are unable to handle missing values. Typically, missing values are either ignored completely by removing them or are imputed and used in the calculation of the correlation coefficient. In both cases, the correlation value will be impacted based on a perspective that missing data represents no useful information. However, missing values occur in real data sets for a variety of reasons. In omics data sets that are derived from analytical measurements, the primary reason for missing values is that a specific measurable phenomenon falls below the detection limits of the analytical instrumentation. These missing data are not missing at random, but represent some information by their “missingness.” Therefore, we propose an information-content-informed Kendall-tau (ICI-Kt) correlation coefficient that allows missing values to carry explicit information in the determination of concordant and discordant pairs. With both simulated and real data sets from RNA-seq experiments, we demonstrate that the ICI-Kt allows for the inclusion of missing data values as interpretable information. Moreover, our implementation of ICI-Kt uses a mergesort-like algorithm that provides O(nlog(n)) computational performance. Finally, we show that approximate ICI-Kt correlations can be calculated using smaller feature subsets of large data sets with significant time savings, which has practical computational value when feature sizes are very large.\nThe ICI-Kt correlation calculation is available in an R package and Python module on GitHub at https://github.com/moseleyBionformaticsLab/ICIKendallTau and https://github.com/moseleyBionformaticsLab/icikt, respectively.",
+		"DOI": "10.1101/2022.02.24.481854",
 		"language": "en",
-		"note": "DOI: 10.1101/2022.02.24.481854\nsection: New Results\ntype: article",
+		"note": "section: New Results\ntype: article",
 		"page": "2022.02.24.481854",
 		"source": "bioRxiv",
 		"title": "Information-Content-Informed Kendall-tau Correlation: Utilizing Missing Values",
@@ -364,5 +365,1135 @@
 			]
 		},
 		"citation-key": "TruncatedNormalDistribution2022"
+	},
+	{
+		"id": "ledfordSpaceChargeEffects1984",
+		"type": "article-journal",
+		"archive_location": "world",
+		"container-title": "Analytical Chemistry",
+		"DOI": "10.1021/ac00278a027",
+		"issue": "14",
+		"journalAbbreviation": "Anal Chem",
+		"language": "EN",
+		"note": "publisher: American Chemical Society",
+		"page": "2744 - 2748",
+		"title": "Space charge effects in Fourier transform mass spectrometry. II. Mass calibration",
+		"URL": "https://pubs.acs.org/doi/pdf/10.1021/ac00278a027",
+		"volume": "56",
+		"author": [
+			{
+				"family": "Ledford",
+				"given": "Edward B."
+			},
+			{
+				"family": "Rempel",
+				"given": "Don L."
+			},
+			{
+				"family": "Gross",
+				"given": "M. L."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					3,
+					22
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"1984"
+				]
+			]
+		},
+		"citation-key": "ledfordSpaceChargeEffects1984"
+	},
+	{
+		"id": "burkardtTruncatedNormalDistribution",
+		"type": "article-journal",
+		"abstract": "The normal distribution is a common model of randomness. Unlike the uniform distribution, it proposes a most probable value which is also the mean, while other values occur with a probability that decreases in a regular way with distance from the mean. This behavior is mathematically very satisfying, and has an easily observed correspondence with many physical processes. One drawback of the normal distribution, however, is that it supplies a positive probability density to every value in the range (−∞, +∞), although the actual probability of an extreme event will be very low. In many cases, it is desired to use the normal distribution to describe the random variation of a quantity that, for physical reasons, must be strictly positive. A mathematically defensible way to preserve the main features of the normal distribution while avoiding extreme values involves the truncated normal distribution, in which the range of deﬁnition is made ﬁnite at one or both ends of the interval. It is the purpose of this report to describe the truncation process, to consider how certain basic statistical properties of the new distribution can be determined, to show how to eﬃciently sample the distribution, and how to construct an associated quadrature rule, or even a sparse grid quadrature rule for a problem with multidimensional randomness.",
+		"language": "en",
+		"page": "35",
+		"source": "Zotero",
+		"title": "The Truncated Normal Distribution",
+		"author": [
+			{
+				"family": "Burkardt",
+				"given": "John"
+			}
+		],
+		"citation-key": "burkardtTruncatedNormalDistribution"
+	},
+	{
+		"id": "moseleyCorrectingEffectsNatural2010",
+		"type": "article-journal",
+		"abstract": "Stable isotope tracing with ultra-high resolution Fourier transform-ion cyclotron resonance-mass spectrometry (FT-ICR-MS) can provide simultaneous determination of hundreds to thousands of metabolite isotopologue species without the need for chromatographic separation. Therefore, this experimental metabolomics methodology may allow the tracing of metabolic pathways starting from stable-isotope-enriched precursors, which can improve our mechanistic understanding of cellular metabolism. However, contributions to the observed intensities arising from the stable isotope's natural abundance must be subtracted (deisotoped) from the raw isotopologue peaks before interpretation. Previously posed deisotoping problems are sidestepped due to the isotopic resolution and identification of individual isotopologue peaks. This peak resolution and identification come from the very high mass resolution and accuracy of FT-ICR-MS and present an analytically solvable deisotoping problem, even in the context of stable-isotope enrichment.",
+		"container-title": "BMC Bioinformatics",
+		"DOI": "10.1186/1471-2105-11-139",
+		"ISSN": "1471-2105",
+		"issue": "1",
+		"journalAbbreviation": "BMC Bioinformatics",
+		"page": "139",
+		"source": "BioMed Central",
+		"title": "Correcting for the effects of natural abundance in stable isotope resolved metabolomics experiments involving ultra-high resolution mass spectrometry",
+		"URL": "https://doi.org/10.1186/1471-2105-11-139",
+		"volume": "11",
+		"author": [
+			{
+				"family": "Moseley",
+				"given": "Hunter NB"
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					3,
+					29
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2010",
+					3,
+					17
+				]
+			]
+		},
+		"citation-key": "moseleyCorrectingEffectsNatural2010"
+	},
+	{
+		"id": "carreerComputationalFrameworkHighThroughput2013",
+		"type": "article-journal",
+		"abstract": "New metabolomics applications of ultra-high resolution and accuracy mass spectrometry can provide thousands of detectable isotopologues, with the number of potentially detectable isotopologues increasing exponentially with the number of stable isotopes used in newer isotope tracing methods like stable isotope-resolved metabolomics (SIRM) experiments. This huge increase in usable data requires software capable of correcting the large number of isotopologue peaks resulting from SIRM experiments in a timely manner. We describe the design of a new algorithm and software system capable of handling these high volumes of data, while including quality control methods for maintaining data quality. We validate this new algorithm against a previous single isotope correction algorithm in a two-step cross-validation. Next, we demonstrate the algorithm and correct for the effects of natural abundance for both 13C and 15N isotopes on a set of raw isotopologue intensities of UDP-N-acetyl-D-glucosamine derived from a 13C/15N-tracing experiment. Finally, we demonstrate the algorithm on a full omics-level dataset.",
+		"container-title": "Metabolites",
+		"DOI": "10.3390/metabo3040853",
+		"ISSN": "2218-1989",
+		"issue": "4",
+		"language": "en",
+		"note": "number: 4\npublisher: Multidisciplinary Digital Publishing Institute",
+		"page": "853-866",
+		"source": "www.mdpi.com",
+		"title": "A Computational Framework for High-Throughput Isotopic Natural Abundance Correction of Omics-Level Ultra-High Resolution FT-MS Datasets",
+		"URL": "https://www.mdpi.com/2218-1989/3/4/853",
+		"volume": "3",
+		"author": [
+			{
+				"family": "Carreer",
+				"given": "William J."
+			},
+			{
+				"family": "Flight",
+				"given": "Robert M."
+			},
+			{
+				"family": "Moseley",
+				"given": "Hunter N. B."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					3,
+					29
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2013",
+					12
+				]
+			]
+		},
+		"citation-key": "carreerComputationalFrameworkHighThroughput2013"
+	},
+	{
+		"id": "kindMetabolomicDatabaseAnnotations2006",
+		"type": "article-journal",
+		"abstract": "Metabolomic studies are targeted at identifying and quantifying all metabolites in a given biological context. Among the tools used for metabolomic research, mass spectrometry is one of the most powerful tools. However, metabolomics by mass spectrometry always reveals a high number of unknown compounds which complicate in depth mechanistic or biochemical understanding. In principle, mass spectrometry can be utilized within strategies of de novo structure elucidation of small molecules, starting with the computation of the elemental composition of an unknown metabolite using accurate masses with errors <5 ppm (parts per million). However even with very high mass accuracy (<1 ppm) many chemically possible formulae are obtained in higher mass regions. In automatic routines an additional orthogonal filter therefore needs to be applied in order to reduce the number of potential elemental compositions. This report demonstrates the necessity of isotope abundance information by mathematical confirmation of the concept.",
+		"container-title": "BMC Bioinformatics",
+		"DOI": "10.1186/1471-2105-7-234",
+		"ISSN": "1471-2105",
+		"issue": "1",
+		"journalAbbreviation": "BMC Bioinformatics",
+		"page": "234",
+		"source": "BioMed Central",
+		"title": "Metabolomic database annotations via query of elemental compositions: Mass accuracy is insufficient even at less than 1 ppm",
+		"title-short": "Metabolomic database annotations via query of elemental compositions",
+		"URL": "https://doi.org/10.1186/1471-2105-7-234",
+		"volume": "7",
+		"author": [
+			{
+				"family": "Kind",
+				"given": "Tobias"
+			},
+			{
+				"family": "Fiehn",
+				"given": "Oliver"
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					3,
+					29
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2006",
+					4,
+					28
+				]
+			]
+		},
+		"citation-key": "kindMetabolomicDatabaseAnnotations2006"
+	},
+	{
+		"id": "eylesMethodsStudyProtein2004",
+		"type": "article-journal",
+		"abstract": "It is clear that merely knowing the structure of a protein alone is not sufficient to fully understand its behavior: knowledge also of the dynamic events that occur within proteins is vital to elucidate their function and folding. In recent years, mass spectrometry has come to the forefront as a powerful biophysical method, which can shed light both on the structure and dynamics of proteins. Hydrogen exchange monitored by mass spectrometry is a highly sensitive marker of the backbone dynamics in solution that, combined with gas phase dissociation techniques, can provide a high resolution tool to locate the dynamic regions of a protein. Additionally, charge state distributions in electrospray mass spectra yield insight into the nature and population of alternate structural states present at equilibrium. In this paper, we describe several applications of these methodologies to probe the dynamic events key to the structure, folding, and biological functions of proteins.",
+		"collection-title": "Investigating Protein Folding, Misfolding and Nonnative States:  Experimental and Theoretical Methods",
+		"container-title": "Methods",
+		"DOI": "10.1016/j.ymeth.2004.03.015",
+		"ISSN": "1046-2023",
+		"issue": "1",
+		"journalAbbreviation": "Methods",
+		"language": "en",
+		"page": "88-99",
+		"source": "ScienceDirect",
+		"title": "Methods to study protein dynamics and folding by mass spectrometry",
+		"URL": "https://www.sciencedirect.com/science/article/pii/S1046202304000544",
+		"volume": "34",
+		"author": [
+			{
+				"family": "Eyles",
+				"given": "Stephen J"
+			},
+			{
+				"family": "Kaltashov",
+				"given": "Igor A"
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					3,
+					29
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2004",
+					9,
+					1
+				]
+			]
+		},
+		"citation-key": "eylesMethodsStudyProtein2004"
+	},
+	{
+		"id": "dettmerMassSpectrometrybasedMetabolomics2007",
+		"type": "article-journal",
+		"abstract": "This review presents an overview of the dynamically developing field of mass spectrometry-based metabolomics. Metabolomics aims at the comprehensive and quantitative analysis of wide arrays of metabolites in biological samples. These numerous analytes have very diverse physico-chemical properties and occur at different abundance levels. Consequently, comprehensive metabolomics investigations are primarily a challenge for analytical chemistry and specifically mass spectrometry has vast potential as a tool for this type of investigation. Metabolomics require special approaches for sample preparation, separation, and mass spectrometric analysis. Current examples of those approaches are described in this review. It primarily focuses on metabolic fingerprinting, a technique that analyzes all detectable analytes in a given sample with subsequent classification of samples and identification of differentially expressed metabolites, which define the sample classes. To perform this complex task, data analysis tools, metabolite libraries, and databases are required. Therefore, recent advances in metabolomics bioinformatics are also discussed. © 2006 Wiley Periodicals, Inc., Mass Spec Rev 26:51–78, 2007",
+		"container-title": "Mass Spectrometry Reviews",
+		"DOI": "10.1002/mas.20108",
+		"ISSN": "1098-2787",
+		"issue": "1",
+		"language": "en",
+		"note": "_eprint: https://onlinelibrary.wiley.com/doi/pdf/10.1002/mas.20108",
+		"page": "51-78",
+		"source": "Wiley Online Library",
+		"title": "Mass spectrometry-based metabolomics",
+		"URL": "https://onlinelibrary.wiley.com/doi/abs/10.1002/mas.20108",
+		"volume": "26",
+		"author": [
+			{
+				"family": "Dettmer",
+				"given": "Katja"
+			},
+			{
+				"family": "Aronov",
+				"given": "Pavel A."
+			},
+			{
+				"family": "Hammock",
+				"given": "Bruce D."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					3,
+					29
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2007"
+				]
+			]
+		},
+		"citation-key": "dettmerMassSpectrometrybasedMetabolomics2007"
+	},
+	{
+		"id": "yangChloroformateDerivatizationTracing2017",
+		"type": "article-journal",
+		"abstract": "Amino acids have crucial roles in central metabolism, both anabolic and catabolic. To elucidate these roles, steady-state concentrations of amino acids alone are insufficient, as each amino acid participates in multiple pathways and functions in a complex network, which can also be compartmentalized. Stable Isotope-Resolved Metabolomics (SIRM) is an approach that uses atom-resolved tracking of metabolites through biochemical transformations in cells, tissues, or whole organisms. Using different elemental stable isotopes to label multiple metabolite precursors makes it possible to resolve simultaneously the utilization of these precursors in a single experiment. Conversely, a single precursor labeled with two (or more) different elemental isotopes can trace the allocation of e.g. C and N atoms through the network. Such dual-label experiments however challenge the resolution of conventional mass spectrometers, which must distinguish the neutron mass differences among different elemental isotopes. This requires ultrahigh resolution Fourier transform mass spectrometry (UHR-FTMS). When combined with direct infusion nano-electrospray ion source (nano-ESI), UHR-FTMS can provide rapid, global, and quantitative analysis of all possible mass isotopologues of metabolites. Unfortunately, very low mass polar metabolites such as amino acids can be difficult to analyze by current models of UHR-FTMS, plus the high salt content present in typical cell or tissue polar extracts may cause unacceptable ion suppression for sources such as nano-ESI. Here we describe a modified method of ethyl chloroformate (ECF) derivatization of amino acids to enable rapid quantitative analysis of stable isotope labeled amino acids using nano-ESI UHR-FTMS. This method showed excellent linearity with quantifiable limits in the low nanomolar range represented in microgram quantities of biological specimens, which results in extracts with total analyte abundances in the low to sub-femtomole range. We have applied this method to profile amino acids and their labeling patterns in 13C and 2H doubly labeled PC9 cell extracts, cancerous and non-cancerous tissue extracts from a lung cancer patient and their protein hydrolysates as well as plasma extracts from mice fed with a liquid diet containing 13C6-glucose (Glc). The multi-element isotopologue distributions provided key insights into amino acid metabolism and intracellular pools in human lung cancer tissues in high detail. The 13C labeling of Asp and Glu revealed de novo synthesis of these amino acids from 13C6-Glc via the Krebs cycle, specifically the elevated level of 13C3-labeled Asp and Glu in cancerous versus non-cancerous lung tissues was consistent with enhanced pyruvate carboxylation. In addition, tracking the fate of double tracers, (13C6-Glc + 2H2-Gly or 13C6-Glc + 2H3-Ser) in PC9 cells clearly resolved pools of Ser and Gly synthesized de novo from 13C6-Glc (13C3-Ser and 13C2-Gly) versus Ser and Gly derived from external sources (2H3-Ser, 2H2-Gly). Moreover the complex 2H labeling patterns of the latter were results of Ser and Gly exchange through active Ser-Gly one-carbon metabolic pathway in PC9 cells.",
+		"container-title": "Analytica Chimica Acta",
+		"DOI": "10.1016/j.aca.2017.04.014",
+		"ISSN": "0003-2670",
+		"journalAbbreviation": "Analytica Chimica Acta",
+		"language": "en",
+		"page": "63-73",
+		"source": "ScienceDirect",
+		"title": "Chloroformate derivatization for tracing the fate of Amino acids in cells and tissues by multiple stable isotope resolved metabolomics (mSIRM)",
+		"URL": "https://www.sciencedirect.com/science/article/pii/S0003267017304579",
+		"volume": "976",
+		"author": [
+			{
+				"family": "Yang",
+				"given": "Ye"
+			},
+			{
+				"family": "Fan",
+				"given": "Teresa W-M."
+			},
+			{
+				"family": "Lane",
+				"given": "Andrew N."
+			},
+			{
+				"family": "Higashi",
+				"given": "Richard M."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					3,
+					29
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2017",
+					7,
+					11
+				]
+			]
+		},
+		"citation-key": "yangChloroformateDerivatizationTracing2017"
+	},
+	{
+		"id": "creekStableIsotopeAssistedMetabolomics2012",
+		"type": "article-journal",
+		"abstract": "The combination of high-resolution LC–MS-based untargeted metabolomics with stable isotope tracing provides a global overview of the cellular fate of precursor metabolites. This methodology enables detection of putative metabolites from biological samples and simultaneous quantification of the pattern and extent of isotope labeling. Labeling of Trypanosoma brucei cell cultures with 50% uniformly 13C-labeled glucose demonstrated incorporation of glucose-derived carbon into 187 of 588 putatively identified metabolites in diverse pathways including carbohydrate, nucleotide, lipid, and amino acid metabolism. Labeling patterns confirmed the metabolic pathways responsible for the biosynthesis of many detected metabolites, and labeling was detected in unexpected metabolites, including two higher sugar phosphates annotated as octulose phosphate and nonulose phosphate. This untargeted approach to stable isotope tracing facilitates the biochemical analysis of known pathways and yields rapid identification of previously unexplored areas of metabolism.",
+		"container-title": "Analytical Chemistry",
+		"DOI": "10.1021/ac3018795",
+		"ISSN": "0003-2700",
+		"issue": "20",
+		"journalAbbreviation": "Anal. Chem.",
+		"note": "publisher: American Chemical Society",
+		"page": "8442-8447",
+		"source": "ACS Publications",
+		"title": "Stable Isotope-Assisted Metabolomics for Network-Wide Metabolic Pathway Elucidation",
+		"URL": "https://doi.org/10.1021/ac3018795",
+		"volume": "84",
+		"author": [
+			{
+				"family": "Creek",
+				"given": "Darren J."
+			},
+			{
+				"family": "Chokkathukalam",
+				"given": "Achuthanunni"
+			},
+			{
+				"family": "Jankevics",
+				"given": "Andris"
+			},
+			{
+				"family": "Burgess",
+				"given": "Karl E. V."
+			},
+			{
+				"family": "Breitling",
+				"given": "Rainer"
+			},
+			{
+				"family": "Barrett",
+				"given": "Michael P."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					3,
+					29
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2012",
+					10,
+					16
+				]
+			]
+		},
+		"citation-key": "creekStableIsotopeAssistedMetabolomics2012"
+	},
+	{
+		"id": "hillerNontargetedElucidationMetabolic2010",
+		"type": "article-journal",
+		"abstract": "Systems level tools for the quantitative analysis of metabolic networks are required to engineer metabolism for biomedical and industrial applications. While current metabolomics techniques enable high-throughput quantification of metabolites, these methods provide minimal information on the rates and connectivity of metabolic pathways. Here we present a new method, nontargeted tracer fate detection (NTFD), that expands upon the concept of metabolomics to solve the above problems. Through the combined use of stable isotope tracers and chromatography coupled to mass spectrometry, our computational analysis enables the quantitative detection of all measurable metabolites derived from a specific labeled compound. Without a priori knowledge of a reaction network or compound library, NTFD provides information about relative flux magnitudes into each metabolite pool by determining the mass isotopomer distribution for all labeled compounds. This novel method adds a new dimension to the metabolomics tool box and provides a framework for global analysis of metabolic fluxes.",
+		"container-title": "Analytical Chemistry",
+		"DOI": "10.1021/ac1011574",
+		"ISSN": "0003-2700",
+		"issue": "15",
+		"journalAbbreviation": "Anal. Chem.",
+		"note": "publisher: American Chemical Society",
+		"page": "6621-6628",
+		"source": "ACS Publications",
+		"title": "Nontargeted Elucidation of Metabolic Pathways Using Stable-Isotope Tracers and Mass Spectrometry",
+		"URL": "https://doi.org/10.1021/ac1011574",
+		"volume": "82",
+		"author": [
+			{
+				"family": "Hiller",
+				"given": "Karsten"
+			},
+			{
+				"family": "Metallo",
+				"given": "Christian M."
+			},
+			{
+				"family": "Kelleher",
+				"given": "Joanne K"
+			},
+			{
+				"family": "Stephanopoulos",
+				"given": "Gregory"
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					3,
+					29
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2010",
+					8,
+					1
+				]
+			]
+		},
+		"citation-key": "hillerNontargetedElucidationMetabolic2010"
+	},
+	{
+		"id": "fanStableIsotoperesolvedMetabolomics2012",
+		"type": "article-journal",
+		"abstract": "Advances in analytical methodologies, principally nuclear magnetic resonance spectroscopy (NMR) and mass spectrometry (MS), during the last decade have made large-scale analysis of the human metabolome a reality. This is leading to the reawakening of the importance of metabolism in human diseases, particularly cancer. The metabolome is the functional readout of the genome, functional genome, and proteome; it is also an integral partner in molecular regulations for homeostasis. The interrogation of the metabolome, or metabolomics, is now being applied to numerous diseases, largely by metabolite profiling for biomarker discovery, but also in pharmacology and therapeutics. Recent advances in stable isotope tracer-based metabolomic approaches enable unambiguous tracking of individual atoms through compartmentalized metabolic networks directly in human subjects, which promises to decipher the complexity of the human metabolome at an unprecedented pace. This knowledge will revolutionize our understanding of complex human diseases, clinical diagnostics, as well as individualized therapeutics and drug response. In this review, we focus on the use of stable isotope tracers with metabolomics technologies for understanding metabolic network dynamics in both model systems and in clinical applications. Atom-resolved isotope tracing via the two major analytical platforms, NMR and MS, has the power to determine novel metabolic reprogramming in diseases, discover new drug targets, and facilitates ADME studies. We also illustrate new metabolic tracer-based imaging technologies, which enable direct visualization of metabolic processes in vivo. We further outline current practices and future requirements for biochemoinformatics development, which is an integral part of translating stable isotope-resolved metabolomics into clinical reality.",
+		"container-title": "Pharmacology & Therapeutics",
+		"DOI": "10.1016/j.pharmthera.2011.12.007",
+		"ISSN": "0163-7258",
+		"issue": "3",
+		"journalAbbreviation": "Pharmacology & Therapeutics",
+		"language": "en",
+		"page": "366-391",
+		"source": "ScienceDirect",
+		"title": "Stable isotope-resolved metabolomics and applications for drug development",
+		"URL": "https://www.sciencedirect.com/science/article/pii/S0163725811002300",
+		"volume": "133",
+		"author": [
+			{
+				"family": "Fan",
+				"given": "Teresa W. -M."
+			},
+			{
+				"family": "Lorkiewicz",
+				"given": "Pawel K."
+			},
+			{
+				"family": "Sellers",
+				"given": "Katherine"
+			},
+			{
+				"family": "Moseley",
+				"given": "Hunter N. B."
+			},
+			{
+				"family": "Higashi",
+				"given": "Richard M."
+			},
+			{
+				"family": "Lane",
+				"given": "Andrew N."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					3,
+					29
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2012",
+					3,
+					1
+				]
+			]
+		},
+		"citation-key": "fanStableIsotoperesolvedMetabolomics2012"
+	},
+	{
+		"id": "moseleyNovelDeconvolutionMethod2011",
+		"type": "article-journal",
+		"abstract": "Stable isotope tracing is a powerful technique for following the fate of individual atoms through metabolic pathways. Measuring isotopic enrichment in metabolites provides quantitative insights into the biosynthetic network and enables flux analysis as a function of external perturbations. NMR and mass spectrometry are the techniques of choice for global profiling of stable isotope labeling patterns in cellular metabolites. However, meaningful biochemical interpretation of the labeling data requires both quantitative analysis and complex modeling. Here, we demonstrate a novel approach that involved acquiring and modeling the timecourses of 13C isotopologue data for UDP-N-acetyl-D-glucosamine (UDP-GlcNAc) synthesized from [U-13C]-glucose in human prostate cancer LnCaP-LN3 cells. UDP-GlcNAc is an activated building block for protein glycosylation, which is an important regulatory mechanism in the development of many prominent human diseases including cancer and diabetes.",
+		"container-title": "BMC Biology",
+		"DOI": "10.1186/1741-7007-9-37",
+		"ISSN": "1741-7007",
+		"issue": "1",
+		"journalAbbreviation": "BMC Biology",
+		"page": "37",
+		"source": "BioMed Central",
+		"title": "A novel deconvolution method for modeling UDP-N-acetyl-D-glucosamine biosynthetic pathways based on 13C mass isotopologue profiles under non-steady-state conditions",
+		"URL": "https://doi.org/10.1186/1741-7007-9-37",
+		"volume": "9",
+		"author": [
+			{
+				"family": "Moseley",
+				"given": "Hunter NB"
+			},
+			{
+				"family": "Lane",
+				"given": "Andrew N."
+			},
+			{
+				"family": "Belshoff",
+				"given": "Alex C."
+			},
+			{
+				"family": "Higashi",
+				"given": "Richard M."
+			},
+			{
+				"family": "Fan",
+				"given": "Teresa WM"
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					3,
+					29
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2011",
+					5,
+					31
+				]
+			]
+		},
+		"citation-key": "moseleyNovelDeconvolutionMethod2011"
+	},
+	{
+		"id": "verdegemMAIMSSoftwareTool2017",
+		"type": "article-journal",
+		"abstract": "Metabolic tracer analysis (MTA) is a collection of principles, rules and tools for the interpretation of stable isotope incorporation patterns. One example is the GAIMS algorithm for the deconvolution of the UDP-GlcNAc 13C mass isotopologue profile. GAIMS has been presented as a powerful, yet currently unavailable, proof-of-concept-only technique.",
+		"container-title": "Metabolomics",
+		"DOI": "10.1007/s11306-017-1250-7",
+		"ISSN": "1573-3890",
+		"issue": "10",
+		"journalAbbreviation": "Metabolomics",
+		"language": "en",
+		"page": "123",
+		"source": "Springer Link",
+		"title": "MAIMS: a software tool for sensitive metabolic tracer analysis through the deconvolution of 13C mass isotopologue profiles of large composite metabolites",
+		"title-short": "MAIMS",
+		"URL": "https://doi.org/10.1007/s11306-017-1250-7",
+		"volume": "13",
+		"author": [
+			{
+				"family": "Verdegem",
+				"given": "Dries"
+			},
+			{
+				"family": "Moseley",
+				"given": "Hunter N. B."
+			},
+			{
+				"family": "Vermaelen",
+				"given": "Wesley"
+			},
+			{
+				"family": "Sanchez",
+				"given": "Abel Acosta"
+			},
+			{
+				"family": "Ghesquière",
+				"given": "Bart"
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					3,
+					29
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2017",
+					9,
+					5
+				]
+			]
+		},
+		"citation-key": "verdegemMAIMSSoftwareTool2017"
+	},
+	{
+		"id": "fanAlteredRegulationMetabolic2009",
+		"type": "article-journal",
+		"abstract": "Metabolic perturbations arising from malignant transformation have not been systematically characterized in human lung cancers in situ. Stable isotope resolved metabolomic analysis (SIRM) enables functional analysis of gene dysregulations in lung cancer. To this purpose, metabolic changes were investigated by infusing uniformly labeled 13C-glucose into human lung cancer patients, followed by resection and processing of paired non-cancerous lung and non small cell carcinoma tissues. NMR and GC-MS were used for 13C-isotopomer-based metabolomic analysis of the extracts of tissues and blood plasma.",
+		"container-title": "Molecular Cancer",
+		"DOI": "10.1186/1476-4598-8-41",
+		"ISSN": "1476-4598",
+		"issue": "1",
+		"journalAbbreviation": "Molecular Cancer",
+		"page": "41",
+		"source": "BioMed Central",
+		"title": "Altered regulation of metabolic pathways in human lung cancer discerned by 13C stable isotope-resolved metabolomics (SIRM)",
+		"URL": "https://doi.org/10.1186/1476-4598-8-41",
+		"volume": "8",
+		"author": [
+			{
+				"family": "Fan",
+				"given": "Teresa WM"
+			},
+			{
+				"family": "Lane",
+				"given": "Andrew N."
+			},
+			{
+				"family": "Higashi",
+				"given": "Richard M."
+			},
+			{
+				"family": "Farag",
+				"given": "Mohamed A."
+			},
+			{
+				"family": "Gao",
+				"given": "Hong"
+			},
+			{
+				"family": "Bousamra",
+				"given": "Michael"
+			},
+			{
+				"family": "Miller",
+				"given": "Donald M."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					3,
+					29
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2009",
+					6,
+					26
+				]
+			]
+		},
+		"citation-key": "fanAlteredRegulationMetabolic2009"
+	},
+	{
+		"id": "lorkiewiczHighInformationThroughput2012",
+		"type": "article-journal",
+		"abstract": "Fourier transform-ion cyclotron resonance-mass spectrometry (FTICR-MS) is capable of acquiring unmatched quality of isotopologue data for stable isotope resolved metabolomics (SIRM). This capability drives the need for a continuous ion introduction for obtaining optimal isotope ratios. Here we report the simultaneous analysis of mono and dinucleotides from crude polar extracts by FTICR-MS by adapting an ion-pairing sample preparation method for LC–MS analysis. This involves a rapid cleanup of extracted nucleotides on pipet tips containing a C18 stationary phase, which enabled global analysis of nucleotides and their 13C isotopologues at nanomolar concentrations by direct infusion nanoelectrospray FTICR-MS with 5 min of data acquisition. The resolution and mass accuracy enabled computer-assisted unambiguous assignment of most nucleotide species, including all phosphorylated forms of the adenine, guanine, uracil and cytosine nucleotides, NAD+, NADH, NADP+, NADPH, cyclic nucleotides, several UDP-hexoses, and all their 13C isotopologues. The method was applied to a SIRM study on human lung adenocarcinoma A549 cells grown in [U-13C] glucose with or without the anti-cancer agent methylseleninic acid. At m/z resolving power of 400,000, 13C-isotopologues of nucleotides were fully resolved from all other elemental isotopologues, thus allowing their 13C fractional enrichment to be accurately determined. The method achieves both high sample and high information throughput analysis of nucleotides for metabolic pathway reconstruction in SIRM investigations.",
+		"container-title": "Metabolomics",
+		"DOI": "10.1007/s11306-011-0388-y",
+		"ISSN": "1573-3890",
+		"issue": "5",
+		"journalAbbreviation": "Metabolomics",
+		"language": "en",
+		"page": "930-939",
+		"source": "Springer Link",
+		"title": "High information throughput analysis of nucleotides and their isotopically enriched isotopologues by direct-infusion FTICR-MS",
+		"URL": "https://doi.org/10.1007/s11306-011-0388-y",
+		"volume": "8",
+		"author": [
+			{
+				"family": "Lorkiewicz",
+				"given": "Pawel"
+			},
+			{
+				"family": "Higashi",
+				"given": "Richard M."
+			},
+			{
+				"family": "Lane",
+				"given": "Andrew N."
+			},
+			{
+				"family": "Fan",
+				"given": "Teresa W.-M."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					3,
+					29
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2012",
+					10,
+					1
+				]
+			]
+		},
+		"citation-key": "lorkiewiczHighInformationThroughput2012"
+	},
+	{
+		"id": "goodacreMetabolomicsNumbersAcquiring2004",
+		"type": "article-journal",
+		"container-title": "Trends in Biotechnology",
+		"DOI": "10.1016/j.tibtech.2004.03.007",
+		"ISSN": "0167-7799, 1879-3096",
+		"issue": "5",
+		"journalAbbreviation": "Trends in Biotechnology",
+		"language": "English",
+		"note": "publisher: Elsevier\nPMID: 15109811",
+		"page": "245-252",
+		"source": "www.cell.com",
+		"title": "Metabolomics by numbers: acquiring and understanding global metabolite data",
+		"title-short": "Metabolomics by numbers",
+		"URL": "https://www.cell.com/trends/biotechnology/abstract/S0167-7799(04)00081-2",
+		"volume": "22",
+		"author": [
+			{
+				"family": "Goodacre",
+				"given": "Royston"
+			},
+			{
+				"family": "Vaidyanathan",
+				"given": "Seetharaman"
+			},
+			{
+				"family": "Dunn",
+				"given": "Warwick B."
+			},
+			{
+				"family": "Harrigan",
+				"given": "George G."
+			},
+			{
+				"family": "Kell",
+				"given": "Douglas B."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					3,
+					29
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2004",
+					5,
+					1
+				]
+			]
+		},
+		"citation-key": "goodacreMetabolomicsNumbersAcquiring2004"
+	},
+	{
+		"id": "higashiStableIsotopeLabeledTracers2014",
+		"type": "chapter",
+		"abstract": "Advances in analytical methodologies, principally nuclear magnetic resonance spectroscopy (NMR) and mass spectrometry (MS), over the last decade have made large-scale analysis of the human metabolome a reality. This is leading to the reawakening of the importance of metabolism in human diseases, particularly widespread metabolic diseases such as cancer, diabetes, and obesity. Emerging NMR and MS atom-tracking technologies and informatics are poised to revolutionize metabolomics-based research because they deliver the high information throughput (HIT) that is needed for deciphering systems biochemistry. In particular, stable isotope-resolved metabolomics (SIRM) enables unambiguous tracking of individual atoms through compartmentalized metabolic networks in a wide range of experimental systems, including human subjects. MS offers a wide range of instrumental capabilities involving different levels of initial capital outlay and operating costs, ranging from gas-chromatography (GC) MS that is affordable by many individual laboratories to the HIT-supporting Fourier-transform (FT) class of MS that rivals NMR in cost and infrastructure support. This chapter focuses on sample preparation, instrument, and data processing procedures for these two extremes of MS instrumentation used in SIRM.",
+		"collection-title": "Methods in Molecular Biology",
+		"container-title": "Mass Spectrometry in Metabolomics: Methods and Protocols",
+		"event-place": "New York, NY",
+		"ISBN": "978-1-4939-1258-2",
+		"language": "en",
+		"note": "DOI: 10.1007/978-1-4939-1258-2_11",
+		"page": "147-167",
+		"publisher": "Springer",
+		"publisher-place": "New York, NY",
+		"source": "Springer Link",
+		"title": "Stable Isotope-Labeled Tracers for Metabolic Pathway Elucidation by GC-MS and FT-MS",
+		"URL": "https://doi.org/10.1007/978-1-4939-1258-2_11",
+		"author": [
+			{
+				"family": "Higashi",
+				"given": "Richard M."
+			},
+			{
+				"family": "Fan",
+				"given": "Teresa W.-M."
+			},
+			{
+				"family": "Lorkiewicz",
+				"given": "Pawel K."
+			},
+			{
+				"family": "Moseley",
+				"given": "Hunter N. B."
+			},
+			{
+				"family": "Lane",
+				"given": "Andrew N."
+			}
+		],
+		"editor": [
+			{
+				"family": "Raftery",
+				"given": "Daniel"
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					3,
+					30
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2014"
+				]
+			]
+		},
+		"citation-key": "higashiStableIsotopeLabeledTracers2014"
+	},
+	{
+		"id": "peakeNewLipidSoftware",
+		"type": "article-journal",
+		"language": "en",
+		"page": "7",
+		"source": "Zotero",
+		"title": "A New Lipid Software Workflow for Processing Orbitrap-based Global Lipidomics Data in Translational and Systems Biology Research",
+		"author": [
+			{
+				"family": "Peake",
+				"given": "David A"
+			},
+			{
+				"family": "Yokoi",
+				"given": "Yasuto"
+			},
+			{
+				"family": "Wang",
+				"given": "Junhua"
+			},
+			{
+				"family": "Huang",
+				"given": "Yingying"
+			}
+		],
+		"citation-key": "peakeNewLipidSoftware"
+	},
+	{
+		"id": "sellersPyruvateCarboxylaseCritical2015",
+		"type": "article-journal",
+		"container-title": "The Journal of Clinical Investigation",
+		"DOI": "10.1172/JCI72873",
+		"ISSN": "0021-9738",
+		"issue": "2",
+		"journalAbbreviation": "J Clin Invest",
+		"language": "en",
+		"note": "publisher: American Society for Clinical Investigation\nPMID: 0",
+		"page": "687-698",
+		"source": "www.jci.org",
+		"title": "Pyruvate carboxylase is critical for non–small-cell lung cancer proliferation",
+		"URL": "https://www.jci.org/articles/view/72873",
+		"volume": "125",
+		"author": [
+			{
+				"family": "Sellers",
+				"given": "Katherine"
+			},
+			{
+				"family": "Fox",
+				"given": "Matthew P."
+			},
+			{
+				"family": "Bousamra",
+				"given": "Michael"
+			},
+			{
+				"family": "Slone",
+				"given": "Stephen P."
+			},
+			{
+				"family": "Higashi",
+				"given": "Richard M."
+			},
+			{
+				"family": "Miller",
+				"given": "Donald M."
+			},
+			{
+				"family": "Wang",
+				"given": "Yali"
+			},
+			{
+				"family": "Yan",
+				"given": "Jun"
+			},
+			{
+				"family": "Yuneva",
+				"given": "Mariia O."
+			},
+			{
+				"family": "Deshpande",
+				"given": "Rahul"
+			},
+			{
+				"family": "Lane",
+				"given": "Andrew N."
+			},
+			{
+				"family": "Fan",
+				"given": "Teresa W.-M."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					3,
+					30
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2015",
+					2,
+					2
+				]
+			]
+		},
+		"citation-key": "sellersPyruvateCarboxylaseCritical2015"
+	},
+	{
+		"id": "harrisDiverseMechanismsGrowth2012",
+		"type": "article-journal",
+		"abstract": "The rationale of this dose matching/dose escalating study was to compare a panel of flavonoids—luteolin, resveratrol, and quercetin—against the metabolite flux-controlling properties of a synthetic targeted fatty acid synthase inhibitor drug C75 on multiple macromolecule synthesis pathways in pancreatic tumor cells using [1,2-13C2]-d-glucose as the single precursor metabolic tracer. MIA PaCa-2 pancreatic adenocarcinoma cells were cultured for 48 h in the presence of 0.1% DMSO (control), or 50 or 100 μM of each test compound, while intracellular glycogen, RNA ribose, palmitate and cholesterol as well as extra cellular 13CO2, lactate and glutamate production patterns were measured using gas chromatography/mass spectrometry (GC/MS) and stable isotope-based dynamic metabolic profiling (SiDMAP). The use of 50% [1,2-13C2]-d-glucose as tracer resulted in an average of 24 excess 13CO2 molecules for each 1,000 CO2 molecule in the culture media, which was decreased by 29 and 33% (P < 0.01) with 100 μM C75 and luteolin treatments, respectively. Extracellular tracer glucose-derived 13C-labeled lactate fractions (Σm) were between 45.52 and 47.49% in all cultures with a molar ratio of 2.47% M + 1/Σm lactate produced indirectly by direct oxidation of glucose in the pentose cycle in control cultures; treatment with 100 μM C75 and luteolin decreased this figure to 1.80 and 1.67%. The tracer glucose-derived 13C labeled fraction (Σm) of ribonucleotide ribose was 34.73% in controls, which was decreased to 20.58 and 8.45% with C75, 16.15 and 6.86% with luteolin, 27.66 and 19.25% with resveratrol, and 30.09 and 25.67% with quercetin, respectively. Luteolin effectively decreased nucleotide precursor synthesis pentose cycle flux primarily via the oxidative branch, where we observed a 41.74% flux (M + 1/Σm) in control cells, in comparison with only a 37.19%, 32.74%, or a 26.57%, 25.47% M + 1/Σm flux (P < 0.001) after 50 or 100 μM C75 or luteolin treatment. Intracellular de novo fatty acid palmitate (C16:0) synthesis was severely and equally blocked by C75 and luteolin treatments indicated by the 5.49% (control), 2.29 or 2.47% (C75) and 2.21 or 2.73% (luteolin) tracer glucose-derived 13C-labeled fractions, respectively. On the other hand there was a significant 192 and 159% (P < 0.001), and a 103 and 117% (P < 0.01) increase in tracer glucose-derived cholesterol after C75 or luteolin treatment. Only resveratrol and quercetin at 100 μM inhibited tracer glucose-derived glycogen labeling (Σm) and turnover by 34.8 and 23.8%, respectively. The flavonoid luteolin possesses equal efficacy to inhibit fatty acid palmitate de novo synthesis as well as nucleotide RNA ribose turnover via the oxidative branch of the pentose cycle in comparison with the targeted fatty acid synthase inhibitor synthetic compound C75. Luteolin is also effective in stringently controlling glucose entry and anaplerosis in the TCA cycle, while it promotes less glucose flux towards cholesterol synthesis than that of C75. In contrast, quercetin and resveratrol inhibit glycogen synthesis and turnover as their underlying mechanism of controlling tumor cell proliferation. Therefore the flavonoid luteolin controls fatty and nucleic acid syntheses as well as energy production with pharmacological strength, which can be explored as a non-toxic natural treatment modality for pancreatic cancer.",
+		"container-title": "Metabolomics",
+		"DOI": "10.1007/s11306-011-0300-9",
+		"ISSN": "1573-3890",
+		"issue": "2",
+		"journalAbbreviation": "Metabolomics",
+		"language": "en",
+		"page": "201-210",
+		"source": "Springer Link",
+		"title": "Diverse mechanisms of growth inhibition by luteolin, resveratrol, and quercetin in MIA PaCa-2 cells: a comparative glucose tracer study with the fatty acid synthase inhibitor C75",
+		"title-short": "Diverse mechanisms of growth inhibition by luteolin, resveratrol, and quercetin in MIA PaCa-2 cells",
+		"URL": "https://doi.org/10.1007/s11306-011-0300-9",
+		"volume": "8",
+		"author": [
+			{
+				"family": "Harris",
+				"given": "Diane M."
+			},
+			{
+				"family": "Li",
+				"given": "Luyi"
+			},
+			{
+				"family": "Chen",
+				"given": "Monica"
+			},
+			{
+				"family": "Lagunero",
+				"given": "F. Tracy"
+			},
+			{
+				"family": "Go",
+				"given": "Vay Liang W."
+			},
+			{
+				"family": "Boros",
+				"given": "Laszlo G."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					3,
+					30
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2012",
+					4,
+					1
+				]
+			]
+		},
+		"citation-key": "harrisDiverseMechanismsGrowth2012"
+	},
+	{
+		"id": "mitchellSmallMoleculeIsotope2019",
+		"type": "article-journal",
+		"abstract": "Improvements in Fourier transform mass spectrometry (FT-MS) enable increasingly more complex experiments in the field of metabolomics. What is directly detected in FT-MS spectra are spectral features (peaks) that correspond to sets of adducted and charged forms of specific molecules in the sample. The robust assignment of these features is an essential step for MS-based metabolomics experiments, but the sheer complexity of what is detected and a variety of analytically introduced variance, errors, and artifacts has hindered the systematic analysis of complex patterns of observed peaks with respect to isotope content. We have developed a method called SMIRFE that detects small biomolecules and determines their elemental molecular formula (EMF) using detected sets of isotopologue peaks sharing the same EMF. SMIRFE does not use a database of known metabolite formulas; instead a nearly comprehensive search space of all isotopologues within a mass range is constructed and used for assignment. This search space can be tailored for different isotope labeling patterns expected in different stable isotope tracing experiments. Using consumer-level computing equipment, a large search space of 2000 Da was constructed, and assignment performance was evaluated and validated using verified assignments on a pair of peak lists derived from spectra containing unlabeled and 15N-labeled versions of amino acids derivatized using ethylchloroformate. SMIRFE identified 18 of 18 predicted derivatized EMFs, and each assignment was evaluated statistically and assigned an e-value representing the probability to occur by chance.",
+		"container-title": "Analytical Chemistry",
+		"DOI": "10.1021/acs.analchem.9b00748",
+		"ISSN": "0003-2700",
+		"issue": "14",
+		"journalAbbreviation": "Anal. Chem.",
+		"note": "publisher: American Chemical Society",
+		"page": "8933-8940",
+		"source": "ACS Publications",
+		"title": "Small Molecule Isotope Resolved Formula Enumeration: A Methodology for Assigning Isotopologues and Metabolite Formulas in Fourier Transform Mass Spectra",
+		"title-short": "Small Molecule Isotope Resolved Formula Enumeration",
+		"URL": "https://doi.org/10.1021/acs.analchem.9b00748",
+		"volume": "91",
+		"author": [
+			{
+				"family": "Mitchell",
+				"given": "Joshua M."
+			},
+			{
+				"family": "Flight",
+				"given": "Robert M."
+			},
+			{
+				"family": "Moseley",
+				"given": "Hunter N. B."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					3,
+					30
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2019",
+					7,
+					16
+				]
+			]
+		},
+		"citation-key": "mitchellSmallMoleculeIsotope2019"
+	},
+	{
+		"id": "mitchellDerivingLipidClassification2020",
+		"type": "article-journal",
+		"abstract": "Despite instrument and algorithmic improvements, the untargeted and accurate assignment of metabolites remains an unsolved problem in metabolomics. New assignment methods such as our SMIRFE algorithm can assign elemental molecular formulas to observed spectral features in a highly untargeted manner without orthogonal information from tandem MS or chromatography. However, for many lipidomics applications, it is necessary to know at least the lipid category or class that is associated with a detected spectral feature to derive a biochemical interpretation. Our goal is to develop a method for robustly classifying elemental molecular formula assignments into lipid categories for an application to SMIRFE-generated assignments. Using a Random Forest machine learning approach, we developed a method that can predict lipid category and class from SMIRFE non-adducted molecular formula assignments. Our methods achieve high average predictive accuracy (>90%) and precision (>83%) across all eight of the lipid categories in the LIPIDMAPS database. Classification performance was evaluated using sets of theoretical, data-derived, and artifactual molecular formulas. Our methods enable the lipid classification of non-adducted molecular formula assignments generated by SMIRFE without orthogonal information, facilitating the biochemical interpretation of untargeted lipidomics experiments. This lipid classification appears insufficient for validating single-spectrum assignments, but could be useful in cross-spectrum assignment validation.",
+		"container-title": "Metabolites",
+		"DOI": "10.3390/metabo10030122",
+		"ISSN": "2218-1989",
+		"issue": "3",
+		"journalAbbreviation": "Metabolites",
+		"language": "eng",
+		"note": "PMID: 32214009\nPMCID: PMC7143220",
+		"page": "E122",
+		"source": "PubMed",
+		"title": "Deriving Lipid Classification Based on Molecular Formulas",
+		"volume": "10",
+		"author": [
+			{
+				"family": "Mitchell",
+				"given": "Joshua M."
+			},
+			{
+				"family": "Flight",
+				"given": "Robert M."
+			},
+			{
+				"family": "Moseley",
+				"given": "Hunter N. B."
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2020",
+					3,
+					24
+				]
+			]
+		},
+		"citation-key": "mitchellDerivingLipidClassification2020"
 	}
 ]
