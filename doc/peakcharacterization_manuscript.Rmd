@@ -54,9 +54,9 @@ knitr::opts_chunk$set(echo = FALSE,
 ```
 
 ::: {custom-style="MDPI_1.7_abstract"}
-**Abstract:** We introduce a novel method for characterizing peaks from direct injection FT-MS experiments developed on metabolomics datasets that utilizes frequency values derived directly from the spacing of raw m/z points in spectral scans.
+**Abstract:** We introduce a novel, scan-centric method for characterizing peaks from direct injection multi-scan FT-MS experiments developed on metabolomics datasets that utilizes frequency values derived directly from the spacing of raw m/z points in spectral scans.
 Our method incorporates several aspects designed to make the derived intensities trustworthy, and suitable for use in our previously published peak assignment algorithm SMIRFE.
-Notably, the inclusion of an intensity independent noise removal, and normalization of scan level data results in a reduction of median relative standard deviation from **X** to **Y**, and much better fit of peak intensities to relative natural abundances of assigned isotopologues.
+Notably, the use of intensity independent noise removal, and normalization of scan level data results in a much better fit of relative intensity to natural abundance probability for low abundance isotopologues that are not present in all of the acquired scans.
 :::
 
 ::: {custom-style="MDPI_1.8_keywords"}
@@ -68,9 +68,28 @@ Notably, the inclusion of an intensity independent noise removal, and normalizat
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-What can we say about FT-MS data?
-There is more and more of it, and more of it applied to metabolomics.
-Profile mode, multi-scan direct injection FT-MS is an interesting approach because it allows us to handle cases where something might go wrong in an individual scan, while still extracting useful data.
+Fourier transform mass spectrometry (FT-MS) provides high performance in terms of sensitivity, resolution and mass accuracy all in one analytical instrumentation.
+The combination of these capabilities provide several analytical and interpretive improvements including: (i) the ability to resolve distinct isotopologues with identical unit masses but different accurate masses [@higashiStableIsotopeLabeledTracers2014], enabling multi-element isotopic natural abundance correction [@moseleyCorrectingEffectsNatural2010; @carreerComputationalFrameworkHighThroughput2013]; (ii) improved assignment accuracy [@kindMetabolomicDatabaseAnnotations2006]; and (iii) the detection of metabolites in the sub-femtomolar range [@eylesMethodsStudyProtein2004; @dettmerMassSpectrometrybasedMetabolomics2007]. 
+In the metabolomics field, these improvements permit more complicated, but more informative experimental designs such as the use of multiple isotope-labeled precursors in stable isotope-resolved metabolomics (SIRM) experiments [@yangChloroformateDerivatizationTracing2017. 
+Multiple isotope-labeling experiments can provide the information needed to elucidate unknown metabolic pathways [@creekStableIsotopeAssistedMetabolomics2012; @higashiStableIsotopeLabeledTracers2014], quantify relative fluxes through multiple metabolic pathways [@hillerNontargetedElucidationMetabolic2010], identify metabolite pools in different celullar compartments [@fanStableIsotoperesolvedMetabolomics2012], and identify active metabolic pathways under various cellular conditions [@moseleyNovelDeconvolutionMethod2011; @sellersPyruvateCarboxylaseCritical2015; @verdegemMAIMSSoftwareTool2017]. 
+These gains in information enable more complete modeling of cellular metabolism and better understanding of physiological and pathological processes at a mechanistic level, facilitating the identification of potential therapeutic targets [@fanAlteredRegulationMetabolic2009] and the quantification of differential drug response [@harrisDiverseMechanismsGrowth2012].
+
+While the advantages of FT-MS are significant, when deployed in a high-throughput environment, the volume of data produced requires automated tools for data reduction, quality control, feature assignment, and downstream analyses. 
+These requirements are amplified when FT-MS is used with direct infusion where existing and well-validated assignment methods that rely on orthogonal sources of information (such as chromatography) are either not applicable or would further increase the amount of data to be processed. 
+Therefore, without automation, rigorous assignment of non-polymeric biomolecules in untargeted MS analyses remains difficult even with FT-MS’s high resolution.
+
+Within this high-throughput environment we previously developed methods to remove high-peak-density artifacts [@mitchellNewMethodsIdentify2018], annotate peaks with assignments using SMIRFE [@mitchellSmallMoleculeIsotope2019], and generate lipid classifications for those peak assignments [@mitchellDerivingLipidClassification2020].
+All of these methods together culminated in detecting differential lipids in non-small-cell lung cancer (NSCLC) [@mitchellUntargetedLipidomicsNonSmall2021].
+
+The input peak-data in these studies are derived from multi-scan direct-injection FT-MS data.
+SMIRFE in particular uses expected relationships of relative peak height or intensity to natural abundance probability (NAP) across multiple peaks to determine the likelihood of an assignment for the peaks in question.
+In the Thermo-Fisher Orbitrap FT-MS instruments, data is acquired in micro-scans and scans, where each scan is an aggregate of multiple micro-scans.
+Depending on the sample source, it can be advantageous to keep the data at the scan level, so that any given "bad" scan can be removed prior to aggregating the data across scans and generating a centroided peak m/z and intensity.
+If the scan level data is not processed and aggregated correctly, the final peak intensities and / or m/z's will be incorrect.
+In particular, if peaks are missing in some scans due to low abundance, the final aggregate peak intensities will not fit the expected relative intensity to NAP relationships.
+Here we describe novel scan-centric FT-MS metabolomics data processing methods that better preserve the expected relative intensity to NAP.
+In addition, due to the tendency of increasing point spacing with increasing m/z in Orbitrap type instruments, we derive a method for transforming the m/z data to axial frequency, which has the desirable property of being equally spaced across the full spectrum.
+Finally, we show that in addition to better preserving the expected intensity - NAP relationships, our scan-centric method also results in improved relative standard deviations, automatic identification of high-peak-density artifact peaks, and separation of samples in a lipidomics data analysis.
 :::
 
 ::: {custom-style="MDPI_2.1_heading1"}
@@ -82,7 +101,7 @@ Profile mode, multi-scan direct injection FT-MS is an interesting approach becau
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-To motivate our solution, we generated peak lists using the peak exporting functionality in Xcalibur (a process we have observed being used to generate datasets), as well as merging scans (see Methods) in the MSnbase R package.
+To motivate our solution, we generated peak lists using the peak exporting functionality in Xcalibur (a process we have observed being used to generate datasets), as well as merging scans (see Methods) with the MSnbase R package.
 In all cases, for a known assigned set of peaks, the intensity ratios between the assigned peaks deviate from the intensity ratio predicted by their natural abundance probabilities (NAPs), as shown in Figure X, with some solutions giving different amounts of error.
 We do note that when all of the peaks are present in a single scan, their relative intensity ratios are much closer to the theoretical ratios based on NAP.
 :::
