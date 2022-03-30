@@ -82,10 +82,11 @@ Within this high-throughput environment we previously developed methods to remov
 All of these methods together culminated in detecting differential lipids in non-small-cell lung cancer (NSCLC) [@mitchellUntargetedLipidomicsNonSmall2021].
 
 The input peak-data in these studies are derived from multi-scan direct-injection FT-MS data.
-SMIRFE in particular uses expected relationships of relative peak height or intensity to natural abundance probability (NAP) across multiple peaks to determine the likelihood of an assignment for the peaks in question.
+SMIRFE uses expected relationships of relative peak height or intensity to natural abundance probability (NAP) across multiple peak pairs to determine the likelihood of an assignment for the peaks in question.
 In the Thermo-Fisher Orbitrap FT-MS instruments, data is acquired in micro-scans and scans, where each scan is an aggregate of multiple micro-scans.
 Depending on the sample source, it can be advantageous to keep the data at the scan level, so that any given "bad" scan can be removed prior to aggregating the data across scans and generating a centroided peak m/z and intensity.
 If the scan level data is not processed and aggregated correctly, the final peak intensities and / or m/z's will be incorrect.
+
 In particular, if peaks are missing in some scans due to low abundance, the final aggregate peak intensities will not fit the expected relative intensity to NAP relationships.
 Here we describe novel scan-centric FT-MS metabolomics data processing methods that better preserve the expected relative intensity to NAP.
 In addition, due to the tendency of increasing point spacing with increasing m/z in Orbitrap type instruments, we derive a method for transforming the m/z data to axial frequency, which has the desirable property of being equally spaced across the full spectrum.
@@ -100,10 +101,27 @@ Finally, we show that in addition to better preserving the expected intensity - 
 ### Naively Averaged Data Have Bad Relative Intensities
 :::
 
+```{r increment_motivation}
+figure_count$increment("motivation")
+```
+
 ::: {custom-style="MDPI_3.1_text"}
-To motivate our solution, we generated peak lists using the peak exporting functionality in Xcalibur (a process we have observed being used to generate datasets), as well as merging scans (see Methods) with the MSnbase R package.
-In all cases, for a known assigned set of peaks, the intensity ratios between the assigned peaks deviate from the intensity ratio predicted by their natural abundance probabilities (NAPs), as shown in Figure X, with some solutions giving different amounts of error.
-We do note that when all of the peaks are present in a single scan, their relative intensity ratios are much closer to the theoretical ratios based on NAP.
+To motivate our solution, we generated peak lists using the peak exporting functionality in Xcalibur as well as our scan-centric peak characterization, and found matching Xcalibur peaks to our assignments.
+As an example, in `r figure_count$label_text("motivation")` we show the Xcalibur calculated intensities and theoretical peak intensities based on NAP for four peaks matching threonine.
+As the NAP gets lower, the deviations of the Xcalibur calculated intensities from the NAP become larger.
+:::
+
+::: {custom-style="MDPI_5.2_figure"}
+```{r motivation, dn_id = figure_count, fig.width = 10, fig.height = 6}
+tar_load(motivation_plot)
+motivation_plot
+```
+:::
+
+::: {custom-style="MDPI_5.1_figure_caption"}
+`r figure_count$label_text("motivation")`.
+Xcalibur intensities (black) and theoretical intensities based on relative NAP (red) for ECF derived threonine.
+The 18O isotopologue is shifted by 0.01 m/z and the NAP peaks by 0.05 m/z to aid visualization.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
