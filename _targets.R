@@ -119,11 +119,17 @@ figures_tar = tar_plan(
              create_noise_plot(noise_combine)),
   tar_target(mn_ratios,
              calculate_m_n_ratio(noise_combine)),
-  tar_render(manuscript, "doc/peakcharacterization_manuscript.Rmd"),
-  tar_target(rmd_no_mdpi, strip_mdpi("doc/peakcharacterization_manuscript.Rmd")),
-  tar_target(rmd_mdpi, strip_headers("doc/peakcharacterization_manuscript.Rmd")),
-  tar_render(manuscript_mdpi, "doc/peakcharacterization_mdpi.Rmd"),
-  tar_render(manuscript_nostyle, "doc/peakcharacterization_nostyle.Rmd")
+  tar_target(motivation_plot,
+             motivating_plot(nap_height_1ecf)),
+  tar_target(base_manuscript,
+             "doc/peakcharacterization_manuscript.Rmd",
+             format = "file"),
+  tar_render(manuscript_both,
+             "doc/peakcharacterization_manuscript.Rmd"),
+  tar_target(manuscript_nostyle,
+             strip_mdpi_render(base_manuscript)),
+  tar_target(manuscript_mdpi,
+             strip_headers_render(base_manuscript))
 )
 
 tables_tar = tar_plan(
@@ -247,6 +253,28 @@ height_nap_tar = list(
   tar_target(aa_diffs_filtersd_2ecf, ratio_diffs_extracted(aa_compared_filtersd_2ecf))
 )
 
+unassigned_match_tar = list(
+  tar_target(um_peaks_1ecf,
+             match_unassigned_peaks(method_filtersd_1ecf, xcalibur_1ecf, msnbase_1ecf)),
+  tar_target(um_peaks_2ecf,
+             match_unassigned_peaks(method_filtersd_2ecf, xcalibur_2ecf, msnbase_2ecf)),
+  tar_target(um_peaks_97lipid,
+             match_unassigned_peaks(method_filtersd_97lipid, xcalibur_97lipid, msnbase_97lipid)),
+  tar_target(um_peaks_49lipid,
+             match_unassigned_peaks(method_filtersd_49lipid, xcalibur_49lipid, msnbase_49lipid))
+)
+
+assigned_match_tar = list(
+  tar_target(ass_peaks_1ecf,
+             match_assigned_peaks(aa_filtersd_1ecf, xcalibur_1ecf, msnbase_1ecf)),
+  tar_target(ass_peaks_2ecf,
+             match_assigned_peaks(aa_filtersd_2ecf, xcalibur_2ecf, msnbase_2ecf)),
+  tar_target(ass_peaks_97lipid,
+             match_assigned_peaks(aa_filtersd_97lipid, xcalibur_97lipid, msnbase_97lipid)),
+  tar_target(ass_peaks_49lipid,
+             match_assigned_peaks(aa_filtersd_49lipid, xcalibur_49lipid, msnbase_49lipid))
+)
+
 list(pkg_tar,
      data_tar,
      method_tar,
@@ -262,4 +290,6 @@ list(pkg_tar,
      formula_tar,
      xcalibur_tar,
      height_nap_tar,
+     unassigned_match_tar,
+     assigned_match_tar,
      aa_tar)
