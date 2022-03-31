@@ -510,6 +510,70 @@ out_plot
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
+### Method Specific Peaks
+:::
+
+```{r increment_peak_comparisons}
+table_count$increment("unassigned_1ecf")
+table_count$increment("unassigned_97lipid")
+
+figure_count$increment("unassigned_upset")
+
+tar_load(um_peaks_1ecf)
+tar_load(um_peaks_97lipid)
+```
+
+::: {custom-style="MDPI_3.1_text"}
+Each set of peaks generated may or may not be specific to the particular method used to generate centroided peak m/z and intensities.
+This is true for the different scan-centric combinations, as well as the peaks from Xcalibur and MSnbase.
+Here we examine the overlap of the unassigned (`r figure_count$label_text("unassigned_upset")`) and assigned peaks from the full scan-centric processing with Xcalibur and MSnbase.
+These same counts are also summarized in `r table_count$label_text("unassigned_1ecf")` and `r table_count$label_text("unassigned_97lipid")`.
+In these two examples, there are some striking differences.
+The 1ecf sample has all of the scan-centric peaks shared with either Xcalibur or MSnbase peaks, whereas the 97lipid sample has 2/3 of the peaks specific to scan-centric characterization and not matched to either of the other methods.
+Notably, for both samples, the scan-centric characterization produces similar numbers of peaks, even though the upper mass limit in 1ecf is 1000 m/z compared to 1600 m/z for the 97lipid sample.
+Whereas the number of peaks from MSnbase and Xcalibur are three-fold and 40-fold higher in the 1ecf sample compared to the 97lipid sample.
+:::
+
+```{r unassigned_upset, dn_id = figure_count, fig.width = 16, fig.height = 8}
+set_order = c("scancentric", "msnbase", "xcalibur")
+u1 = grid::grid.grabExpr(draw(UpSet(um_peaks_1ecf$comb_matrix, 
+                           set_order = set_order)))
+u2 = grid::grid.grabExpr(draw(UpSet(um_peaks_97lipid$comb_matrix, 
+                           set_order = set_order)))
+
+up_plot = wrap_elements(u1, clip = FALSE) + wrap_elements(u2, clip = FALSE)
+up_plot + plot_annotation(tag_levels = "A")
+```
+
+::: {custom-style="MDPI_5.1_figure_caption"}
+`r figure_count$label_text("unassigned_upset")`.
+UpSet plot with the counts of common and specific peaks for each of scancentric, MSnbase and XCalibur generated peaks for the 1ecf (**A**) and 97lipid (**B**) samples.
+:::
+
+::: {custom-style="MDPI_4.1_table_caption"}
+`r table_count$label_text("unassigned_1ecf")`.
+Number of matched peaks between peak processing methods for 1ecf.
+:::
+::: {custom-style="MDPI_4.2_table_body"}
+```{r unassigned_1ecf}
+um_peaks_1ecf$ft_table %>%
+  autofit()
+```
+:::
+
+::: {custom-style="MDPI_4.1_table_caption"}
+`r table_count$label_text("unassigned_97lipid")`.
+Number of matched peaks between peak processing methods for 97lipid.
+:::
+::: {custom-style="MDPI_4.2_table_body"}
+```{r unassigned_97lipid}
+um_peaks_97lipid$ft_table %>%
+  autofit()
+```
+:::
+
+
+::: {custom-style="MDPI_2.2_heading2"}
 ### Changes in Variance Across a Large Dataset
 :::
 
