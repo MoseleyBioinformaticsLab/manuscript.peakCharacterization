@@ -604,7 +604,9 @@ On a single scan level, possible peaks are detected by simple bump-hunting for t
 These possible peaks are then characterized using a weighted parabolic fit of log-intensity to position (where position is either m/z or frequency), and the weights for each point are the relative log-intensity compared to the maximum log-intensity for the peak.
 :::
 
+::: {custom-style="MDPI_3.9_equation"}
 $$\ln{intensity} = intercept + a*position+b*position^2$$
+:::
 
 ::: {custom-style="MDPI_3.1_text"}
 From this weighted parabolic fit, the center, intensity, integrated area and sum-of-square residuals can be extracted for the peak.
@@ -671,10 +673,26 @@ Sliding windows that are 1000 frequency points wide with a stride of 100 points 
 ### Assigning Scan-Centric Peaks
 :::
 
-We created potential EMF databases for SMIRFE assignments for ECF and 15N labeled amino acids or for lipids (see supplemental materials for the actual limits).
-We assigned ECF derivatized amino acid samples with 15N labeling, a single positive charge, and H and Na as adducts.
-We assigned lipid samples with no labeling, a single positive charge, and H, Na, K, and NH4 as possible adducts.
+::: {custom-style="MDPI_3.1_text"}
+Our previously described SMIRFE algorithm [@mitchellSmallMoleculeIsotope2019] was used to assign molecular formulas to scan-centric characterized peaks in an untargeted manner. 
+For the lipid samples, an initial EMF database was generated using an M/Z limit of 1605 M/Z, and maximum numbers for each element were set to C: 130, N: 7, O: 28, P: 3, H: 230. 
+Assigned formulas were allowed to have K, Na, H, and NH4 adducts (only positive mode samples were assigned). 
+Assigned molecular formulas were then classified into one or more lipid categories using our lipid classifier tool [@mitchellDerivingLipidClassification2020]. 
+Lipid classes that were previously observed to be overclassified by our models (neutral and acidic glycosphingolipids) were excluded.
+For the ECF derivatized amino-acid samples, the EMF database was generated using an m/z limit of 1005 m/z, and maximum numbers for each element were set to C: 100, N: 7, O: 40, H: 230, P: 3, S: 3.
 We attempted to create peaks that could be assigned by SMIRFE from the MSnbase and Xcalibur peak lists, but SMIRFE would not assign them.
+:::
+
+::: {custom-style="MDPI_2.2_heading2"}
+Consistently Assigned Lipid Spectral Feature (Corresponded Peak) Generation and Peak Intensity Normalization
+:::
+
+Our SMIRFE assignment method assigns isotope-resolved molecular formulas (IMFs) to characterized peaks in each spectrum. 
+Each IMF represents an isotopologue of a given elemental molecular formula (EMF) (e.g., 13C112C51H1216O6 is an IMF representing the m+13C1 isotopologue of EMF C6H12O6). Consistently assigned (i.e., corresponded peaks) are identified using an in-house method we have named EMF voting which is described in Appendix A. 
+EMF voting identified 3485 total corresponded peaks across all 157 spectra with 855 corresponded peaks present in 25% or more of either the disease or non-disease group of samples. 
+To minimize false assignment and their effects, non_lipid and multiple lipids were not considered in downstream analyses. 
+All lipid isotopologue intensities were normalized by dividing the isotopologue intensity by the median intensity of all the peaks in the sample. 
+For differential abundance analysis, missing values were replaced with a threshold value that is ½ of the lower confidence interval of the distribution of all log-transformed intensities from that tissue. 
 
 
 ::: {custom-style="MDPI_2.2_heading2"}
@@ -686,6 +704,17 @@ We matched the scan-centric peaks to the other methods by looking for the closes
 ::: {custom-style="MDPI_2.2_heading2"}
 ### Peak - Peak NAP Height Ratios
 :::
+
+Each pair of peaks in a specifically labeled and adducted elemental molecular formula are related by their natural abundance probability (NAP).
+Theoretically, the log-ratios of two peaks NAPs are approximately equal to the log-ratios of two peaks intensities.
+
+::: {custom-style="MDPI_3.9_equation"}
+$$log(NAP_{P1} / NAP_{P2}) - log(Int_{P1} / Int_{P2}) \approx 0$$
+:::
+
+SMIRFE assignments include the NAP for each of the isotopologue molecular formulas (IMFs) in the particular labelled and adducted EMF.
+For each peak pair in the peak group for a particular EMF, we can calculate the log-ratio for the NAPs and the log-ratio for the intensities, and their absolute differences.
+This calculation is done for the final characterized intensity, as well as the intensities at the scan level, and for both the *raw* intensity and *corrected* intensity, and for matched Xcalibur peak intensities, and matched MSnbase peak intensities if there were two or more matching peaks in the labeled, adducted EMF.
 
 ::: {custom-style="MDPI_2.2_heading2"}
 ### Multi-Class F-Statistics
@@ -703,8 +732,17 @@ For each matched peak across samples, we kept the peaks present in at least 25% 
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-Samples included two ethyl-chloroformate (ECF) derivatized amino-acid samples [reference] and two samples where lipid extracts were extracted from lung tumors [reference].
-All four samples are positive mode, were converted from raw to mzML using msconvert from ProteoWizard (profile mode).
+The method for generating the amino-acid dataset was adapted from a previously published method for performing ethylchloroformate (ECF) amino acid derivatization [@yangChloroformateDerivatizationTracing2017]. 
+Two replicate samples were prepared and spectra were obtained for both samples using a Tribrid Fusion Orbitrap at 500k resolution and from 150 to 1000m/z.
+
+The collection, preparation, and mass spectrometry analysis of the paired cancer and non-cancer samples has been previously described [@sellersPyruvateCarboxylaseCritical2015]. 
+In summary, cancer and non-cancer samples were acquired from eight-six non-diabetic patients with suspected resectable stage I or IIA non-small cell lung cancer. 
+Written informed consent was collected from all subjects prior to inclusion and all samples were collected under a University of Louisville or University of Kentucky IRB protocol. 
+Lipid extracts were prepared using a modified Folch extraction and reconstituted for direct infusion ultra-high resolution mass spectrometry on a pair of Thermo Tribrid Fusion Orbitrap instruments (FSN10115 and FSN10352, referred to as Fusion 1 and Fusion 2 respectively) coupled to an Advion nanoelectrospray system. 
+53 patients (102 spectra total) were acquired from Fusion 1 and 40 patients (77 spectra total) were acquired from Fusion 2. Fusion 1 samples were exclusively from the University of Louisville while Fusion 2 were a mix. 
+Three of the patients had only a cancer or non-cancer sample acquired.
+Two of the cancer lipid samples (49Cpos and 97Cpos) were used for examples in this work.
+The rest were used for the examination of F-statistics.
 :::
 
 ::: {custom-style="MDPI_3.5_text_before_list"}
