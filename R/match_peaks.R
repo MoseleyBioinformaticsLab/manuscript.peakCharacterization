@@ -1,11 +1,53 @@
-match_assigned_peaks = function(filtersd_assign, xcalibur_peaks, msnbase_peaks){
-  NULL
+match_assigned_peaks = function(filtersd_assign, xcalibur_data, msnbase_data){
+  # filtersd_assign = tar_read(aa_filtersd_1ecf)
+  # xcalibur_data = tar_read(xcalibur_1ecf)
+  # msnbase_data = tar_read(msnbase_1ecf)
+  xcalibur_peaks = xcalibur_data$comb
+  xcalibur_peaks$PeakID = paste0("xcalibur_", seq(1, nrow(xcalibur_peaks)))
+  xcalibur_peaks$rowid = seq(1, nrow(xcalibur_peaks))
+  msnbase_peaks = msnbase_data$comb
+  msnbase_peaks$PeakID = paste0("msnbase_", seq(1, nrow(msnbase_peaks)))
+  msnbase_peaks$rowid = seq(1, nrow(msnbase_peaks))
+  assigned_peaks = purrr::map_df(filtersd_assign$emfs, ~ .x)
+  theoretical_peaks = assigned_peaks %>%
+    dplyr::transmute(theoreticalmz = ObservedMZ - mass_error,
+                     ppm = theoreticalmz * 2e-6,
+                     lowmz = theoreticalmz - ppm,
+                     highmz = theoreticalmz + ppm)
+  theoretical_peaks$PeakID = paste0("scanlevel_", seq(1, nrow(theoretical_peaks)))
+  scanlevel_peaks = assigned_peaks %>%
+    dplyr::transmute(mz = ObservedMZ,
+                     intensity = Height)
+  scanlevel_peaks$PeakID = theoretical_peaks$PeakID
+  scanlevel_peaks$rowid = seq(1, nrow(scanlevel_peaks))
+  scanlevel_peaks$mz_diff = scanlevel_peaks$mz - theoretical_peaks$theoreticalmz
+  scanlevel_peaks$source = "scanlevel"
+
+  xcalibur_matched = sub_match(theoretical_peaks, xcalibur_peaks) %>%
+    dplyr::filter(grepl("^scanlevel", PeakID)) %>%
+    dplyr::mutate(source = "xcalibur")
+  msnbase_matched = sub_match(theoretical_peaks, msnbase_peaks) %>%
+    dplyr::filter(grepl("^scanlevel", PeakID)) %>%
+    dplyr::mutate(source = "msnbase")
+
+  peak_list = list(scancentric = scanlevel_peaks$PeakID,
+                   xcalibur = xcalibur_matched$PeakID,
+                   msnbase = msnbase_matched$PeakID)
+  peak_comb_matrix = ComplexHeatmap::make_comb_mat(peak_list)
+  peak_comb_matrix
+
+  list(comb_matrix = peak_comb_matrix,
+       peaks = rbind(scanlevel_peaks,
+                     xcalibur_matched,
+                     msnbase_matched),
+       ft_table = comb_matrix_2_table(peak_comb_matrix))
+
 }
 
 match_unassigned_peaks = function(filtersd_data, xcalibur_data, msnbase_data){
-  # filtersd_data = tar_read(method_filtersd_1ecf)
-  # xcalibur_data = tar_read(xcalibur_1ecf)
-  # msnbase_data = tar_read(msnbase_1ecf)
+  # filtersd_data = tar_read(method_filtersd_97lipid)
+  # xcalibur_data = tar_read(xcalibur_97lipid)
+  # msnbase_data = tar_read(msnbase_97lipid)
 
   filtersd_peaks = filtersd_data$char_obj$zip_ms$peak_finder$peak_regions$peak_data
   xcalibur_peaks = xcalibur_data$comb
@@ -35,15 +77,19 @@ match_unassigned_peaks = function(filtersd_data, xcalibur_data, msnbase_data){
 }
 
 sub_match = function(filtersd_tomatch, other_peaks){
+  other_peaks$mz_diff = NA
   for (irow in seq_len(nrow(filtersd_tomatch))) {
+    #message(irow)
     tmp_filtersd = filtersd_tomatch[irow, ]
     other_match = dplyr::between(other_peaks$mz, tmp_filtersd$lowmz, tmp_filtersd$highmz)
     if (sum(other_match) == 1) {
       other_peaks[other_match, "PeakID"] = tmp_filtersd$PeakID
+      other_peaks[other_match, "mz_diff"] = other_peaks[other_match, "mz"] - tmp_filtersd$theoreticalmz
     } else if (sum(other_match) > 1) {
       tmp_other = other_peaks[other_match, ]
       min_loc = which.min(abs(tmp_other$mz - tmp_filtersd$theoreticalmz))
       other_peaks[tmp_other$rowid[min_loc], "PeakID"] = tmp_filtersd$PeakID
+      other_peaks[tmp_other$rowid[min_loc], "mz_diff"] = other_peaks[tmp_other$rowid[min_loc], "mz"] - tmp_filtersd$theoreticalmz
     }
   }
   other_peaks

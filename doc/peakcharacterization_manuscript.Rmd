@@ -478,7 +478,7 @@ threonine_diffs = aa_diffs_filtersd_1ecf$specific_diffs$diffs %>%
 
 threonine_ratioplot = ggplot(threonine_ratios, aes(x = ratio, y = diff, color = source, size = n_missing)) +
     geom_point() +
-    theme(legend.position = c(0.7, 0.8)) +
+    theme(legend.position = c(0.7, 0.75)) +
     labs(x = "Pairwise Comparison",
          y = "Peak-Peak NAP - Height Differences") +
   theme(axis.title.y = element_text(size = nap_fontsize))
@@ -518,9 +518,12 @@ table_count$increment("unassigned_1ecf")
 table_count$increment("unassigned_97lipid")
 
 figure_count$increment("unassigned_upset")
+figure_count$increment("assigned_mz_diff")
 
 tar_load(um_peaks_1ecf)
 tar_load(um_peaks_97lipid)
+tar_load(ass_peaks_1ecf)
+tar_load(ass_peaks_97lipid)
 ```
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -572,6 +575,32 @@ um_peaks_97lipid$ft_table %>%
 ```
 :::
 
+::: {custom-style="MDPI_5.2_figure"}
+```{r assigned_mz_diff, dn_id = figure_count}
+diffs_1ecf = ass_peaks_1ecf$peaks %>%
+  dplyr::mutate(source = factor(source, levels = c("scanlevel", "xcalibur", "msnbase"), ordered = TRUE))
+diffs_97lipid = ass_peaks_97lipid$peaks %>%
+  dplyr::mutate(source = factor(source, levels = c("scanlevel", "xcalibur", "msnbase"), ordered = TRUE))
+
+diffs_plot = (diffs_1ecf %>%
+                ggplot(aes(x = mz_diff)) +
+  geom_histogram(bins = 30) +
+  facet_wrap(~ source, ncol = 1) +
+  labs(x = "m/z Difference")) |
+  (diffs_97lipid %>%
+     ggplot(aes(x = mz_diff)) +
+     geom_histogram(bins = 30) +
+     facet_wrap(~ source, ncol = 1) +
+     labs(x = "m/z Difference")) +
+  plot_annotation(tag_levels = "A")
+diffs_plot
+```
+:::
+
+::: {custom-style="MDPI_5.1_figure_caption"}
+`r figure_count$label_text("assigned_mz_diff")`.
+Histograms of the m/z differences to the assigned and matched peak for 1ecf (**A**) and 97lipid (**B**).
+:::
 
 ::: {custom-style="MDPI_2.2_heading2"}
 ### Changes in Variance Across a Large Dataset

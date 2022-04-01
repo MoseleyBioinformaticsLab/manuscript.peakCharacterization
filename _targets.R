@@ -227,8 +227,29 @@ formula_tar = tar_target(aa_formula,
 aa_tar = tar_map(
   values = aa_methods,
   names = "name",
-  tar_target(aa_high, find_aa_assignments(in_assign, aa_formula)),
-  tar_target(aa, find_aa_assignments(in_assign, aa_formula, 0.1))
+  tar_target(aa_high, find_assignments(in_assign, aa_formula)),
+  tar_target(aa, find_assignments(in_assign, aa_formula, 0.1))
+)
+
+lipid_methods = expand_grid(
+  assign = "emf",
+  method = c("noperc_nonorm",
+             "perc99_nonorm",
+             "singlenorm",
+             "intsinglenorm",
+             "doublenorm",
+             "filtersd"),
+  sample = c("97lipid",
+             "49lipid")
+) %>%
+  dplyr::mutate(in_assign = rlang::syms(paste0(assign, "_", method, "_", sample)),
+                name = paste0(method, "_", sample))
+
+lipid_tar = tar_map(
+  values = lipid_methods,
+  names = "name",
+  tar_target(lipid_high, find_assignments(in_assign)),
+  tar_target(lipid, find_assignments(in_assign, e_cutoff = 0.1))
 )
 
 xcalibur_df = tibble(
@@ -270,9 +291,9 @@ assigned_match_tar = list(
   tar_target(ass_peaks_2ecf,
              match_assigned_peaks(aa_filtersd_2ecf, xcalibur_2ecf, msnbase_2ecf)),
   tar_target(ass_peaks_97lipid,
-             match_assigned_peaks(aa_filtersd_97lipid, xcalibur_97lipid, msnbase_97lipid)),
+             match_assigned_peaks(lipid_filtersd_97lipid, xcalibur_97lipid, msnbase_97lipid)),
   tar_target(ass_peaks_49lipid,
-             match_assigned_peaks(aa_filtersd_49lipid, xcalibur_49lipid, msnbase_49lipid))
+             match_assigned_peaks(lipid_filtersd_49lipid, xcalibur_49lipid, msnbase_49lipid))
 )
 
 list(pkg_tar,
@@ -292,4 +313,5 @@ list(pkg_tar,
      height_nap_tar,
      unassigned_match_tar,
      assigned_match_tar,
-     aa_tar)
+     aa_tar,
+     lipid_tar)

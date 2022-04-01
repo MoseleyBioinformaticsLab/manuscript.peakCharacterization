@@ -14,7 +14,12 @@ check_nap_intensity = function(nap_df){
   nap_int_ratios = calculate_log_ratio_differences(nap_df)
 }
 
-find_aa_assignments = function(assign_data, aa_formulas, e_cutoff = NULL){
+find_assignments = function(assign_data, formulas_df = NULL, e_cutoff = NULL){
+  # assign_data = tar_read(emf_filtersd_97lipid)
+  # assign_data = tar_read(emf_filtersd_1ecf)
+  # formulas_df = tar_read(aa_formula)
+  # e_cutoff = 0.1
+  # e_cutoff = NULL
   if (is.null(e_cutoff)) {
     scored_assignments = smirfeTools::score_filter_assignments(assign_data)
   } else {
@@ -23,21 +28,32 @@ find_aa_assignments = function(assign_data, aa_formulas, e_cutoff = NULL){
 
   within_emfs = smirfeTools:::get_sample_emfs(scored_assignments$assignments, assign_data$sample, evalue_cutoff = 0.98, use_corroborating = TRUE)
 
-  possible_aa = purrr::map_lgl(within_emfs, function(in_emf){
-    if (any(aa_formulas$complete_EMF %in% in_emf$complete_EMF)) {
-      TRUE
-    } else {
-      FALSE
-    }
-  })
-  within_aa = within_emfs[possible_aa]
-  all_aa = purrr::map_df(within_aa, ~ .x)
-  all_aa = dplyr::left_join(all_aa, dplyr::select(aa_formulas, -isotopologue_EMF), by = "complete_EMF")
-  all_aa = dplyr::left_join(dplyr::select(all_aa, -PeakID, -Sample, -ObservedMZ), scored_assignments$data, by = "Sample_Peak")
+  if (!is.null(formulas_df)) {
+    possible_formula = purrr::map_lgl(within_emfs, function(in_emf){
+      if (any(formulas_df$complete_EMF %in% in_emf$complete_EMF)) {
+        TRUE
+      } else {
+        FALSE
+      }
+    })
+    within_list = within_emfs[possible_formula]
+    all_list = purrr::map_df(within_list, ~ .x)
+    all_list = dplyr::left_join(all_list, dplyr::select(formulas_df, -isotopologue_EMF), by = "complete_EMF")
+  } else {
+    all_list = purrr::map_df(within_emfs, ~ .x)
+  }
 
-  split_aa = split(all_aa, all_aa$AA)
-  list(aa = split_aa,
-       aa_formulas = aa_formulas,
+
+  all_list = dplyr::left_join(dplyr::select(all_list, -PeakID, -Sample, -ObservedMZ), scored_assignments$data, by = "Sample_Peak")
+
+  if ("AA" %in% names(all_list)) {
+    split_list = split(all_list, all_list$AA)
+  } else {
+    split_list = split(all_list, all_list$grouped_EMF)
+  }
+
+  list(emfs = split_list,
+       formula_df = formulas_df,
        scored = scored_assignments)
 }
 
@@ -102,7 +118,7 @@ process_imf = function(imf_string){
 check_serine = function(filtersd){
   # filtersd = tar_read(aa_filtersd_1ecf)
   #
-  use_aa = filtersd$aa$Serine
+  use_aa = filtersd$emfs$Serine
   aa_data = dplyr::left_join(dplyr::select(use_aa, -PeakID, -Sample, -ObservedMZ), filtersd$scored$data, by = "Sample_Peak")
 
   tmp_data = aa_data %>%
@@ -203,7 +219,7 @@ aa_height_nap_all = function(filtersd, xcalibur, msnbase){
   msnbase_peaks = msnbase$comb
   msnbase_peaks$Sample_Peak = paste0("msnbase_", seq_len(nrow(msnbase_peaks)))
 
-  aa_info = purrr::imap(filtersd$aa, function(use_aa, aa_id){
+  aa_info = purrr::imap(filtersd$emfs, function(use_aa, aa_id){
     # use_aa = filtersd$aa[["Alanine"]]
     # aa_id = "Alanine"
     #message(aa_id)
