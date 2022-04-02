@@ -17,7 +17,12 @@ msnbase_centroid = function(mzml_file, sample_id = NULL, char_list = NULL){
 
   mzml_prof = MSnbase::readMSData(mzml_file, msLevel. = 1, centroided. = FALSE)
   mzml_info = get_ms_info(mzml_prof)
-  mzml_info_hitime = msnbase_time_filter(mzml_info, 4)
+
+  if (grepl("pos|lipid", sample_id)) {
+    mzml_info_hitime = msnbase_time_rtime_filter(mzml_info)
+  } else {
+    mzml_info_hitime = msnbase_time_filter(mzml_info)
+  }
 
   mzml_prof2 = mzml_prof[mzml_info_hitime$scan]
 
@@ -44,6 +49,24 @@ msnbase_centroid = function(mzml_file, sample_id = NULL, char_list = NULL){
 }
 
 msnbase_time_filter <- function(scan_times, min_time_difference = 4){
+  scan_times <- dplyr::mutate(scan_times, lag = rtime - dplyr::lag(rtime), lead = dplyr::lead(rtime) - rtime)
+
+  high_lag <- scan_times$lag >= min_time_difference
+  high_lag[is.na(high_lag)] <- TRUE
+  high_lead <- scan_times$lead >= min_time_difference
+  high_lead[is.na(high_lead)] <- TRUE
+
+  na_lead_high_lag <- is.na(scan_times$lead) & high_lag
+  na_lag_high_lead <- is.na(scan_times$lag) & high_lead
+
+  keep_scans <- (na_lead_high_lag | high_lag) & (na_lag_high_lead | high_lead)
+  scan_times[keep_scans, ]
+}
+
+msnbase_time_rtime_filter <- function(scan_times, min_time_difference = 4, rtime_limit = 7.5 * 60){
+  scan_times = scan_times %>%
+    dplyr::filter(rtime < rtime_limit)
+
   scan_times <- dplyr::mutate(scan_times, lag = rtime - dplyr::lag(rtime), lead = dplyr::lead(rtime) - rtime)
 
   high_lag <- scan_times$lag >= min_time_difference

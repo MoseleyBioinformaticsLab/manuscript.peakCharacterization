@@ -3,6 +3,29 @@ library(FTMS.peakCharacterization)
 pkg = utils::packageDescription("FTMS.peakCharacterization")
 # actually run this stuff
 
+scan_time_rtime_filter = function(raw_ms, min_time_difference = 4, rtime_limit = 7.5*60){
+  scan_times = raw_ms$ms_info
+  scan_times = scan_times[scan_times$scan %in% raw_ms$scan_range, ]
+
+  scan_times = scan_times %>%
+    dplyr::filter(rtime < rtime_limit)
+
+  scan_times <- dplyr::mutate(scan_times, lag = rtime - dplyr::lag(rtime), lead = dplyr::lead(rtime) - rtime)
+
+  high_lag <- scan_times$lag >= min_time_difference
+  high_lag[is.na(high_lag)] <- TRUE
+  high_lead <- scan_times$lead >= min_time_difference
+  high_lead[is.na(high_lead)] <- TRUE
+
+  na_lead_high_lag <- is.na(scan_times$lead) & high_lag
+  na_lag_high_lead <- is.na(scan_times$lag) & high_lead
+
+  keep_scans <- (na_lead_high_lag | high_lag) & (na_lag_high_lead | high_lead)
+  raw_ms$set_scans(scan_range = scan_times$scan[keep_scans])
+  raw_ms
+}
+
+
 peak_pick_samples <- read.table(here::here("lungcancer_all", "file_sample_info.txt"), header = TRUE, sep = "\t", stringsAsFactors = FALSE)
 all_mzml_files <- dir("/mlab/data/archives/FTMS_raw/CESB/mzml_data", recursive = TRUE, full.names = TRUE, pattern = "mzML$")
 
@@ -44,6 +67,6 @@ plan(multicore)
 set_internal_map(furrr::future_map)
 
 json_files = gsub(".mzML", ".json", use_files)
-zip_results = run_mzml_list(use_files, json_files = json_files, save_loc = zip_save)
+zip_results = run_mzml_list(use_files, json_files = json_files, save_loc = zip_save, raw_scan_filter = scan_time_rtime_filter)
 
 saveRDS(zip_results, file = file.path(zip_save, "zip_1_90.rds"))
