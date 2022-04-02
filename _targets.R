@@ -296,6 +296,39 @@ assigned_match_tar = list(
              match_assigned_peaks(lipid_filtersd_49lipid, xcalibur_49lipid, msnbase_49lipid))
 )
 
+lungcancer_tar = list(
+  tar_target(sample_file,
+             "data/data_output/lung_data/file_sample_info.txt",
+            format = "file"),
+  tar_target(sample_info,
+             create_sample_info_df(
+               sample_file
+             )),
+  tar_target(emf_file,
+             "data/data_output/lung_data/lung_voted_all_2022-03-08.rds",
+             format = "file"),
+  tar_target(scancentric_imfs,
+             extract_scancentric_imfs(
+               emf_file
+             )),
+  tar_target(msnbase_data,
+             "data/data_output/lung_data/lung_msnbase_peaks.rds",
+             format = "file"),
+  tar_target(msnbase_imfs,
+             match_imfs(
+               msnbase_data,
+               scancentric_imfs
+               )),
+  tar_target(xcalibur_data,
+             "data/data_output/lung_data/lung_xcalibur_peaks.rds",
+             format = "file"),
+  tar_target(xcalibur_imfs,
+             match_imfs(
+               xcalibur_data,
+               scancentric_imfs
+             ))
+)
+
 list(pkg_tar,
      data_tar,
      method_tar,
@@ -314,4 +347,5 @@ list(pkg_tar,
      unassigned_match_tar,
      assigned_match_tar,
      aa_tar,
-     lipid_tar)
+     lipid_tar,
+     lungcancer_tar)
