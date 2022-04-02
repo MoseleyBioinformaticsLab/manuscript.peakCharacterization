@@ -46,3 +46,4 @@ set_internal_map(furrr::future_map)
 json_files = gsub(".mzML", ".json", use_files)
 zip_results = run_mzml_list(use_files, json_files = json_files, save_loc = zip_save)
 
+saveRDS(zip_results, file = file.path(zip_save, "zip_91_end.rds"))
