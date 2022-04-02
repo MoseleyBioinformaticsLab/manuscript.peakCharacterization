@@ -255,3 +255,52 @@ msnbase_fake_scans = function(msnbase_data){
        Peaks = new_data,
        ScanLevel = scan_level_list)
 }
+
+xcalibur_fake_scans = function(xcalibur_data){
+  new_id = paste0("fake_xcalibur_", xcalibur_data$sample_id)
+
+  cent_data = xcalibur_data$comb
+  cent_data$PeakID = seq(1, nrow(cent_data))
+  sd_val = 5e-7
+
+  n_scan = 50
+
+  model_matrix = matrix(NA, nrow = 1, ncol = n_scan)
+  colnames(model_matrix) = seq(1, n_scan)
+
+  peak_data = purrr::map(seq_len(nrow(cent_data)), function(in_row){
+    tmp_data = cent_data[in_row, , drop = FALSE]
+
+    tmp_mz = tmp_intensity = model_matrix
+    rownames(tmp_mz) = rownames(tmp_intensity) = tmp_data$PeakID
+    tmp_mz[, ] = rnorm(n_scan, mean = tmp_data$mz, sd = sd_val * tmp_data$mz)
+    tmp_intensity[, ] = tmp_data$intensity
+    list(peaks = tmp_data,
+         mz = tmp_mz,
+         intensity = tmp_intensity)
+  })
+  scan_mz = do.call(rbind, purrr::map(peak_data, ~ .x$mz))
+  scan_intensity = do.call(rbind, purrr::map(peak_data, ~ .x$intensity))
+
+  cent_data = purrr::map_df(peak_data, ~ .x$peaks)
+  mz_sd = apply(scan_mz, 1, sd, na.rm = TRUE)
+  new_data = cent_data %>%
+    dplyr::transmute(PeakID = PeakID,
+                     Height = intensity,
+                     ObservedMZ = mz,
+                     ObservedMZSD = mz_sd,
+                     Log10Height = log10(intensity),
+                     CorrectedLog10Height = log10(intensity),
+                     NScan = n_scan,
+                     Offset = 0)
+  scan_level_list = list(Log10Height = log10(scan_intensity),
+                         CorrectedLog10Height = log10(scan_intensity),
+                         ObservedMZ = scan_mz,
+                         Scan = colnames(scan_mz),
+                         PeakID = rownames(scan_mz)
+  )
+  list(TIC = sum(new_data$Height),
+       Sample = new_id,
+       Peaks = new_data,
+       ScanLevel = scan_level_list)
+}

@@ -50,7 +50,9 @@ method_tar = tar_map(
   tar_target(method, method_sym(data_sym)),
   tar_target(rsd, single_rsd(method)),
   tar_target(zip, write_peaks_for_assignment(method)),
-  tar_target(assign, assign_files(zip))
+  tar_target(assign, assign_files(zip)),
+  tar_target(n_peak, n_final_peak(method)),
+  tar_target(emf, get_assignments(assign))
 )
 
 
@@ -59,6 +61,37 @@ normalization_tar = tar_combine(
   method_tar[[1]],
   command = normalization_factors(!!!.x),
   iteration = "list"
+)
+
+n_peak_tar = tar_combine(
+  n_peak_combine,
+  method_tar[[5]],
+  command = dplyr::bind_rows(!!!.x)
+)
+
+noise_tar = tibble(
+  data_name = (c(
+    "data_97lipid",
+    "data_49lipid",
+    "data_1ecf",
+    "data_2ecf"
+  ))
+) %>%
+  dplyr::mutate(
+    data_syms = rlang::syms(data_name),
+    data_id = rename_samples(data_name)
+  )
+
+compare_noise_tar = tar_map(
+  values = noise_tar,
+  names = "data_id",
+  tar_target(noise, compare_noise_cutoffs(data_syms))
+)
+
+combine_noise_tar = tar_combine(
+  noise_combine,
+  compare_noise_tar,
+  command = dplyr::bind_rows(!!!.x)
 )
 
 # rsd_tar = tar_combine(
@@ -82,19 +115,33 @@ figures_tar = tar_plan(
   ),
   tar_target(compare_normalization,
              normalization_graph(normalization_combine)),
-  tar_render(manuscript, "doc/peakcharacterization_manuscript.Rmd")
+  tar_target(noise_plot,
+             create_noise_plot(noise_combine)),
+  tar_target(mn_ratios,
+             calculate_m_n_ratio(noise_combine)),
+  tar_target(motivation_plot,
+             motivating_plot(nap_height_1ecf)),
+  tar_target(base_manuscript,
+             "doc/peakcharacterization_manuscript.Rmd",
+             format = "file"),
+  tar_render(manuscript_both,
+             "doc/peakcharacterization_manuscript.Rmd"),
+  tar_target(manuscript_nostyle,
+             strip_mdpi_render(base_manuscript)),
+  tar_target(manuscript_mdpi,
+             strip_headers_render(base_manuscript))
 )
 
 tables_tar = tar_plan(
   tar_target(rsd_values, summarize_rsd(rsd_combine))
 )
 
-other_tar = tar_plan(
-  tar_target(
-    nonoise_vs_noise,
-    compare_noise_cutoff(data_97lipid)
-  )
-)
+# other_tar = tar_plan(
+#   tar_target(
+#     nonoise_vs_noise,
+#     compare_noise_cutoff(data_97lipid)
+#   )
+# )
 
 msnbase_mzml = expand_grid(
   data_function = rlang::syms("msnbase_centroid"),
@@ -159,15 +206,146 @@ hpd_tar = tar_map(
 #   hpd_tar[[2]],
 #   command = dplyr::bind_rows(!!!.x)
 # )
+#
+aa_methods = expand_grid(
+  assign = "emf",
+  method = c("noperc_nonorm",
+              "perc99_nonorm",
+              "singlenorm",
+              "intsinglenorm",
+              "doublenorm",
+              "filtersd"),
+  sample = c("1ecf",
+             "2ecf")
+) %>%
+  dplyr::mutate(in_assign = rlang::syms(paste0(assign, "_", method, "_", sample)),
+                name = paste0(method, "_", sample))
 
+formula_tar = tar_target(aa_formula,
+                         get_expected_formulas())
+
+aa_tar = tar_map(
+  values = aa_methods,
+  names = "name",
+  tar_target(aa_high, find_assignments(in_assign, aa_formula)),
+  tar_target(aa, find_assignments(in_assign, aa_formula, 0.1))
+)
+
+lipid_methods = expand_grid(
+  assign = "emf",
+  method = c("noperc_nonorm",
+             "perc99_nonorm",
+             "singlenorm",
+             "intsinglenorm",
+             "doublenorm",
+             "filtersd"),
+  sample = c("97lipid",
+             "49lipid")
+) %>%
+  dplyr::mutate(in_assign = rlang::syms(paste0(assign, "_", method, "_", sample)),
+                name = paste0(method, "_", sample))
+
+lipid_tar = tar_map(
+  values = lipid_methods,
+  names = "name",
+  tar_target(lipid_high, find_assignments(in_assign)),
+  tar_target(lipid, find_assignments(in_assign, e_cutoff = 0.1))
+)
+
+xcalibur_df = tibble(
+  files = excel_files,
+  name = rename_samples(excel_files)
+)
+
+xcalibur_tar = tar_map(
+  values = xcalibur_df,
+  names = "name",
+  tar_target(xcalibur, get_xcalibur_peaks(files))
+)
+
+height_nap_tar = list(
+  tar_target(nap_height_1ecf, aa_height_nap_all(aa_filtersd_1ecf, xcalibur_1ecf, msnbase_1ecf)),
+  tar_target(nap_height_2ecf, aa_height_nap_all(aa_filtersd_2ecf, xcalibur_2ecf, msnbase_2ecf)),
+  tar_target(aa_compared_filtersd_1ecf, compare_peak_ratios(nap_height_1ecf)),
+  tar_target(aa_compared_filtersd_2ecf, compare_peak_ratios(nap_height_2ecf)),
+  tar_target(aa_large_filtersd_1ecf, find_large_diffs(aa_compared_filtersd_1ecf)),
+  tar_target(aa_large_filtersd_2ecf, find_large_diffs(aa_compared_filtersd_2ecf)),
+  tar_target(aa_diffs_filtersd_1ecf, ratio_diffs_extracted(aa_compared_filtersd_1ecf)),
+  tar_target(aa_diffs_filtersd_2ecf, ratio_diffs_extracted(aa_compared_filtersd_2ecf))
+)
+
+unassigned_match_tar = list(
+  tar_target(um_peaks_1ecf,
+             match_unassigned_peaks(method_filtersd_1ecf, xcalibur_1ecf, msnbase_1ecf)),
+  tar_target(um_peaks_2ecf,
+             match_unassigned_peaks(method_filtersd_2ecf, xcalibur_2ecf, msnbase_2ecf)),
+  tar_target(um_peaks_97lipid,
+             match_unassigned_peaks(method_filtersd_97lipid, xcalibur_97lipid, msnbase_97lipid)),
+  tar_target(um_peaks_49lipid,
+             match_unassigned_peaks(method_filtersd_49lipid, xcalibur_49lipid, msnbase_49lipid))
+)
+
+assigned_match_tar = list(
+  tar_target(ass_peaks_1ecf,
+             match_assigned_peaks(aa_filtersd_1ecf, xcalibur_1ecf, msnbase_1ecf)),
+  tar_target(ass_peaks_2ecf,
+             match_assigned_peaks(aa_filtersd_2ecf, xcalibur_2ecf, msnbase_2ecf)),
+  tar_target(ass_peaks_97lipid,
+             match_assigned_peaks(lipid_filtersd_97lipid, xcalibur_97lipid, msnbase_97lipid)),
+  tar_target(ass_peaks_49lipid,
+             match_assigned_peaks(lipid_filtersd_49lipid, xcalibur_49lipid, msnbase_49lipid))
+)
+
+lungcancer_tar = list(
+  tar_target(sample_file,
+             "data/data_output/lung_data/file_sample_info.txt",
+            format = "file"),
+  tar_target(sample_info,
+             create_sample_info_df(
+               sample_file
+             )),
+  tar_target(emf_file,
+             "data/data_output/lung_data/lung_voted_all_2022-03-08.rds",
+             format = "file"),
+  tar_target(scancentric_imfs,
+             extract_scancentric_imfs(
+               emf_file
+             )),
+  tar_target(msnbase_data,
+             "data/data_output/lung_data/lung_msnbase_peaks.rds",
+             format = "file"),
+  tar_target(msnbase_imfs,
+             match_imfs(
+               msnbase_data,
+               scancentric_imfs
+               )),
+  tar_target(xcalibur_data,
+             "data/data_output/lung_data/lung_xcalibur_peaks.rds",
+             format = "file"),
+  tar_target(xcalibur_imfs,
+             match_imfs(
+               xcalibur_data,
+               scancentric_imfs
+             ))
+)
 
 list(pkg_tar,
      data_tar,
      method_tar,
+     n_peak_tar,
+     compare_noise_tar,
+     combine_noise_tar,
      rsd_tar,
      normalization_tar,
      figures_tar,
      tables_tar,
      msnbase_tar,
      hpd_tar,
-     other_tar)
+     formula_tar,
+     xcalibur_tar,
+     height_nap_tar,
+     unassigned_match_tar,
+     assigned_match_tar,
+     aa_tar,
+     lipid_tar,
+     lungcancer_tar)

@@ -30,7 +30,7 @@ reduce_removing_zero <- function(regions, point_regions_list, multiplier = 1.5, 
   IRanges::reduce(regions)
 }
 
-find_signal_98 <- function(regions, point_regions_list, multiplier = 1.5, n_point_region = 2000){
+find_signal_adj <- function(regions, point_regions_list, multiplier = 1.5, n_point_region = 2000, use_percentile = 0.98){
   nz_counts = FTMS.peakCharacterization:::count_overlaps(regions, point_regions_list[[1]])
   n_region = seq(2, length(point_regions_list))
   for (iregion in n_region) {
@@ -43,7 +43,7 @@ find_signal_98 <- function(regions, point_regions_list, multiplier = 1.5, n_poin
   chunk_perc = purrr::map_dbl(chunk_indices, function(in_index){
     use_counts = nz_counts[seq(in_index, min(in_index + (n_point_region - 1), length(nz_counts)))]
     if (max(use_counts) > 0) {
-      return(stats::quantile(use_counts, 0.98))
+      return(stats::quantile(use_counts, use_percentile))
     } else {
       return(0)
     }
