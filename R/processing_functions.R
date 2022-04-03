@@ -26,9 +26,6 @@ time_filter = function(raw_ms, min_time_difference = 4){
   scan_times = raw_ms$ms_info
   scan_times = scan_times[scan_times$scan %in% raw_ms$scan_range, ]
 
-  scan_times = scan_times %>%
-    dplyr::filter(rtime < rtime_limit)
-
   scan_times <- dplyr::mutate(scan_times, lag = rtime - dplyr::lag(rtime), lead = dplyr::lead(rtime) - rtime)
 
   high_lag <- scan_times$lag >= min_time_difference
