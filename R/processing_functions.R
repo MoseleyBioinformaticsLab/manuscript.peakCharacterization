@@ -1,10 +1,60 @@
 # common setup stuff
 #
+time_rtime_filter = function(raw_ms, min_time_difference = 4, rtime_limit = 7.5*60){
+  scan_times = raw_ms$ms_info
+  scan_times = scan_times[scan_times$scan %in% raw_ms$scan_range, ]
+
+  scan_times = scan_times %>%
+    dplyr::filter(rtime < rtime_limit)
+
+  scan_times <- dplyr::mutate(scan_times, lag = rtime - dplyr::lag(rtime), lead = dplyr::lead(rtime) - rtime)
+
+  high_lag <- scan_times$lag >= min_time_difference
+  high_lag[is.na(high_lag)] <- TRUE
+  high_lead <- scan_times$lead >= min_time_difference
+  high_lead[is.na(high_lead)] <- TRUE
+
+  na_lead_high_lag <- is.na(scan_times$lead) & high_lag
+  na_lag_high_lead <- is.na(scan_times$lag) & high_lead
+
+  keep_scans <- (na_lead_high_lag | high_lag) & (na_lag_high_lead | high_lead)
+  raw_ms$set_scans(scan_range = scan_times$scan[keep_scans])
+  raw_ms
+}
+
+time_filter = function(raw_ms, min_time_difference = 4){
+  scan_times = raw_ms$ms_info
+  scan_times = scan_times[scan_times$scan %in% raw_ms$scan_range, ]
+
+  scan_times = scan_times %>%
+    dplyr::filter(rtime < rtime_limit)
+
+  scan_times <- dplyr::mutate(scan_times, lag = rtime - dplyr::lag(rtime), lead = dplyr::lead(rtime) - rtime)
+
+  high_lag <- scan_times$lag >= min_time_difference
+  high_lag[is.na(high_lag)] <- TRUE
+  high_lead <- scan_times$lead >= min_time_difference
+  high_lead[is.na(high_lead)] <- TRUE
+
+  na_lead_high_lag <- is.na(scan_times$lead) & high_lag
+  na_lag_high_lead <- is.na(scan_times$lag) & high_lead
+
+  keep_scans <- (na_lead_high_lag | high_lag) & (na_lag_high_lead | high_lead)
+  raw_ms$set_scans(scan_range = scan_times$scan[keep_scans])
+  raw_ms
+}
+
+
 # read in the scans and generate the sliding and tiling windows
 reading_scans_tile_windows <- function(in_file, pkg){
   #use_file = file.path('data_analysis', 'data_input', in_file)
   use_file = in_file
-  char_ms <- CharacterizeMSPeaks$new(use_file, peak_finder = PeakRegionFinder$new())
+  if (grepl("pos|lipid", in_file)) {
+    use_filter = time_rtime_filter
+  } else {
+    use_filter = time_filter
+  }
+  char_ms <- CharacterizeMSPeaks$new(use_file, peak_finder = PeakRegionFinder$new(), raw_scan_filter = use_filter)
   char_ms$load_file()
   char_ms$peak_finder$start_time = Sys.time()
   char_ms$filter_raw_scans()
