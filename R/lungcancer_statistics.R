@@ -17,14 +17,15 @@ extract_scancentric_imfs = function(emf_file){
 
 match_imfs = function(other_file, scancentric_imfs){
   other_data = readRDS(other_file)
-  if (grepl("xcalibur")) {
+  if (grepl("xcalibur", other_file)) {
     other_data = purrr::map(other_data, function(.x){
-      dplyr::transmute(intensity = Intensity,
-                       mz = TargetMass,
-                       sample_id = sample)
+      .x %>%
+        dplyr::transmute(intensity = Intensity,
+                         mz = TargetMass,
+                         sample_id = sample)
     })
   }
-  if (grepl("msnbase")) {
+  if (grepl("msnbase", other_file)) {
     other_data = purrr::map(other_data, function(.x){
       tmp_df = .x$comb %>%
         dplyr::transmute(intensity = intensity,
@@ -40,23 +41,45 @@ match_imfs = function(other_file, scancentric_imfs){
   other_data = other_data[keep_other]
   other_data = other_data[colnames(scancentric_location)]
 
-  other_location = other_intensity = matrix(NA, nrow = nrow(scancentric_location),
-                                            ncol = ncol(scancentric_location))
-  rownames(other_location) = rownames(other_intensity) = rownames(scancentric_location)
-  colnames(other_location) = colnames(other_intensity) = colnames(scancentric_location)
-  location_ppm = scancentric_location * 2e-6
-  location_low = scancentric_location - location_ppm
-  location_high = scancentric_location + location_ppm
+  na_vector = rep(NA, nrow(scancentric_location))
+  names(na_vector) = rownames(scancentric_location)
 
-  for (icol in colnames(scancentric_location)) {
-    tmp_df = other_data[[icol]] %>%
-      dplyr::mutate(irow = seq(1, nrow(.)))
+  split_location = purrr::map(colnames(scancentric_location), function(isample){
+    scancentric_location[, isample]
+  })
+  names(split_location) = colnames(scancentric_location)
 
-    for (irow in rownames(scancentric_location)) {
-      if (!is.na(scancentric_location[irow, icol])) {
-        match_locs = dplyr::between(tmp_df$mz, location_low[irow, icol], location_high[irow, icol])
+  match_loc_intensity = furrr::future_imap(split_location, function(in_location, isample){
+    out_location = out_intensity = na_vector
+    location_ppm = in_location * 2e-6
+    location_low = in_location - location_ppm
+    location_high = in_location + location_ppm
+
+    tmp_df = other_data[[isample]]
+    for (imf in names(in_location)) {
+      if (!is.na(in_location[imf])) {
+        match_locs = tmp_df %>%
+          dplyr::filter(dplyr::between(mz, location_low[imf], location_high[imf])) %>%
+          dplyr::mutate(mz_diff = abs(mz - in_location[imf])) %>%
+          dplyr::arrange(dplyr::desc(mz_diff))
+
+        if (nrow(match_locs) > 0) {
+          out_location[imf] = match_locs$mz[1]
+          out_intensity[imf] = match_locs$intensity[1]
+        }
       }
     }
+    list(location = out_location,
+         intensity = out_intensity)
+  })
 
-  }
+  other_locations = as.matrix(purrr::map_dfc(match_loc_intensity, ~ .x$location))
+  rownames(other_locations) = rownames(scancentric_location)
+  other_intensity = as.matrix(purrr::map_dfc(match_loc_intensity, ~ .x$intensity))
+  rownames(other_intensity) = rownames(scancentric_location)
+
+  other_imfs = scancentric_imfs
+  other_imfs$intensity = other_intensity
+  other_imfs$location = other_location
+  other_imfs
 }
