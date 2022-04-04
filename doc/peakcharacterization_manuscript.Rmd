@@ -777,29 +777,34 @@ We attempted to create peaks that could be assigned by SMIRFE from the MSnbase a
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-Consistently Assigned Lipid Spectral Feature (Corresponded Peak) Generation and Peak Intensity Normalization
+### Consistently Assigned Lipid Spectral Feature (Corresponded Peak) Generation and Peak Intensity Normalization
 :::
 
+::: {custom-style="MDPI_3.1_text"}
 Our SMIRFE assignment method assigns isotope-resolved molecular formulas (IMFs) to characterized peaks in each spectrum. 
 Each IMF represents an isotopologue of a given elemental molecular formula (EMF) (e.g., 13C112C51H1216O6 is an IMF representing the m+13C1 isotopologue of EMF C6H12O6). Consistently assigned (i.e., corresponded peaks) are identified using an in-house method we have named EMF voting which is described in Appendix A. 
 EMF voting identified 3485 total corresponded peaks across all 157 spectra with 855 corresponded peaks present in 25% or more of either the disease or non-disease group of samples. 
 To minimize false assignment and their effects, non_lipid and multiple lipids were not considered in downstream analyses. 
 All lipid isotopologue intensities were normalized by dividing the isotopologue intensity by the median intensity of all the peaks in the sample. 
 For differential abundance analysis, missing values were replaced with a threshold value that is ½ of the lower confidence interval of the distribution of all log-transformed intensities from that tissue. 
-
+:::
 
 ::: {custom-style="MDPI_2.2_heading2"}
 ### Matching Peaks
 :::
 
+::: {custom-style="MDPI_3.1_text"}
 We matched the scan-centric peaks to the other methods by looking for the closest m/z peak that was within 2 ppm of the scan-centric reported m/z.
+:::
 
 ::: {custom-style="MDPI_2.2_heading2"}
 ### Peak - Peak NAP Height Ratios
 :::
 
+::: {custom-style="MDPI_3.1_text"}
 Each pair of peaks in a specifically labeled and adducted elemental molecular formula are related by their natural abundance probability (NAP).
 Theoretically, the log-ratios of two peaks NAPs are approximately equal to the log-ratios of two peaks intensities.
+:::
 
 ::: {custom-style="MDPI_3.9_equation"}
 $$log(NAP_{P1} / NAP_{P2}) - log(Int_{P1} / Int_{P2}) \approx 0$$
