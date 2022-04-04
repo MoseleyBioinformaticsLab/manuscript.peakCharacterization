@@ -1,5 +1,5 @@
 ---
-title: "Scan-Centric, Frequency-Based Method for Characterizing Peaks from Direct Injection FT-MS Experiments"
+title: "Scan-Centric, Frequency-Based Method for Characterizing Peaks from Direct Injection Fourier transform Mass Spectrometry Experiments"
 author:
   - Robert M Flight:
       email: robert.flight@uky.edu
@@ -54,9 +54,10 @@ knitr::opts_chunk$set(echo = FALSE,
 ```
 
 ::: {custom-style="MDPI_1.7_abstract"}
-**Abstract:** We introduce a novel, scan-centric method for characterizing peaks from direct injection multi-scan FT-MS experiments developed on metabolomics datasets that utilizes frequency values derived directly from the spacing of raw m/z points in spectral scans.
-Our method incorporates several aspects designed to make the derived intensities trustworthy, and suitable for use in our previously published peak assignment algorithm SMIRFE.
-Notably, the use of intensity independent noise removal, and normalization of scan level data results in a much better fit of relative intensity to natural abundance probability for low abundance isotopologues that are not present in all of the acquired scans.
+**Abstract:** We introduce a novel, scan-centric method for characterizing peaks from direct injection multi-scan Fourier transform mass spectra of complex samples that utilizes frequency values derived directly from the spacing of raw m/z points in spectral scans.
+Our peak characterization method utilizes intensity independent noise removal and normalization of scan level data to provide a much better fit of relative intensity to natural abundance probabilities for low abundance isotopologues that are not present in all of the acquired scans.
+Moreover, our method calculates both peak- and scan-specific statistics incorporated within a series of quality control steps that are designed to robustly derive peak centers, intensities and intensity ratios with their scan-level variances.
+These cross-scan characterized peaks are suitable for use in our previously published peak assignment methodology, Small Molecule Isotope Resolved Formula Enumeration (SMIRFE).
 :::
 
 ::: {custom-style="MDPI_1.8_keywords"}
@@ -69,23 +70,22 @@ Notably, the use of intensity independent noise removal, and normalization of sc
 
 ::: {custom-style="MDPI_3.1_text"}
 Fourier transform mass spectrometry (FT-MS) provides high performance in terms of sensitivity, resolution and mass accuracy all in one analytical instrumentation.
-The combination of these capabilities provide several analytical and interpretive improvements including: (i) the ability to resolve distinct isotopologues with identical unit masses but different accurate masses [@higashiStableIsotopeLabeledTracers2014], enabling multi-element isotopic natural abundance correction [@moseleyCorrectingEffectsNatural2010; @carreerComputationalFrameworkHighThroughput2013]; (ii) improved assignment accuracy [@kindMetabolomicDatabaseAnnotations2006]; and (iii) the detection of metabolites in the sub-femtomolar range [@eylesMethodsStudyProtein2004; @dettmerMassSpectrometrybasedMetabolomics2007]. 
-In the metabolomics field, these improvements permit more complicated, but more informative experimental designs such as the use of multiple isotope-labeled precursors in stable isotope-resolved metabolomics (SIRM) experiments [@yangChloroformateDerivatizationTracing2017. 
-Multiple isotope-labeling experiments can provide the information needed to elucidate unknown metabolic pathways [@creekStableIsotopeAssistedMetabolomics2012; @higashiStableIsotopeLabeledTracers2014], quantify relative fluxes through multiple metabolic pathways [@hillerNontargetedElucidationMetabolic2010], identify metabolite pools in different celullar compartments [@fanStableIsotoperesolvedMetabolomics2012], and identify active metabolic pathways under various cellular conditions [@moseleyNovelDeconvolutionMethod2011; @sellersPyruvateCarboxylaseCritical2015; @verdegemMAIMSSoftwareTool2017]. 
-These gains in information enable more complete modeling of cellular metabolism and better understanding of physiological and pathological processes at a mechanistic level, facilitating the identification of potential therapeutic targets [@fanAlteredRegulationMetabolic2009] and the quantification of differential drug response [@harrisDiverseMechanismsGrowth2012].
+The combination of these capabilities provide several analytical and interpretive improvements including: (i) the ability to resolve distinct isotopologues with identical unit masses but different accurate masses [@higashiStableIsotopeLabeledTracers2014]; (ii)  enable multi-element isotopic natural abundance correction for at least the lower portion of the detected mass range  [@moseleyCorrectingEffectsNatural2010; @carreerComputationalFrameworkHighThroughput2013; @wangAccuCor2IsotopeNatural2021]; (iii) improved assignment accuracy [@kindMetabolomicDatabaseAnnotations2006; @mitchellSmallMoleculeIsotope2019]; and (iv) the detection of metabolites in the sub-femtomolar range, when combined with chromatographic separation  [@eylesMethodsStudyProtein2004; @dettmerMassSpectrometrybasedMetabolomics2007]. 
+In the metabolomics field, these improvements permit more complicated, but more informative experimental designs such as the use of single and multiple isotope-labeled precursors in stable isotope-resolved metabolomics (SIRM) experiments [@yangChloroformateDerivatizationTracing2017].
+These stable isotop tracing experiments provide a wealth of isotope flux data that is interpretable in terms of metabolite flux information that is specific to a metabolic model, pathway, and subcellular location [@@higashiStableIsotopeLabeledTracers2014; @creekStableIsotopeAssistedMetabolomics2012; @hillerNontargetedElucidationMetabolic2010; @fanStableIsotoperesolvedMetabolomics2012; @moseleyNovelDeconvolutionMethod2011; @sellersPyruvateCarboxylaseCritical2015; @verdegemMAIMSSoftwareTool2017; @jinMoietyModelingFramework2019; @jinRobustMoietyModel2020].
 
-While the advantages of FT-MS are significant, when deployed in a high-throughput environment, the volume of data produced requires automated tools for data reduction, quality control, feature assignment, and downstream analyses. 
-These requirements are amplified when FT-MS is used with direct infusion where existing and well-validated assignment methods that rely on orthogonal sources of information (such as chromatography) are either not applicable or would further increase the amount of data to be processed. 
-Therefore, without automation, rigorous assignment of non-polymeric biomolecules in untargeted MS analyses remains difficult even with FT-MS’s high resolution.
+While these advantages of FT-MS are significant, when deployed in a high-throughput environment, the volume of data produced requires automated tools for data reduction, quality control, feature assignment, and downstream analyses. 
+Furthermore within the context of direct infusion, assignment of FT-MS spectral features lack orthogonal sources of information such as chromatographic retention times, reducing the reliability of assignment with most MS assignment software tools.
 
-Within this high-throughput environment we previously developed methods to remove high-peak-density artifacts [@mitchellNewMethodsIdentify2018], annotate peaks with assignments using SMIRFE [@mitchellSmallMoleculeIsotope2019], and generate lipid classifications for those peak assignments [@mitchellDerivingLipidClassification2020].
-All of these methods together culminated in detecting differential lipids in non-small-cell lung cancer (NSCLC) [@mitchellUntargetedLipidomicsNonSmall2021].
+Within this combined high-throughput with direct injection context, we previously developed methods to remove high-peak-density artifacts [@mitchellNewMethodsIdentify2018], annotate peaks with assignments using SMIRFE [@mitchellSmallMoleculeIsotope2019], and generate lipid classifications for spectral peak assignments [@mitchellDerivingLipidClassification2020].
+We applied all of these methods together in detecting and assigning differential lipids in non-small-cell lung cancer (NSCLC) [@mitchellUntargetedLipidomicsNonSmall2021].
 
 The input peak-data in these studies are derived from multi-scan direct-injection FT-MS data.
 SMIRFE uses expected relationships of relative peak height or intensity to natural abundance probability (NAP) across multiple peak pairs to determine the likelihood of an assignment for the peaks in question.
 In the Thermo-Fisher Orbitrap FT-MS instruments, data is acquired in micro-scans and scans, where each scan is an aggregate of multiple micro-scans.
-Depending on the sample source, it can be advantageous to keep the data at the scan level, so that any given "bad" scan can be removed prior to aggregating the data across scans and generating a centroided peak m/z and intensity.
-If the scan level data is not processed and aggregated correctly, the final peak intensities and / or m/z's will be incorrect.
+While these micro-scan and subsequent scans are expected to be analytical replicates, spray instability and temporal delay in automatic gain control pragmatically break this expectation.
+Therefore, it is advantageous to keep the data at the scan level, so that any given poor quality (i.e. "bad") scan can be removed prior to aggregating the data across scans and generating a centroided peak m/z and intensity.
+If the scan level data is not processed and aggregated correctly, the final peak intensities in arbitrary units and centers in m/z will have high uncertainty (total variance) [@moseleyErrorAnalysisPropagation2013].
 
 In particular, if peaks are missing in some scans due to low abundance, the final aggregate peak intensities will not fit the expected relative intensity to NAP relationships.
 Here we describe novel scan-centric FT-MS metabolomics data processing methods that better preserve the expected relative intensity to NAP.
@@ -107,7 +107,7 @@ figure_count$increment("motivation")
 
 ::: {custom-style="MDPI_3.1_text"}
 To motivate our solution, we generated peak lists using the peak exporting functionality in Xcalibur as well as our scan-centric peak characterization, and found matching Xcalibur peaks to our assignments.
-As an example, in `r figure_count$label_text("motivation")` we show the Xcalibur calculated intensities and theoretical peak intensities based on NAP for four peaks matching threonine.
+As an example, in `r figure_count$label_text("motivation")`, we show the Xcalibur calculated intensities and theoretical peak intensities based on NAP for four peaks matching threonine.
 As the NAP gets lower, the deviations of the Xcalibur calculated intensities from the NAP become larger.
 :::
 
@@ -137,12 +137,12 @@ FT-MS data from the Thermo-Fisher Orbitrap instruments used to acquire the data 
 Outside of the meta-data, it merely contains the m/z and intensity values for profile spectra acquired across multiple scans.
 However, the frequency can be calculated by dividing the average m/z of two adjacent points by their difference (`r figure_count$label_text("mz_frequency_conversion")`A, red points representing the average m/z of two adjacent points, red lines representing the difference between the two adjacent points).
 The subsequent differences in frequency should be relatively constant with respect to m/z, in contrast to the differences of adjacent m/z points, as shown in `r figure_count$label_text("mz_frequency_conversion")`B and C.
-The Thermo Fusion instrument from which most of our collaborators data has been acquired, at a resolution of 400K, has a mode of 0.5, as shown in `r figure_count$label_text("mz_frequency_conversion")`C and D.
+The Thermo Fusion instrument from which most of our collaborators data has been acquired, at a resolution of 450K or 500K depending on the sample, has a mode of 0.5, as shown in `r figure_count$label_text("mz_frequency_conversion")`C and D.
 Restricting to those points that fall into a narrow range of frequency differences (0.49 - 0.51), a model of frequency to m/z can be generated (see Methods), with an example shown in `r figure_count$label_text("mz_frequency_conversion")`E.
 This model seems to fit the known relationship between frequency and m/z, where the frequency is related to $1/\sqrt{mz}$.
 This is useful, because some of the subsequent steps in our workflow use sliding and tiled windows where it is assumed that the sliding windows contain the same number of data points.
-The m/z point-to-point differences are not constant, but can be approximated by a lasso linear model; however, it is very difficult to create a lasso model with an intercept of 0.
-In addition, we would also need to vary the width of sliding windows according to the m/z difference at a particular m/z based on the lasso model.
+The m/z point-to-point differences are not constant, but can be approximated by a loess linear model [@Cleveland1992loess]; however, it is very difficult to create a loess model with an intercept of 0.
+In addition, we would also need to vary the width of sliding windows according to the m/z difference at a particular m/z based on the loess model.
 Frequency based points suffer none of these drawbacks, and the conversion from m/z can be derived from the raw profile level data itself, which is incredibly useful.
 :::
 
@@ -309,7 +309,7 @@ figure_count$increment("normalization_factors")
 ```
 
 ::: {custom-style="MDPI_3.1_text"}
-Due to differences in how many ions are captured in the trap and the limited dynamic range of the detector, the observed peak intensities for the same analyte vary slightly between scans (see `r figure_count$label_text("breaking_regions")`A and B for example).
+Due to differences in how many ions are captured in the trap and the limited dynamic range of the detector, the observed peak intensities for the same analyte vary between scans (see `r figure_count$label_text("breaking_regions")`A and B for example).
 Using the median peak differences between scans, it is possible to normalize the peak intensities across scans.
 However, there are two issues with these peak intensities across scans: 1) some peak intensities correlate with the scan number (i.e. scan acquisition order); and 2) some peak differences between scans are correlated with intensity.
 The solution to **1** is to do a two pass normalization.
@@ -319,6 +319,7 @@ In the second pass, the correlated peaks are removed, and normalization is carri
 The solution to **2** (peak differences correlated with intensity) is to only use the most intense peaks, as shown in `r figure_count$label_text("intensity_scan")`B.
 The highlighted peaks in `r figure_count$label_text("intensity_scan")`B are those with an intensity greater than 0.7 of the maximum intensity observed in that scan, and at least visually, their differences are **not** correlated with intensity.
 If *all* peaks are used for normalization, a very different set of normalization factors will be generated than by using only the *most intense* peaks, as shown in `r figure_count$label_text("normalization_factors")`A and B.
+Though the two-pass normalization (doublenorm) and single-pass normalization using the most intense peaks (singlenorm_int) generate very similar normalization factors (`r figure_count$label_text("normalization_factors"`B and C), removing the scan-correlated peaks does change some of the normalization factors.
 :::
 
 ::: {custom-style="MDPI_5.2_figure"}
@@ -346,6 +347,7 @@ compare_normalization[[1]]
 ::: {custom-style="MDPI_5.1_figure_caption"}
 **`r figure_count$label_text("normalization_factors")`.** **A**: Histogram of scan normalization factors using either a single pass normalization using *all* peaks (singlenorm), single pass normalization using peaks with an intensity \>= 0.7 of the maximum intensity (singlenorm_int), or the double pass normalization removing peaks whose height is correlated with scan and using the most intense peaks (doublenorm).
 **B**: The difference of the normalization factors obtained from either doublenorm or singlenorm_int compared to singlenorm.
+**C**: **B**, but with a zoomed y-axis to illustrate the differences in the normalization factors obtained with the different methods.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
@@ -391,11 +393,11 @@ hpd_right_panel = hpd_plots_2ecf$n %>%
 ::: {custom-style="MDPI_5.1_figure_caption"}
 **`r figure_count$label_text("hpd_compare_fsd")`.** Comparison of HPD and high FSD sites in the ECF 2 sample.
 **A** - **E**:Peak plots for various peak processing modalities in a single HPD site.
-**A**:*xcalibur* peaks exported from Thermo Xcalibur after averaging scans.
-**B**:*scalevel_00*: Scan-level peak characterization without any density based filtering (see noperc_nonorm in Methods).
-**C**:*scanlevel_99*: Scan-level peak characterization using the default point density filtering (see filtersd in Methods).
-**D**:*scanlevel_99_lowsd*: Same as *scanlevel_99*, but removing any peaks marked as having a high frequency standard deviation.
-**E**:*msnbase*: peak centroids generated from *MSnbase*.
+**A**: *xcalibur* peaks exported from Thermo Xcalibur after averaging scans.
+**B**: *scalevel_00*: Scan-level peak characterization without any density based filtering (see noperc_nonorm in Methods).
+**C**: *scanlevel_99*: Scan-level peak characterization using the default point density filtering (see filtersd in Methods).
+**D**: *scanlevel_99_lowsd*: Same as *scanlevel_99*, but removing any peaks marked as having a high frequency standard deviation.
+**E**: *msnbase*: peak centroids generated from *MSnbase*.
 **F**: Scatterplot of peak counts across all of the HPDs detected in the ECF 2 sample against the Xcalibur peak counts.
 :::
 
@@ -410,7 +412,7 @@ table_count$increment("rsd_method")
 
 ::: {custom-style="MDPI_3.1_text"}
 Each step in the peak characterization either changes the overall number of peaks coming from each scan (sliding windows and breaking initial regions) or the overall intensity of the points within a scan.
-Therefore, one way to quantify any potential *improvements* in the characterized peaks is to look at the relative standard deviation (RSD) for the characterized scan level peak intensities (calculated as the standard deviation of peak heights across scans divided by the mean peak height), and compare them as each processing step is introduced.
+Therefore, one way to quantify any potential *improvements* in the characterized peaks is to look at the relative standard deviation (RSD) for the characterized scan level peak intensities (calculated as the standard deviation of peak heights across scans divided by the mean peak height) and compare them as each processing step is introduced.
 :::
 
 ::: {custom-style="MDPI_5.2_figure"}
@@ -428,7 +430,7 @@ A peak had to be present in at least three scans for the RSD value to be reporte
 
 ::: {custom-style="MDPI_4.1_table_caption"}
 `r table_count$label_text("rsd_method")`.
-Relative standard deviation means, medians, modes and maximum observed values for each sample with different overall processing.
+Relative standard deviation means, medians, modes, and maximum observed values for each sample with different overall processing.
 :::
 
 
@@ -453,11 +455,11 @@ figure_count$increment("nap_intensity")
 ```
 
 ::: {custom-style="MDPI_3.1_text"}
-As an alternative to RSD, we can also compare the fit of relative intensities after assignment using SMIRFE [reference] to the theoretical relative natural abundances (relNAP) of the assigned isotopic molecular formula's (IMFs) within the assigned elemental molecular formula's (EMFs).
-Theoretically, we expect that lower quality data will have both lower numbers of assignments, and that for those things that are assigned, the fit between relative intensity and relNAP will be worse.
+As an alternative to RSD, we can also compare the fit of relative intensities after assignment using SMIRFE [@mitchellSmallMoleculeIsotope2019] to the theoretical relative natural abundances (relNAP) of the assigned isotopic molecular formula's (IMFs) within the assigned elemental molecular formula's (EMFs).
+Theoretically, we expect lower quality data to have both lower numbers of assignments, and for those things that are assigned, the fit between relative intensity and relNAP to be worse.
 To compare relative NAP to relative abundances, we only examined the assignments from the two samples containing ECF derivatized amino-acids, as we can limit the assignments to those that match expected derivatizations of the known amino-acids (see Supplemental for the expected EMFs, and expected relative NAPs for the individual IMFs).
 
-`r figure_count$label_text("nap_intensity")` compares the peak - peak natural abundance and height log-ratio differences generated using heights from Xcalibur and from our scan-level peak characterization.
+`r figure_count$label_text("nap_intensity")` compares the peak-peak isotopic natural abundance probability and height log-ratio differences (Equation X in Methods) generated using heights from Xcalibur and from our scan-level peak characterization.
 :::
 
 ::: {custom-style="MDPI_5.2_figure"}
@@ -504,7 +506,7 @@ out_plot
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
 `r figure_count$label_text("nap_intensity")`.
-**A**. Peak - peak NAP - intensity differences from scan-level peak heights (red) and Xcalibur peak heights (blue) from the threonine amino acid assignments with Na adduct, with point size reflecting how many peaks were missing across scans.
+**A**. The peak-peak NAP - intensity log differences from scan-level peak heights (red) and Xcalibur peak heights (blue) from the threonine amino acid assignments with Na adduct, with point size reflecting how many peaks were missing across scans.
 **B**. The difference of Xcalibur to scan-level ratios plotted directly as a function of the number of scans the peak was not found in.
 **C**. The differences of Xcalibur to scan-level ratios for all of the amino acid assignments in EMFs with more than a single peak in both ECF samples.
 :::
@@ -556,6 +558,7 @@ UpSet plot with the counts of common and specific peaks for each of scancentric,
 ::: {custom-style="MDPI_4.1_table_caption"}
 `r table_count$label_text("unassigned_1ecf")`.
 Number of matched peaks between peak processing methods for 1ecf.
+There are no overlapping peaks only between scancentric and msnbase, as well as no peaks found only by the scancentric method.
 :::
 ::: {custom-style="MDPI_4.2_table_body"}
 ```{r unassigned_1ecf}
@@ -658,8 +661,9 @@ $$mz = intercept + x* \frac{1}{frequency} + y*\frac{1}{frequency^2} + z*\frac{1}
 
 ::: {custom-style="MDPI_3.1_text"}
 Two types of frequency intervals are used, sliding and tiled windows.
-In this work, the sliding windows are 10 points wide with a stride of one point.
+In this work, the sliding windows are the equivalent of 10 frequency points wide with a stride of one point.
 The tiled windows are one point wide with a stride of one point.
+Each point here is the equivalent of the difference between data points in frequency space, which is a spacing of 0.5.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
@@ -773,7 +777,7 @@ Assigned formulas were allowed to have K, Na, H, and NH4 adducts (only positive 
 Assigned molecular formulas were then classified into one or more lipid categories using our lipid classifier tool [@mitchellDerivingLipidClassification2020]. 
 Lipid classes that were previously observed to be overclassified by our models (neutral and acidic glycosphingolipids) were excluded.
 For the ECF derivatized amino-acid samples, the EMF database was generated using an m/z limit of 1005 m/z, and maximum numbers for each element were set to C: 100, N: 7, O: 40, H: 230, P: 3, S: 3.
-We attempted to create peaks that could be assigned by SMIRFE from the MSnbase and Xcalibur peak lists, but SMIRFE would not assign them.
+We attempted to create peaks that could be assigned by SMIRFE from the MSnbase and Xcalibur peak lists, but SMIRFE would not assign them given its requirements for scan-level peak characterization data.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
@@ -784,9 +788,8 @@ We attempted to create peaks that could be assigned by SMIRFE from the MSnbase a
 Our SMIRFE assignment method assigns isotope-resolved molecular formulas (IMFs) to characterized peaks in each spectrum. 
 Each IMF represents an isotopologue of a given elemental molecular formula (EMF) (e.g., 13C112C51H1216O6 is an IMF representing the m+13C1 isotopologue of EMF C6H12O6). Consistently assigned (i.e., corresponded peaks) are identified using an in-house method we have named EMF voting which is described in Appendix A. 
 EMF voting identified 3485 total corresponded peaks across all 157 spectra with 855 corresponded peaks present in 25% or more of either the disease or non-disease group of samples. 
-To minimize false assignment and their effects, non_lipid and multiple lipids were not considered in downstream analyses. 
 All lipid isotopologue intensities were normalized by dividing the isotopologue intensity by the median intensity of all the peaks in the sample. 
-For differential abundance analysis, missing values were replaced with a threshold value that is ½ of the lower confidence interval of the distribution of all log-transformed intensities from that tissue. 
+For differential abundance analysis, missing values were removed. 
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
@@ -811,7 +814,7 @@ $$log(NAP_{P1} / NAP_{P2}) - log(Int_{P1} / Int_{P2}) \approx 0$$
 :::
 
 SMIRFE assignments include the NAP for each of the isotopologue molecular formulas (IMFs) in the particular labelled and adducted EMF.
-For each peak pair in the peak group for a particular EMF, we can calculate the log-ratio for the NAPs and the log-ratio for the intensities, and their absolute differences.
+For each peak pair in the peak group for a particular EMF, we calculate the log-ratio for the NAPs and the log-ratio for the intensities, and their absolute differences.
 This calculation is done for the final characterized intensity, as well as the intensities at the scan level, and for both the *raw* intensity and *corrected* intensity, and for matched Xcalibur peak intensities, and matched MSnbase peak intensities if there were two or more matching peaks in the labeled, adducted EMF.
 
 ::: {custom-style="MDPI_2.2_heading2"}
