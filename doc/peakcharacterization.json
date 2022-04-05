@@ -1495,5 +1495,175 @@
 			]
 		},
 		"citation-key": "mitchellDerivingLipidClassification2020"
+	},
+	{
+		"id": "wangAccuCor2IsotopeNatural2021",
+		"type": "article-journal",
+		"abstract": "Stable isotope labeling techniques have been widely applied in the field of metabolomics and proteomics. Before the measured mass spectral data can be used for quantitative analysis, it must be accurately corrected for isotope natural abundance and tracer isotopic impurity. Despite the increasing popularity of dual-isotope tracing strategy such as 13C-15N or 13C-2H, there are no accurate tools for correcting isotope natural abundance for such experiments in a resolution-dependent manner. Here, we present AccuCor2 as an R-based tool to perform the correction for 13C-15N or 13C-2H labeling experiments. Our method uses a newly designed algorithm to construct the correction matrices that link labeling pattern and measured mass fractions, then use non-negative least-squares to solve the labeling patterns. Our results show that the dual-isotope experiments often require a mass resolution that is high enough to resolve 13C and 15N or 13C and 2H. Otherwise, the labeling pattern is not solvable. However, this mass resolution may not be sufficiently high to resolve other non-tracer elements such as oxygen or sulfur from the tracer elements. Therefore, we design AccuCor2 to perform the correction based on the actual mass resolution of the measurements. Using both simulated and experimental data, we show that AccuCor2 performs accurate and resolution-dependent correction for dual-isotope tracer data.",
+		"container-title": "Laboratory Investigation",
+		"DOI": "10.1038/s41374-021-00631-4",
+		"ISSN": "1530-0307",
+		"issue": "10",
+		"journalAbbreviation": "Lab Invest",
+		"language": "en",
+		"note": "number: 10\npublisher: Nature Publishing Group",
+		"page": "1403-1410",
+		"source": "www.nature.com",
+		"title": "AccuCor2: isotope natural abundance correction for dual-isotope tracer experiments",
+		"title-short": "AccuCor2",
+		"URL": "https://www.nature.com/articles/s41374-021-00631-4",
+		"volume": "101",
+		"author": [
+			{
+				"family": "Wang",
+				"given": "Yujue"
+			},
+			{
+				"family": "Parsons",
+				"given": "Lance R."
+			},
+			{
+				"family": "Su",
+				"given": "Xiaoyang"
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					4,
+					4
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2021",
+					10
+				]
+			]
+		},
+		"citation-key": "wangAccuCor2IsotopeNatural2021"
+	},
+	{
+		"id": "jinMoietyModelingFramework2019",
+		"type": "article-journal",
+		"abstract": "Stable isotope tracing can follow individual atoms through metabolic transformations through the detection of the incorporation of stable isotope within metabolites. This resulting data can be interpreted in terms related to metabolic flux. However, detection of a stable isotope in metabolites by mass spectrometry produces a profile of isotopologue peaks that requires deconvolution to ascertain the localization of isotope incorporation.",
+		"container-title": "BMC Bioinformatics",
+		"DOI": "10.1186/s12859-019-3096-7",
+		"ISSN": "1471-2105",
+		"issue": "1",
+		"journalAbbreviation": "BMC Bioinformatics",
+		"page": "524",
+		"source": "BioMed Central",
+		"title": "Moiety modeling framework for deriving moiety abundances from mass spectrometry measured isotopologues",
+		"URL": "https://doi.org/10.1186/s12859-019-3096-7",
+		"volume": "20",
+		"author": [
+			{
+				"family": "Jin",
+				"given": "Huan"
+			},
+			{
+				"family": "Moseley",
+				"given": "Hunter N. B."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					4,
+					4
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2019",
+					10,
+					28
+				]
+			]
+		},
+		"citation-key": "jinMoietyModelingFramework2019"
+	},
+	{
+		"id": "jinRobustMoietyModel2020",
+		"type": "article-journal",
+		"abstract": "Stable isotope resolved metabolomics (SIRM) experiments use stable isotope tracers to provide superior metabolomics datasets for metabolic flux analysis and metabolic modeling. Since assumptions of model correctness can seriously compromise interpretation of metabolic flux results, we have developed a metabolic modeling software package specifically designed for moiety model comparison and selection based on the metabolomics data provided. Here, we tested the effectiveness of model selection with two time-series mass spectrometry (MS) isotopologue datasets for uridine diphosphate N-acetyl-d-glucosamine (UDP-GlcNAc) generated from different platforms utilizing direct infusion nanoelectrospray and liquid chromatography. Analysis results demonstrate the robustness of our model selection methods by the successful selection of the optimal model from over 40 models provided. Moreover, the effects of specific optimization methods, degree of optimization, selection criteria, and specific objective functions on model selection are illustrated. Overall, these results indicate that over-optimization can lead to model selection failure, but combining multiple datasets can help control this overfitting effect. The implication is that SIRM datasets in public repositories of reasonable quality can be combined with newly acquired datasets to improve model selection. Furthermore, curation efforts of public metabolomics repositories to maintain high data quality could have a huge impact on future metabolic modeling efforts.",
+		"container-title": "Metabolites",
+		"DOI": "10.3390/metabo10030118",
+		"ISSN": "2218-1989",
+		"issue": "3",
+		"journalAbbreviation": "Metabolites",
+		"language": "eng",
+		"note": "PMID: 32245221\nPMCID: PMC7143054",
+		"page": "E118",
+		"source": "PubMed",
+		"title": "Robust Moiety Model Selection Using Mass Spectrometry Measured Isotopologues",
+		"volume": "10",
+		"author": [
+			{
+				"family": "Jin",
+				"given": "Huan"
+			},
+			{
+				"family": "Moseley",
+				"given": "Hunter N. B."
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2020",
+					3,
+					21
+				]
+			]
+		},
+		"citation-key": "jinRobustMoietyModel2020"
+	},
+	{
+		"id": "Cleveland1992loess",
+		"type": "chapter",
+		"container-title": "Statistical models in s",
+		"note": "section: 8\ntex.added-at: 2018-07-20T15:36:50.000+0200\ntex.biburl: https://www.bibsonomy.org/bibtex/249dc786266d86d0cc54ed6ccb2fe9894/gron\ntex.interhash: 7d86e5cc7c53a61bc8fead3dd2eb3b99\ntex.intrahash: 49dc786266d86d0cc54ed6ccb2fe9894\ntex.timestamp: 2018-07-20T15:36:50.000+0200",
+		"publisher": "Wadsworth & Brooks/Cole",
+		"title": "Local regression models",
+		"author": [
+			{
+				"family": "Cleveland",
+				"given": "W. S."
+			},
+			{
+				"family": "Grosse",
+				"given": "E."
+			},
+			{
+				"family": "Shyu",
+				"given": "W. M."
+			}
+		],
+		"editor": [
+			{
+				"family": "Chambers",
+				"given": "J.M."
+			},
+			{
+				"family": "Hastie",
+				"given": "T.J."
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"1992"
+				]
+			]
+		},
+		"citation-key": "Cleveland1992loess"
 	}
 ]
