@@ -347,5 +347,5 @@ list(pkg_tar,
      unassigned_match_tar,
      assigned_match_tar,
      aa_tar,
-     lipid_tar,
-     lungcancer_tar)
+     lipid_tar)
+     #lungcancer_tar)

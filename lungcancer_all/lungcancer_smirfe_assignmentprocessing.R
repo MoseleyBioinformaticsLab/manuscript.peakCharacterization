@@ -1,6 +1,6 @@
-# python3 -m AssignMany.py 12 "python3 ./Main.py /mlab/scratch/cesb_data/smirfe_dbs/none_nosulfur_1600.db FILE '_assigned.json' '[]' '[\"H\", \"NH4\", \"Na\", \"K\"]' '[1]'" /mlab/scratch/cesb_data/zip_files/lung_matched_tissue-2020-01-27/*.zip
-# python3 -m AssignMany.py 12 "python3 ./Main.py /mlab/scratch/cesb_data/smirfe_dbs/none_1600.db FILE '_assigned_sulfur.json' '[]' '[\"H\", \"NH4\", \"Na\", \"K\"]' '[1]'" /mlab/scratch/cesb_data/zip_files/lung_matched_tissue-2020-01-27/*.zip
-# Example Workflow Across 3 Groups
+# cd smirfe_related/smirfe_code/SMIRFE_assigner
+# python3 -m pipenv shell
+# python3 -m AssignMany.py 12 "../../smirfe_dbs/none_nosulfur_1600.db FILE '_assigned.json' '[]' '[\"H\", \"Na\", \"K\", \"NH4\"]' '[1]'" /mlab/scratch/cesb_data/zip_files/lung_matched_tissue-2022-04-02/*.zip
 # Database limits: C: 130, N: 7, O: 28, S: 0, P: 3, H: 230, max M/Z 1605, adducts: K, Na, NH4, NAP cutoff: 0.4
 library(smirfeTools)
 library(ggplot2)
@@ -14,7 +14,7 @@ plan(multicore)
 set_internal_map(furrr::future_map)
 options(future.globals.maxSize = 800 * 1024 ^ 2)
 
-assigned_files <- dir("/mlab/scratch/cesb_data/zip_files/lung_matched_tissue-2022-03-08",
+assigned_files <- dir("/mlab/scratch/cesb_data/zip_files/lung_matched_tissue-2022-04-02",
                       full.names = TRUE, pattern = "assigned.json")
 pb <- progress_estimated(length(assigned_files))
 
@@ -29,11 +29,11 @@ names(assigned_data) = purrr::map_chr(assigned_data, ~ .x$sample)
 
 all_emfs = unique(unlist(purrr::map(assigned_data, ~ .x$assignments$isotopologue_EMF)))
 
-saveRDS(assigned_data, "data/data_output/lung_data/lung_matched_tissue_raw_smirfe_assignments_2022-03-08.rds")
+saveRDS(assigned_data, "data/data_output/lung_data/lung_matched_tissue_raw_smirfe_assignments_2022-04-02.rds")
 
-cat(all_emfs, sep = "\n", file = "data/data_output/lung_data/all_emfs_2022-03-08.txt")
+cat(all_emfs, sep = "\n", file = "data/data_output/lung_data/all_emfs_2022-04-02.txt")
 
-zip_files <- dir("/mlab/scratch/cesb_data/zip_files/lung_matched_tissue-2022-03-08",
+zip_files <- dir("/mlab/scratch/cesb_data/zip_files/lung_matched_tissue-2022-04-02",
                  full.names = TRUE, pattern = ".zip$")
 all_coefficients = extract_coefficient_data(zip_files)
 
@@ -64,7 +64,10 @@ freq_sd = sd_by_group(grouped_data)
 
 sd_mode = calculate_mode(freq_sd$sd) * 2
 
-classified_emfs = import_emf_classifications("data/data_output/lung_data/all_emfs_classified_2022-03-08.json")
+# cd ~/Projects/work/LipidClassifier
+# python3 -m pipenv shell
+# python3 ./Code/LipidClassifier.py classify_EMFs lipidclassifier_20200131.pickle ~/Documents/manuscripts/in_progress/rmflight_peakCharacterization/data/data_output/lung_data/all_emfs_2022-04-02.txt ~/Documents/manuscripts/in_progress/rmflight_peakCharacterization/data/data_output/lung_data/all_emfs_classified_2022-04-02.json
+classified_emfs = import_emf_classifications("data/data_output/lung_data/all_emfs_classified_2022-04-02.json")
 lipid_df = weight_lipid_classifications(classified_emfs, lipid_weight = 2, not_lipid_weight = 2)
 assigned_data = purrr::map(assigned_data, function(in_data){
   score_filter_assignments(in_data, filter_conditions = e_value <= 0.5,
@@ -85,6 +88,6 @@ mz_cutoff = fit_predict_mz_cutoff(grouped_mz)
 
 all_vote = extract_assigned_data(assigned_data, difference_cutoff = mz_cutoff,
                                  difference_measure = "ObservedMZ", progress = TRUE)
-saveRDS(all_vote, file = "data/data_output/lung_data/lung_voted_all_2022-03-08.rds")
+saveRDS(all_vote, file = "data/data_output/lung_data/lung_voted_all_2022-04-02.rds")
 
 #textme::textme("Lung is all done!")

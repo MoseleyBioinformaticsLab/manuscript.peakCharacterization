@@ -40,6 +40,7 @@ lapply(list.files(here::here("./R"), full.names = TRUE), source)
 
 figure_count = dn_counter$new("Figure ")
 table_count = dn_counter$new("Table ")
+equation_count = dn_counter$new("")
 ```
 
 ```{r setup, include = FALSE}
@@ -51,6 +52,11 @@ knitr::opts_chunk$set(echo = FALSE,
                       fig.process = dn_modify_path,
                       dpi = 600,
                       dev.args = list(png = list(type = "cairo")))
+
+format_equation = function(equation_text, label){
+  number_out = equation_count$label_text(label)
+  paste0('$$\n\\begin{align}\n', equation_text, '&& \\text{(', number_out, ')}', '\n\\end{align}$$')
+}
 ```
 
 ::: {custom-style="MDPI_1.7_abstract"}
@@ -68,11 +74,12 @@ These cross-scan characterized peaks are suitable for use in our previously publ
 ## Introduction
 :::
 
+
 ::: {custom-style="MDPI_3.1_text"}
 Fourier transform mass spectrometry (FT-MS) provides high performance in terms of sensitivity, resolution and mass accuracy all in one analytical instrumentation.
 The combination of these capabilities provide several analytical and interpretive improvements including: (i) the ability to resolve distinct isotopologues with identical unit masses but different accurate masses [@higashiStableIsotopeLabeledTracers2014]; (ii)  enable multi-element isotopic natural abundance correction for at least the lower portion of the detected mass range  [@moseleyCorrectingEffectsNatural2010; @carreerComputationalFrameworkHighThroughput2013; @wangAccuCor2IsotopeNatural2021]; (iii) improved assignment accuracy [@kindMetabolomicDatabaseAnnotations2006; @mitchellSmallMoleculeIsotope2019]; and (iv) the detection of metabolites in the sub-femtomolar range, when combined with chromatographic separation  [@eylesMethodsStudyProtein2004; @dettmerMassSpectrometrybasedMetabolomics2007]. 
 In the metabolomics field, these improvements permit more complicated, but more informative experimental designs such as the use of single and multiple isotope-labeled precursors in stable isotope-resolved metabolomics (SIRM) experiments [@yangChloroformateDerivatizationTracing2017].
-These stable isotop tracing experiments provide a wealth of isotope flux data that is interpretable in terms of metabolite flux information that is specific to a metabolic model, pathway, and subcellular location [@@higashiStableIsotopeLabeledTracers2014; @creekStableIsotopeAssistedMetabolomics2012; @hillerNontargetedElucidationMetabolic2010; @fanStableIsotoperesolvedMetabolomics2012; @moseleyNovelDeconvolutionMethod2011; @sellersPyruvateCarboxylaseCritical2015; @verdegemMAIMSSoftwareTool2017; @jinMoietyModelingFramework2019; @jinRobustMoietyModel2020].
+These stable isotop tracing experiments provide a wealth of isotope flux data that is interpretable in terms of metabolite flux information that is specific to a metabolic model, pathway, and subcellular location [@higashiStableIsotopeLabeledTracers2014; @creekStableIsotopeAssistedMetabolomics2012; @hillerNontargetedElucidationMetabolic2010; @fanStableIsotoperesolvedMetabolomics2012; @moseleyNovelDeconvolutionMethod2011; @sellersPyruvateCarboxylaseCritical2015; @verdegemMAIMSSoftwareTool2017; @jinMoietyModelingFramework2019; @jinRobustMoietyModel2020].
 
 While these advantages of FT-MS are significant, when deployed in a high-throughput environment, the volume of data produced requires automated tools for data reduction, quality control, feature assignment, and downstream analyses. 
 Furthermore within the context of direct infusion, assignment of FT-MS spectral features lack orthogonal sources of information such as chromatographic retention times, reducing the reliability of assignment with most MS assignment software tools.
@@ -319,7 +326,7 @@ In the second pass, the correlated peaks are removed, and normalization is carri
 The solution to **2** (peak differences correlated with intensity) is to only use the most intense peaks, as shown in `r figure_count$label_text("intensity_scan")`B.
 The highlighted peaks in `r figure_count$label_text("intensity_scan")`B are those with an intensity greater than 0.7 of the maximum intensity observed in that scan, and at least visually, their differences are **not** correlated with intensity.
 If *all* peaks are used for normalization, a very different set of normalization factors will be generated than by using only the *most intense* peaks, as shown in `r figure_count$label_text("normalization_factors")`A and B.
-Though the two-pass normalization (doublenorm) and single-pass normalization using the most intense peaks (singlenorm_int) generate very similar normalization factors (`r figure_count$label_text("normalization_factors"`B and C), removing the scan-correlated peaks does change some of the normalization factors.
+Though the two-pass normalization (doublenorm) and single-pass normalization using the most intense peaks (singlenorm_int) generate very similar normalization factors (`r figure_count$label_text("normalization_factors")`B and C), removing the scan-correlated peaks does change some of the normalization factors.
 :::
 
 ::: {custom-style="MDPI_5.2_figure"}
@@ -630,6 +637,10 @@ we should have some discussion here about the results
 ### Conversion of m/z to Frequency
 :::
 
+```{r increment_frequency}
+equation_count$increment("mzfrequency")
+```
+
 ::: {custom-style="MDPI_3.1_text"}
 The data consists of profile mode m/z spectra from multiple scans encoded as m/z and intensity values for each scan.
 No information about the original observed frequency values is available in either the `raw` files or the `mzML` files.
@@ -639,7 +650,13 @@ The *actual, constant* difference can be obtained by examining the median of the
 These *useful* points can be used to construct a linear model relating m/z to frequency for individual scans based on the formula:
 :::
 
+::: {custom-style="MDPI_3.9_equation"}
+`r format_equation('frequency = intercept + x* \\frac{1}{\\sqrt{mz}} + y * \\frac{1}{\\sqrt[3]{mz}}', 'mzfrequency')`
+:::
+
+::: {custom-style="MDPI_3.9_equation"}
 $$frequency = intercept + x* \frac{1}{\sqrt{mz}} + y * \frac{1}{\sqrt[3]{mz}}$$
+:::
 
 ::: {custom-style="MDPI_3.1_text"}
 From the known physical properties of the Orbitrap, only the square root term should be necessary [@ledfordSpaceChargeEffects1984].
