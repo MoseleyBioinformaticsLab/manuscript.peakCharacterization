@@ -300,33 +300,100 @@ lungcancer_tar = list(
   tar_target(sample_file,
              "data/data_output/lung_data/file_sample_info.txt",
             format = "file"),
+  tar_target(patient_file,
+             "data/data_output/lung_data/lungcancer_tissue_type_patient_mappings.csv"),
   tar_target(sample_info,
              create_sample_info_df(
-               sample_file
+               sample_file,
+               bad_samples,
+               patient_file
              )),
+  tar_target(scancentric_json,
+             "data/data_output/lung_json_data_2022-04-02.rds",
+             format = "file"),
+  tar_target(scancentric_medians,
+             get_scancentric_medians(scancentric_json)),
   tar_target(emf_file,
              "data/data_output/lung_data/lung_voted_all_2022-04-02.rds",
              format = "file"),
-  tar_target(scancentric_imfs,
+  tar_target(scancentric_imfs_raw,
              extract_scancentric_imfs(
                emf_file
+             )),
+  tar_target(scancentric_imfs_corrected,
+             extract_scancentric_imfs(
+               emf_file,
+               "corrected"
              )),
   tar_target(msnbase_data,
              "data/data_output/lung_data/lung_msnbase_peaks.rds",
              format = "file"),
+  tar_target(msnbase_medians,
+             get_other_medians(msnbase_data)),
   tar_target(msnbase_imfs,
              match_imfs(
                msnbase_data,
-               scancentric_imfs
+               scancentric_imfs_raw
                )),
   tar_target(xcalibur_data,
              "data/data_output/lung_data/lung_xcalibur_peaks.rds",
              format = "file"),
+  tar_target(xcalibur_medians,
+             get_other_medians(xcalibur_data)),
   tar_target(xcalibur_imfs,
              match_imfs(
                xcalibur_data,
-               scancentric_imfs
-             ))
+               scancentric_imfs_raw
+             )),
+  tar_target(bad_samples,
+             c("151", "154", "158", "70", "77")),
+  tar_target(qcqa,
+             scancentric_qcqa(
+               scancentric_imfs_raw,
+               scancentric_medians,
+               sample_info)),
+  tar_target(lung_raw,
+             run_imf_models(
+               scancentric_imfs_raw,
+               scancentric_medians,
+               qcqa,
+               sample_info,
+               id = "raw"
+             )),
+  tar_target(lung_corrected,
+             run_imf_models(
+               scancentric_imfs_corrected,
+               scancentric_medians,
+               qcqa,
+               sample_info,
+               id = "corrected"
+             )),
+  tar_target(lung_msnbase,
+             run_imf_models(
+               msnbase_imfs,
+               msnbase_medians,
+               qcqa,
+               sample_info,
+               id = "msnbase"
+             )),
+  tar_target(lung_xcalibur,
+             run_imf_models(
+               xcalibur_imfs,
+               xcalibur_medians,
+               qcqa,
+               sample_info,
+               id = "xcalibur"
+             )),
+  tar_target(lung_compare,
+             compare_ttests(
+               list(corrected = lung_corrected,
+                    raw = lung_raw,
+                    msnbase = lung_msnbase,
+                    xcalibur = lung_xcalibur),
+               reference = "raw")
+             ),
+  tar_target(lung_binomial,
+             binomial_compare(lung_compare))
 )
 
 list(pkg_tar,
