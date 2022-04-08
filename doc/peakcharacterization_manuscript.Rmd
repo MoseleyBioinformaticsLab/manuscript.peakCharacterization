@@ -895,14 +895,36 @@ This calculation is done for the final characterized intensity, as well as the i
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Multi-Class F-Statistics
+### Differential Analysis of Large Dataset
 :::
 
+```{r load_qcqa}
+tar_load(qcqa)
+n_out = qcqa$outlier_data %>%
+  dplyr::group_by(sample_class) %>%
+  dplyr::summarise(n_out = sum(outlier))
+n_out_vector = n_out$n_out
+names(n_out_vector) = n_out$sample_class
+```
+
 ::: {custom-style="MDPI_3.1_text"}
-To evaluate the F-statistic between multi-class samples, a much larger set of samples was used.
-In this case, 181 matched non-cancer and cancer samples previously used in the HPD detection manuscript [@mitchellNewMethodsIdentify2018].
-All 181 samples were peak characterized using the most stringent method below as well as peaks generated from the MSnbase R package [ref], assigned using SMIRFE, and then peaks matched by shared EMFs across samples (see Supplemental materials for a description of peak matching and deciding the most likely EMF).
-For each matched peak across samples, we kept the peaks present in at least 25% of samples in both classes of sample (disease, non-disease), and calculated the F-statistic for peaks generated using scan-level peak-characterization and those from MSnbase.
+To compare p-value changes in a large multi-class sample dataset, we used a much larger set of samples.
+We started with the 181 matched non-cancer and cancer samples previously used for HPD detection and lipidomics of non-small-cell-lung-cancer (NSCLC) [@mitchellNewMethodsIdentify2018; @mitchellUntargetedLipidomicsNonSmall2021].
+All samples were characterized using the full scan-centric workflow, as well as peaks generated from the MSnbase R package [@gattoMSnbaseBioconductorPackage2012; @gattoMSnbaseEfficientElegant2020], assigned using SMIRFE, and then peaks matched by shared EMFs across samples (see other methods for a description of peak matching and deciding the most likely EMF).
+After extraction of the scan-centric IMF peak locations across all samples, Xcalibur and MSnbase peaks were matched within each sample, and locations and intensities extracted.
+
+Of the starting 182 samples, five did not finish during scan-centric characterization due to not having any scans left during normalization.
+In addition, some of the samples were acquired multiple times, creating duplicate samples.
+Not knowing which sample run was most appropriate to use, we removed all of the duplicated samples.
+Using information-content-informed Kendall-tau correlation, we compared the median correlations of each sample to all others in the same disease class for outliers, and removed `r n_out_vector["cancer"]` cancer and `r n_out_vector["non-cancer"]` samples.
+
+Each samples intensities were normalized by dividing by the median intensities from that sample.
+Only those peaks present in 50% of both the non-cancer and cancer samples were kept for differential analysis.
+Differential analysis used the logged intensity values, with p-values calculated using rowttests function from the genefilter Bioconductor package (v1.76.0) [@gentlemanGenefilterMethodsFiltering2021], removing any missing values before calculation.
+P-values were adjusted using the Benjamini-Hochberg method in the p.adjust function from the base R stats package (v4.1.0) [@rcoreteamLanguageEnvironmentStatistical2021a].
+
+For comparisons across peak sources, we converted both the raw p-values to log-p-values by calculating -1 * Log10(p-value).
+The reference peak source is the raw scan-centric p-values.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}

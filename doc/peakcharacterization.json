@@ -1665,5 +1665,61 @@
 			]
 		},
 		"citation-key": "Cleveland1992loess"
+	},
+	{
+		"id": "gattoMSnbaseBioconductorPackage2012",
+		"type": "article-journal",
+		"container-title": "Bioinformatics (Oxford, England)",
+		"journalAbbreviation": "Bioinformatics",
+		"page": "288-289",
+		"title": "MSnbase - an R/Bioconductor package for isobaric tagged mass spectrometry data visualization, processing and quantitation",
+		"volume": "28",
+		"author": [
+			{
+				"family": "Gatto",
+				"given": "Laurent"
+			},
+			{
+				"family": "Lilley",
+				"given": "Kathryn"
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2012"
+				]
+			]
+		},
+		"citation-key": "gattoMSnbaseBioconductorPackage2012"
+	},
+	{
+		"id": "gattoMSnbaseEfficientElegant2020",
+		"type": "article-journal",
+		"container-title": "bioRxiv : the preprint server for biology",
+		"journalAbbreviation": "bioRxiv",
+		"title": "MSnbase, efficient and elegant R-based processing and visualisation of raw mass spectrometry data",
+		"author": [
+			{
+				"family": "Gatto",
+				"given": "Laurent"
+			},
+			{
+				"family": "Gibb",
+				"given": "Sebastian"
+			},
+			{
+				"family": "Rainer",
+				"given": "Johannes"
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2020"
+				]
+			]
+		},
+		"citation-key": "gattoMSnbaseEfficientElegant2020"
 	}
 ]
