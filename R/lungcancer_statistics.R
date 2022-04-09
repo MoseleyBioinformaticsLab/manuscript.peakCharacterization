@@ -284,3 +284,15 @@ binomial_compare = function(lung_compare, p_use = "p_diff"){
   binom_res$p.adjust = p.adjust(binom_res$p.value, method = "bonferroni")
   binom_res
 }
+
+ttest_compare_diffs = function(lung_compare, p_use = "p_diff"){
+  split_compare = split(lung_compare[[p_use]], lung_compare$id.test)
+
+  ttest_res = purrr::map_df(split_compare, function(in_compare){
+    test_res = broom::tidy(t.test(in_compare, alternative = "two.sided"))
+
+  })
+  ttest_res$comparison = names(split_compare)
+  ttest_res$p.adjust = p.adjust(ttest_res$p.value, method = "bonferroni")
+  ttest_res
+}
