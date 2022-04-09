@@ -309,8 +309,13 @@ lungcancer_tar = list(
                patient_file
              )),
   tar_target(scancentric_json,
-             "data/data_output/lung_json_data_2022-04-02.rds",
+             "data/data_output/lung_data/lung_json_data_2022-04-02.rds",
              format = "file"),
+  tar_target(scancentric_med_file_corrected,
+             "data/data_output/lung_data/corrected_medians_2022-04-02.rds",
+             format = "file"),
+  tar_target(scancentric_medians_corrected,
+             readRDS(scancentric_med_file_corrected)),
   tar_target(scancentric_medians,
              get_scancentric_medians(scancentric_json)),
   tar_target(emf_file,
@@ -360,7 +365,7 @@ lungcancer_tar = list(
                sample_info,
                id = "raw"
              )),
-  tar_target(lung_corrected,
+  tar_target(lung_corrected_wrong,
              run_imf_models(
                scancentric_imfs_corrected,
                scancentric_medians,
@@ -384,6 +389,24 @@ lungcancer_tar = list(
                sample_info,
                id = "xcalibur"
              )),
+  tar_target(lung_compare_wrong,
+             compare_ttests(
+               list(corrected = lung_corrected_wrong,
+                    raw = lung_raw,
+                    msnbase = lung_msnbase,
+                    xcalibur = lung_xcalibur),
+               reference = "raw")
+             ),
+  tar_target(lung_binomial,
+             binomial_compare(lung_compare)),
+  tar_target(lung_corrected,
+             run_imf_models(
+               scancentric_imfs_corrected,
+               scancentric_medians_corrected,
+               qcqa,
+               sample_info,
+               id = "corrected"
+             )),
   tar_target(lung_compare,
              compare_ttests(
                list(corrected = lung_corrected,
@@ -391,9 +414,11 @@ lungcancer_tar = list(
                     msnbase = lung_msnbase,
                     xcalibur = lung_xcalibur),
                reference = "raw")
-             ),
-  tar_target(lung_binomial,
-             binomial_compare(lung_compare))
+  ),
+  tar_target(lung_compare_ttest,
+             ttest_compare_diffs(
+               lung_compare
+             ))
 )
 
 list(pkg_tar,
