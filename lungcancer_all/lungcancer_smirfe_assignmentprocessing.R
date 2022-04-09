@@ -91,3 +91,11 @@ all_vote = extract_assigned_data(assigned_data, difference_cutoff = mz_cutoff,
 saveRDS(all_vote, file = "data/data_output/lung_data/lung_voted_all_2022-04-02.rds")
 
 #textme::textme("Lung is all done!")
+all_json_files = dir("/mlab/scratch/cesb_data/zip_files/lung_matched_tissue-2022-04-02", pattern = "json$", full.names=TRUE)
+all_json_files = grep("assigned", all_json_files, value = TRUE, invert = TRUE)
+
+json_data = purrr::map(all_json_files, function(in_json){
+  tmp_json = jsonlite::fromJSON(in_json)
+})
+names(json_data) = gsub(".json$", "", basename(all_json_files))
+saveRDS(json_data, file = "data/data_output/lung_json_data_2022-04-02.rds")
