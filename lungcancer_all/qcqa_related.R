@@ -45,7 +45,7 @@ rawms_time_rtime_filter = function(raw_ms, min_time_difference = 4, rtime_limit 
 }
 
 
-convert_scans2 = function(mz_df_list, frequency_fit_description, mz_fit_description){
+convert_scans2 = function(mz_df_list, frequency_fit_description, mz_fit_description, ... = NULL){
   if (is.null(names(mz_df_list))) {
     names(mz_df_list) = purrr::map_chr(mz_df_list, ~ .x$scan[1])
   }
