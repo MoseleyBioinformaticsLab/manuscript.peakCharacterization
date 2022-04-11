@@ -45,7 +45,8 @@ rawms_time_rtime_filter = function(raw_ms, min_time_difference = 4, rtime_limit 
 }
 
 
-convert_scans2 = function(mz_df_list, frequency_fit_description, mz_fit_description, ... = NULL){
+convert_scans2 = function(mz_df_list, frequency_fit_description, mz_fit_description){
+  ... = NULL
   if (is.null(names(mz_df_list))) {
     names(mz_df_list) = purrr::map_chr(mz_df_list, ~ .x$scan[1])
   }
@@ -94,6 +95,7 @@ convert_scans2 = function(mz_df_list, frequency_fit_description, mz_fit_descript
 check_scans_removed = function(in_zip){
   zip_ms = ZipMS$new(in_zip)
   zip_ms$load_raw()
+  zip_ms$load_peak_finder()
 
   raw_ms = zip_ms$raw_ms$clone(deep = TRUE)
   raw_ms = rawms_time_rtime_filter(raw_ms)
@@ -108,14 +110,14 @@ check_scans_removed = function(in_zip){
   setdiff_raw_norm = length(setdiff(raw_ms_info$scan, normalization_factors$scan))
   setdiff_freq_norm = length(setdiff(freq_scans, normalization_factors$scan))
 
-  if (length(setdiff_raw_freq) > 0) {
+  if (setdiff_raw_freq > 0) {
     mz_df_list = raw_ms$extract_raw_data()
     freq_coef2 = convert_scans2(mz_df_list, zip_ms$peak_finder$peak_regions$frequency_fit_description, zip_ms$peak_finder$peak_regions$mz_fit_description)
   } else {
     freq_coef2 = NULL
   }
 
-  if (length(setdiff_freq_norm) > 0) {
+  if (setdiff_freq_norm > 0) {
     out_diff = setdiff(freq_scans, normalization_factors$scan)
   } else {
     out_diff = NULL
