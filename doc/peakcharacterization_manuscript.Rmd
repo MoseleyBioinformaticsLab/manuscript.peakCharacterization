@@ -703,7 +703,57 @@ Also shown are the Bonferroni adjusted p-values from a t-test of the log-p-value
 Green points denote the high, mean, and low-confidence limits reported from the t-test.
 :::
 
+::: {custom-style="MDPI_2.2_heading2"}
+### Quality Control and Quality Analysis
 :::
+
+```{r load_increment_qcqa}
+figure_count$increment("coefficients_qcqa")
+figure_count$increment("frequency_mode_qcqa")
+tar_load(coefficients_qcqa)
+```
+
+::: {custom-style="MDPI_3.1_text"}
+Having a scan-centric workflow for generating the peak centroids means that we have opportunities to evaluate the scans as a whole, as well as the peaks across scans.
+For example, we can mark peaks with unusually high frequency standard deviations (FSD) and mitigate the presence of high-peak-density artefacts (see **Mitigation of High Peak Density Artefacts**).
+We also sometimes find that from initial peak region that has been marked as a single region, still results in two peaks being characterized in a single scan.
+This results in that peak being removed from that scan entirely.
+
+The conversion of m/z to frequency also provides opportunities to evaluate each scan and whether it should be kept for further processing.
+One way is to examine the coefficients of the square-root term for each scan (see term **y** in Equation `r equation_count$label_text("mzfrequency")`) and look for outliers there.
+Across the `r length(coefficients_qcqa$n_coef_out)` raw files that completed scan-centric processing, `r sum(coefficients_qcqa$n_coef_out > 0)` had at least one scan removed based on the square-root coefficient.
+`r figure_count$label_text("coefficients_qcqa")`A shows a histogram of the number of scans removed based on being outliers of the overall distribution.
+`r figure_count$label_text("coefficients_qcqa")`B shows what outlier scan coefficients look like in a single sample.
+:::
+
+::: {custom-style="MDPI_5.2_figure"}
+```{r coefficients_qcqa}
+coef_df1 = data.frame(N_out = coefficients_qcqa$n_coef_out)
+coef_g1 = coef_df1 %>%
+  ggplot(aes(x = N_out)) + 
+  geom_histogram() +
+  labs(x = "# of Scan Outliers", y = "# of Samples")
+
+coef_g2 = coefficients_qcqa$example %>%
+  ggplot(aes(x = sample, y = coefficient, color = outlier, group = sample)) +
+  geom_sina(size = 2) +
+  labs(x = "", y = "Square-Root Term") +
+  theme(legend.position = c(0.1, 0.8))
+
+(coef_g1 | coef_g2) + plot_annotation(tag_levels = "A")
+```
+:::
+
+::: {custom-style="MDPI_5.1_figure_caption"}
+`r figure_count$label_text("coefficients_qcqa")`.
+**A**: Number of scan outliers for each sample in the NSCLC dataset.
+**B**: Single example for sample 199Cpos of the scan square-root terms marked as outliers and removed from further consideration.
+:::
+
+One other check we implemented in the conversion to frequency is checking the range of frequency point-point differences allowed for creating the m/z to frequency model, and making sure that they are the same across scans.
+The initial set of scans we allowed to use included **all** of the MS1 scans, including the precursor scans for the MS2 scans. 
+The samples were acquired as a mix of MS1 only scans for the first 7.5 minutes, and then a mix of MS1 precursor scans followed by MS2 scans for the second 7.5 minutes.
+In 20 samples, the MS1 precursor scans have a different mode in the frequency point-point difference than the primary MS1 scans, as shown in `r figure_count$label_text("frequency_mode_qcqa")`.
 
 ::: {custom-style="MDPI_2.1_heading1"}
 ## Discussion
@@ -1047,7 +1097,7 @@ MSnbase v 2.20.4 [@gattoMSnbaseEfficientElegant2020; @gattoMSnbaseBioconductorPa
 ICI-Kt correlation values among lipid samples were calculated using ICIKendallTau v 0.1.16 [@flightInformationContentInformedKendalltauCorrelation2022].
 Outlier lipid samples were determined using visualizationQualityControl v 0.4.7 [@flightVisualizationQualityControlDevelopmentVisualization2021].
 Specific data manipulation facilities were provided by dplyr v 1.0.8 [@wickhamDplyrGrammarData2022], tidyr v 1.2.0 [@wickhamTidyrTidyMessy2022], furrr v 0.2.3 [@vaughanFurrrApplyMapping2021a], 
-This manuscript was generated from rmarkdown v 2.11 [@allaireRmarkdownDynamicDocuments2021; @xieMarkdownDefinitiveGuide2018; xieMarkdownCookbook2020].
+This manuscript was generated from rmarkdown v 2.11 [@allaireRmarkdownDynamicDocuments2021; @xieMarkdownDefinitiveGuide2018; @xieMarkdownCookbook2020].
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
