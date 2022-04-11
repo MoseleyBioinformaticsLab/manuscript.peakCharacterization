@@ -421,6 +421,16 @@ lungcancer_tar = list(
              ))
 )
 
+qcqa_tar = list(
+  tar_target(coefficients_file,
+             "data/data_output/lung_data/lung_scandiffs_2022-04-02.rds",
+             format = "file"),
+  tar_target(coefficients_data,
+             readRDS(coefficients_file)),
+  tar_target(coefficients_qcqa,
+             coefficients_analysis(coefficients_data))
+)
+
 list(pkg_tar,
      data_tar,
      method_tar,
@@ -440,4 +450,5 @@ list(pkg_tar,
      assigned_match_tar,
      aa_tar,
      lipid_tar,
-     lungcancer_tar)
+     lungcancer_tar,
+     qcqa_tar)
