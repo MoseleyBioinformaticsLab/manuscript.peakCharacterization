@@ -257,7 +257,7 @@ figure_count$increment("centroided_peaks")
 ```
 
 ::: {custom-style="MDPI_3.1_text"}
-Although many other types of mass-spectrometry data suffer from a variable and noisy baseline, the scan-level profile data from the Thermo Fusion has a baseline of 0 due to manipulations in the Thermo firmware, making the determination of the centroided values considerably easier. 
+Although many other types of mass-spectrometry data suffer from a variable and noisy baseline, the scan-level profile data from the Thermo-Fisher Fusion has a baseline of 0 due to manipulations in the Thermo-Fisher firmware, making the determination of the centroided values considerably easier. 
 For each region initially created, the peaks in each scan within that region can be characterized (i.e. centroiding).
 For centroiding, we use a simple weighted quadratic model of log(intensity) to m/z. 
 We add a small constant to enable using the zero values, and weight the values by their ratio to the most intense value, which is normally the value closest to the center of peak, helping to ensure that the **true** centroid is determined. 
@@ -382,7 +382,7 @@ XCalibur peak density was measured using a sliding window ten points wide and a 
 `r figure_count$label_text("hpd_compare_fsd")` shows a single HPD site detected in the 2ecf sample, with the peaks from Xcalibur, as well as various scan-centric processing and the peaks from centroiding using MSnbase.
 From this figure, we can see that the point density based noise filtering removes a large number of the peaks in the HPD site, while the FSD outliers removes further peaks that may be suspect.
 After removing the high FSD peaks, the number of peaks left in the HPD site are the same or less than those from MSnbase, and at least in this example, look more likely to be real peaks compared to those from MSnbase.
-Therefore, scan-level characterization allows us to keep what are likely **real** peaks in HPD sites, without consideration of peak intensity, and mark peaks that may be artifactual from HPD regions.
+Therefore, scan-centric characterization allows us to keep what are likely **real** peaks in HPD sites, without consideration of peak intensity, and mark peaks that may be artifactual from HPD regions.
 :::
 
 ::: {custom-style="MDPI_5.2_figure"}
@@ -406,9 +406,9 @@ hpd_right_panel = hpd_plots_2ecf$n %>%
 **`r figure_count$label_text("hpd_compare_fsd")`.** Comparison of HPD and high FSD sites in the ECF 2 sample.
 **A** - **E**:Peak plots for various peak processing modalities in a single HPD site.
 **A**: *xcalibur* peaks exported from Thermo Xcalibur after averaging scans.
-**B**: *scalevel_00*: Scan-level peak characterization without any density based filtering (see noperc_nonorm in Methods).
-**C**: *scanlevel_99*: Scan-level peak characterization using the default point density filtering (see filtersd in Methods).
-**D**: *scanlevel_99_lowsd*: Same as *scanlevel_99*, but removing any peaks marked as having a high frequency standard deviation.
+**B**: *scalevel_00*: Scan-centric peak characterization without any density based filtering (see noperc_nonorm in Methods).
+**C**: *scancentric_99*: Scan-centric peak characterization using the default point density filtering (see filtersd in Methods).
+**D**: *scancentric_99_lowsd*: Same as *scanlevel_99*, but removing any peaks marked as having a high frequency standard deviation.
 **E**: *msnbase*: peak centroids generated from *MSnbase*.
 **F**: Scatterplot of peak counts across all of the HPDs detected in the ECF 2 sample against the Xcalibur peak counts.
 :::
@@ -495,7 +495,7 @@ all_diffs = rbind(aa_diffs_filtersd_1ecf$all_diffs %>%
                     dplyr::mutate(sample = "2ecf"))
 
 threonine_ratios = aa_diffs_filtersd_1ecf$specific_diffs$ratios %>%
-  dplyr::filter(source %in% c("scan-level", "xcalibur"))
+  dplyr::filter(source %in% c("scan-centric", "xcalibur"))
 threonine_diffs = aa_diffs_filtersd_1ecf$specific_diffs$diffs %>%
   dplyr::filter(source %in% "xcal_raw_char")
 
@@ -509,7 +509,7 @@ threonine_ratioplot = ggplot(threonine_ratios, aes(x = ratio, y = diff, color = 
 threonine_diffplot = ggplot(threonine_diffs, aes(x = n_missing, y = diff)) +
     geom_point(size = 2) +
     labs(x = "Number of Missing Scans",
-         y = "Xcalibur - Scan-Level NAP - Height Differences")+
+         y = "Xcalibur - Scan-Centric NAP - Height Differences")+
   theme(axis.title.y = element_text(size = nap_fontsize))
 
 aa_diffplot = all_diffs %>%
@@ -517,7 +517,7 @@ aa_diffplot = all_diffs %>%
   ggplot(aes(x = n_missing, y = diff)) +
   geom_point() +
   labs(x = "Number of Missing Scans",
-         y = "Xcalibur - Scan-Level NAP - Height Differences") +
+         y = "Xcalibur - Scan-Centric NAP - Height Differences") +
   theme(axis.title.y = element_text(size = nap_fontsize))
 
 out_plot = (threonine_ratioplot | threonine_diffplot) / aa_diffplot + plot_annotation(tag_levels = "A")
@@ -527,9 +527,9 @@ out_plot
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
 `r figure_count$label_text("nap_intensity")`.
-**A**. The peak-peak NAP - intensity log differences from scan-level peak heights (red) and Xcalibur peak heights (blue) from the threonine amino acid assignments with Na adduct, with point size reflecting how many peaks were missing across scans.
-**B**. The difference of Xcalibur to scan-level ratios plotted directly as a function of the number of scans the peak was not found in.
-**C**. The differences of Xcalibur to scan-level ratios for all of the amino acid assignments in EMFs with more than a single peak in both ECF samples.
+**A**. The peak-peak NAP - intensity log differences from scan-centric peak heights (red) and Xcalibur peak heights (blue) from the threonine amino acid assignments with Na adduct, with point size reflecting how many peaks were missing across scans.
+**B**. The difference of Xcalibur to scan-centric ratios plotted directly as a function of the number of scans the peak was not found in.
+**C**. The differences of Xcalibur to scan-centric ratios for all of the amino acid assignments in EMFs with more than a single peak in both ECF samples.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
@@ -652,7 +652,7 @@ MSnbase generated p-values show the widest distribution of differences, as well 
 This echoes the patterns of low overlapping assigned peaks observed in both ECF samples, where many of the scan-centric amino-acid peaks only found one match from the MSnbase peaks.
 Surprisingly, the truncated normal distribution corrected intensities generated very different p-values compared to the raw intensities, and XCalibur showed the most agreement with the raw p-values.
 We tested the statistical significance of these differences using a t-test of the actual difference in log-p-values (shown in `r figure_count$label_text("p_value_comparison")`D).
-It is clear that the raw scan-level intensities are superior.
+It is clear that the raw scan-centric intensities are superior.
 :::
 
 ::: {custom-style="MDPI_5.2_figure"}
@@ -803,9 +803,9 @@ If there are no scans with at least 25 peaks, then the processing of that sample
 FT-MS provides spectral scans; however, unlike nuclear magnetic resonance, these spectral scans are not identical, due to several instrumentation issues.
 Therefore, simple scan summation into an aggregate spectrum followed by peak characterization does not provide optimal data.
 Also, this approach prevents the calculation of useful peak-specific statistics, especially variance.
-In the results presented, we demonstrate superior performance by scan-level peak characterization in terms of: i) improved QC/QA and noise reduction, ii) improved peak height relative standard deviations, iii) improved peak intensity ratios that better match natural abundance probabilities, and iv) better separation between biological groups.
+In the results presented, we demonstrate superior performance by scan-centric peak characterization in terms of: i) improved QC/QA and noise reduction, ii) improved peak height relative standard deviations, iii) improved peak intensity ratios that better match natural abundance probabilities, and iv) better separation between biological groups.
 These improvements are necessary for downstream derivation of molecular formula based on peak ratio matching to NAP in SMIRFE.
-However, scan-level peak characterization requires a sophisticated pipeline of QC/QA and processing steps to derive a superior characterization with informative statistics and QC/QA metrics.
+However, scan-centric peak characterization requires a sophisticated pipeline of QC/QA and processing steps to derive a superior characterization with informative statistics and QC/QA metrics.
 Years of methods development, testing, and optimization have gone into the methods presented here.
 But once implemented, large datasets can be processed in a straight-forward manner and in a manner that supports full computational reproducibility. 
 Not all of the methods presented here provided an improvement.
@@ -842,7 +842,7 @@ The rest were included for the examination of changes in differential analysis p
 ::: {custom-style="MDPI_3.5_text_before_list"}
 For each of the two ECF and two lipid samples, the raw data file was converted to profile mzML format.
 Only the MS1 scans were used, and the scan-scan time difference had to be >= 4 seconds, and for the lipid samples only scans acquired before 450 seconds (7.5 minutes) were kept.
-The scan-level data was then processed in the following eight ways:
+The scan-centric data was then processed in the following eight ways:
 :::
 
 ::: {custom-style="MDPI_3.8_bullet"}
@@ -1035,7 +1035,7 @@ Assigned molecular formulas were then classified into one or more lipid categori
 Lipid classes that were previously observed to be overclassified by our models (neutral and acidic glycosphingolipids) were excluded.
 For the ECF derivatized amino-acid samples, the EMF database was generated using an m/z limit of 1005 m/z, and maximum numbers for each element were set to C: 100, N: 7, O: 40, H: 230, P: 3, S: 3.
 
-We attempted to create peaks that could be assigned by SMIRFE from the MSnbase and Xcalibur peak lists, but SMIRFE would not assign them given its requirements for scan-level peak characterization data.
+We attempted to create peaks that could be assigned by SMIRFE from the MSnbase and Xcalibur peak lists, but SMIRFE would not assign them given its requirements for scan-centric peak characterization data.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}

@@ -469,7 +469,7 @@ ratio_diffs_extracted = function(difference_data, aa_id = "Threonine", formula_i
   raw_ratios = diff_formula$data_ratios %>%
     dplyr::mutate(source2 = source,
                   source = dplyr::case_when(
-      grepl("char_height", source2) ~ "scan-level",
+      grepl("char_height", source2) ~ "scan-centric",
       TRUE ~ source2
                   ))
 

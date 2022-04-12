@@ -60,27 +60,27 @@ density_calculate = function(frequency_values, metadata, frequency_range = NULL)
 }
 
 
-hpds_from_excel = function(scanlevel_99, scanlevel_00, msnbase, excel_files){
-  sample = scanlevel_99$char_obj$zip_ms$id
+hpds_from_excel = function(scancentric_99, scancentric_00, msnbase, excel_files){
+  sample = scancentric_99$char_obj$zip_ms$id
   match_excel = grep(sample, excel_files, value = TRUE)
 
   xl_data = readxl::read_excel(match_excel, skip = 8, col_names = FALSE)
   xl_data = xl_data[, 1:2]
   names(xl_data) = c("mz", "intensity")
   message("got xl data")
-  frequency_coefficients = scanlevel_99$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions$metadata$frequency_coefficients
-  frequency_description = scanlevel_99$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions$metadata$frequency_fit_description
-  mz_coefficients = scanlevel_99$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions$metadata$mz_coefficients
-  mz_description = scanlevel_99$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions$metadata$mz_fit_description
-  org_frequency_peaks = purrr::map_df(seq_len(length(scanlevel_99$char_obj$zip_ms$peak_finder$peak_regions$peak_region_list)),
+  frequency_coefficients = scancentric_99$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions$metadata$frequency_coefficients
+  frequency_description = scancentric_99$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions$metadata$frequency_fit_description
+  mz_coefficients = scancentric_99$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions$metadata$mz_coefficients
+  mz_description = scancentric_99$char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions$metadata$mz_fit_description
+  org_frequency_peaks = purrr::map_df(seq_len(length(scancentric_99$char_obj$zip_ms$peak_finder$peak_regions$peak_region_list)),
                                       function(.x){
-                                        tmp = as.data.frame(scanlevel_99$char_obj$zip_ms$peak_finder$peak_regions$peak_region_list[[.x]]$peaks[, c("ObservedMZ", "ObservedFrequency", "scan")])
+                                        tmp = as.data.frame(scancentric_99$char_obj$zip_ms$peak_finder$peak_regions$peak_region_list[[.x]]$peaks[, c("ObservedMZ", "ObservedFrequency", "scan")])
                                         tmp$region = .x
                                         tmp
                                       })
   xl_data$frequency = FTMS.peakCharacterization:::predict_exponentials(xl_data$mz, frequency_coefficients, frequency_description)
 
-  sliding_metadata = scanlevel_99$char_obj$zip_ms$peak_finder$peak_regions$sliding_regions@metadata
+  sliding_metadata = scancentric_99$char_obj$zip_ms$peak_finder$peak_regions$sliding_regions@metadata
 
   freq_diff = 1000
   sliding_metadata$point_spacing = round(freq_diff / 10)
@@ -91,12 +91,12 @@ hpds_from_excel = function(scanlevel_99, scanlevel_00, msnbase, excel_files){
 
   xl_hpd = density_calculate(xl_data, sliding_metadata, frequency_range)
 
-  peak_99 = scanlevel_99$char_obj$zip_ms$peak_finder$peak_regions$peak_data %>%
+  peak_99 = scancentric_99$char_obj$zip_ms$peak_finder$peak_regions$peak_data %>%
     dplyr::select(ObservedMZ, ObservedFrequency, Height, HighSD) %>%
-    dplyr::mutate(source = "scanlevel_99")
-  peak_00 = scanlevel_00$char_obj$zip_ms$peak_finder$peak_regions$peak_data %>%
+    dplyr::mutate(source = "scancentric_99")
+  peak_00 = scancentric_00$char_obj$zip_ms$peak_finder$peak_regions$peak_data %>%
     dplyr::select(ObservedMZ, ObservedFrequency, Height, HighSD) %>%
-    dplyr::mutate(source = "scanlevel_00")
+    dplyr::mutate(source = "scancentric_00")
   peak_msnbase = msnbase$comb %>%
     dplyr::transmute(ObservedMZ = mz,
                      ObservedFrequency = FTMS.peakCharacterization:::predict_exponentials(ObservedMZ, frequency_coefficients, frequency_description),
@@ -139,7 +139,7 @@ hpds_from_excel = function(scanlevel_99, scanlevel_00, msnbase, excel_files){
 
 chisq_hpds = function(hpd_res){
   peak_data = hpd_res$hpd_data %>%
-    dplyr::filter(source %in% "scanlevel_99")
+    dplyr::filter(source %in% "scancentric_99")
   cont_table = table(peak_data[, c("HighSD", "HPD")])
   chisq_res = broom::tidy(chisq.test(cont_table))
   chisq_res$sample = hpd_res$sample
@@ -174,12 +174,12 @@ plot_hpds = function(hpd_res){
                      n_lowsd = n - sum(HighSD))
   n_wide = n_any %>%
     tidyr::pivot_wider(id_cols = HPDID, names_from = source, values_from = n, values_fill = 0) %>%
-    dplyr::arrange(dplyr::desc(scanlevel_99))
+    dplyr::arrange(dplyr::desc(scancentric_99))
   n_wide_lowsd = n_any %>%
     tidyr::pivot_wider(id_cols = HPDID, names_from = source, values_from = n_lowsd, values_fill = 0) %>%
-    dplyr::arrange(dplyr::desc(scanlevel_99)) %>%
+    dplyr::arrange(dplyr::desc(scancentric_99)) %>%
     dplyr::transmute(HPDID = HPDID,
-                     scanlevel_99_lowsd = scanlevel_99)
+                     scancentric_99_lowsd = scancentric_99)
 
   all_n_wide = dplyr::left_join(n_wide, n_wide_lowsd, by = "HPDID")
   all_n_long = all_n_wide %>%
@@ -196,9 +196,9 @@ plot_hpds = function(hpd_res){
     dplyr::filter(HPDID %in% use_hpdid)
 
   peaks_type = split(peaks_use, peaks_use$source)
-  peaks_type$scanlevel_99_lowsd = peaks_type$scanlevel_99 %>%
+  peaks_type$scancentric_99_lowsd = peaks_type$scancentric_99 %>%
     dplyr::filter(!HighSD) %>%
-    dplyr::mutate(source = "scanlevel_99_lowsd")
+    dplyr::mutate(source = "scancentric_99_lowsd")
   plot_range = range(peaks_use$ObservedFrequency)
 
   plots_type = purrr::map(peaks_type, function(in_type){
@@ -215,9 +215,9 @@ plot_hpds = function(hpd_res){
       labs(y = "Intensity", subtitle = in_type$source[1])
     base_plot
   })
-  plots_type = plots_type[c("xcalibur", "scanlevel_00",
-                            "scanlevel_99",
-                            "scanlevel_99_lowsd",
+  plots_type = plots_type[c("xcalibur", "scancentric_00",
+                            "scancentric_99",
+                            "scancentric_99_lowsd",
                             "msnbase")]
 
   list(n = all_n_long,
