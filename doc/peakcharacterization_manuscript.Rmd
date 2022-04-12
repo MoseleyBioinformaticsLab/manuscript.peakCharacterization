@@ -152,7 +152,7 @@ FT-MS data from the Thermo-Fisher Orbitrap instruments used to acquire the data 
 Outside of the meta-data, it merely contains the m/z and intensity values for profile spectra acquired across multiple scans.
 However, the frequency can be calculated by dividing the average m/z of two adjacent points by their difference (`r figure_count$label_text("mz_frequency_conversion")`A, red points representing the average m/z of two adjacent points, red lines representing the difference between the two adjacent points).
 The subsequent differences in frequency should be relatively constant with respect to m/z, in contrast to the differences of adjacent m/z points, as shown in `r figure_count$label_text("mz_frequency_conversion")`B and C.
-The Thermo Fusion instrument from which most of our collaborators data has been acquired, at a resolution of 450K or 500K depending on the sample, has a mode of 0.5, as shown in `r figure_count$label_text("mz_frequency_conversion")`C and D.
+The Thermo-Fisher Fusion instrument from which most of our collaborators data has been acquired, at a resolution of 450K or 500K depending on the sample, has a mode of 0.5, as shown in `r figure_count$label_text("mz_frequency_conversion")`C and D.
 Restricting to those points that fall into a narrow range of frequency differences (0.49 - 0.51), a model of frequency to m/z can be generated (see Methods), with an example shown in `r figure_count$label_text("mz_frequency_conversion")`E.
 This model seems to fit the known relationship between frequency and m/z, where the frequency is related to $1/\sqrt{mz}$.
 This is useful, because some of the subsequent steps in our workflow use sliding and tiled windows where it is assumed that the sliding windows contain the same number of data points.
@@ -403,14 +403,15 @@ hpd_right_panel = hpd_plots_2ecf$n %>%
 :::
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
-**`r figure_count$label_text("hpd_compare_fsd")`.** Comparison of HPD and high FSD sites in the ECF 2 sample.
+`r figure_count$label_text("hpd_compare_fsd")`.
+Comparison of HPD and high FSD sites in the 2ecf sample.
 **A** - **E**:Peak plots for various peak processing modalities in a single HPD site.
-**A**: *xcalibur* peaks exported from Thermo Xcalibur after averaging scans.
-**B**: *scalevel_00*: Scan-centric peak characterization without any density based filtering (see noperc_nonorm in Methods).
+**A**: *xcalibur* peaks exported from Thermo-Fisher Xcalibur after averaging scans.
+**B**: *scancentric_00*: Scan-centric peak characterization without any density based filtering (see noperc_nonorm in Methods).
 **C**: *scancentric_99*: Scan-centric peak characterization using the default point density filtering (see filtersd in Methods).
-**D**: *scancentric_99_lowsd*: Same as *scanlevel_99*, but removing any peaks marked as having a high frequency standard deviation.
+**D**: *scancentric_99_lowsd*: Same as *scancentric_99*, but removing any peaks marked as having a high frequency standard deviation.
 **E**: *msnbase*: peak centroids generated from *MSnbase*.
-**F**: Scatterplot of peak counts across all of the HPDs detected in the ECF 2 sample against the Xcalibur peak counts.
+**F**: Scatterplot of peak counts across all of the HPDs detected in the 2ecf sample against the Xcalibur peak counts.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
@@ -456,13 +457,9 @@ Relative standard deviation means, medians, modes, and maximum observed values f
 
 ::: {custom-style="MDPI_4.2_table_body"}
 ```{r rsd_table, results = 'asis'}
-tar_load(rsd_values)
-rsd_values = rsd_values %>%
-  dplyr::arrange(sample, processed)
-rsd_ft = flextable(rsd_values) %>%
-  colformat_double(digits = 2) %>%
+tar_load(rsd_best)
+rsd_best %>%
   autofit()
-rsd_ft
 ```
 :::
 
@@ -483,9 +480,10 @@ To compare relative NAP to relative abundances, we only examined the assignments
 From this figure, it is clear that inconsistency in peak presence across scans leads to larger deviations between measured peak heights from aggregate spectra and expected relNAP.
 :::
 
+
 ::: {custom-style="MDPI_5.2_figure"}
 ```{r nap_intensity, dn_id = figure_count, fig.width = 16, fig.height = 8}
-nap_fontsize = 10
+nap_fontsize = 9
 tar_load(aa_diffs_filtersd_1ecf)
 tar_load(aa_diffs_filtersd_2ecf)
 
@@ -800,14 +798,15 @@ If there are no scans with at least 25 peaks, then the processing of that sample
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-FT-MS provides spectral scans; however, unlike nuclear magnetic resonance, these spectral scans are not identical, due to several instrumentation issues.
-Therefore, simple scan summation into an aggregate spectrum followed by peak characterization does not provide optimal data.
+[**Is it just me, or does this feel like the conclusions? If so, do we need a Discussion? I think for MDPI they are optional ...**]
+FT-MS direct-injection data provides spectral scans; however, unlike nuclear magnetic resonance, these spectral scans are not identical, due to several instrumentation issues.
+Therefore, simple scan summation to an aggregate spectrum followed by peak characterization does not provide optimal data.
 Also, this approach prevents the calculation of useful peak-specific statistics, especially variance.
-In the results presented, we demonstrate superior performance by scan-centric peak characterization in terms of: i) improved QC/QA and noise reduction, ii) improved peak height relative standard deviations, iii) improved peak intensity ratios that better match natural abundance probabilities, and iv) better separation between biological groups.
+In the results presented, we demonstrate superior performance by scan-centric peak characterization in terms of: i) improved QC/QA and noise reduction; ii) improved peak height relative standard deviations; iii) improved peak intensity ratios that better match natural abundance probabilities; and iv) better separation between biological groups.
 These improvements are necessary for downstream derivation of molecular formula based on peak ratio matching to NAP in SMIRFE.
 However, scan-centric peak characterization requires a sophisticated pipeline of QC/QA and processing steps to derive a superior characterization with informative statistics and QC/QA metrics.
 Years of methods development, testing, and optimization have gone into the methods presented here.
-But once implemented, large datasets can be processed in a straight-forward manner and in a manner that supports full computational reproducibility. 
+But once implemented, large datasets can be processed in a straight-forward manner that supports full computational reproducibility. 
 Not all of the methods presented here provided an improvement.
 We included our negative results with correcting mean and standard deviations for the intensity of peaks not detected in all scans, so that others do not waste effort pursuing this.
 We initially expected the data to follow a truncated normal distribution; however, upon further contemplation of the results presented here, we believe that the differences between scans still present after normalization imparts a dispersive variance component.
@@ -832,7 +831,7 @@ Two replicate samples were prepared and spectra were obtained for both samples u
 The collection, preparation, and mass spectrometry analysis of the paired cancer and non-cancer samples has been previously described [@sellersPyruvateCarboxylaseCritical2015]. 
 In summary, cancer and nearby non-cancer tissue samples were acquired from eight-six non-diabetic patients with suspected resectable stage I or IIA non-small cell lung cancer. 
 Written informed consent was collected from all subjects prior to inclusion and all samples were collected under a University of Louisville or University of Kentucky IRB protocol. 
-Lipid extracts were prepared using a modified Folch extraction and reconstituted for direct infusion ultra-high resolution mass spectrometry on a pair of Thermo Tribrid Fusion Orbitrap instruments (FSN10115 and FSN10352, referred to as Fusion 1 and Fusion 2 respectively) coupled to an Advion nanoelectrospray system. 
+Lipid extracts were prepared using a modified Folch extraction and reconstituted for direct infusion ultra-high resolution mass spectrometry on a pair of Thermo-Fisher Tribrid Fusion Orbitrap instruments (FSN10115 and FSN10352, referred to as Fusion 1 and Fusion 2 respectively) coupled to an Advion nanoelectrospray system. 
 53 patients (102 spectra total) were acquired from Fusion 1 (serial # FSN10115) and 40 patients (77 spectra total) were acquired from Fusion 2 (serial # FSN10352). Fusion 1 samples were exclusively from the University of Louisville while Fusion 2 were a mix. 
 Three of the patients had only a cancer or non-cancer sample acquired.
 Two of the cancer lipid samples (49Cpos and 97Cpos) were used for the majority of examples in this manuscript.
@@ -901,11 +900,11 @@ These *useful* points can be used to construct a linear model relating m/z to fr
 ::: {custom-style="MDPI_3.1_text"}
 From the known physical properties of the Orbitrap, only the square root term should be necessary [@ledfordSpaceChargeEffects1984].
 Practically, we have found the combination of square and cube-roots to provide a better fit when processing data from the Thermo-Fisher Fusion instrument, likely due to issues with slight imperfections in the orbitrap geometry, contributions from space charge effects and magnetronic motion, control of the magnetic fields, and the Fourier-like transform conversion used by the spectrometer.
-We do note here that when working with Bruker SolariX ICR data, the equation is slightly different, and does not require the cubic square root term (unpublished results, see Supplemental Materials).
+We do note that when working with Bruker SolariX ICR data, the equation is slightly different, and does not require the cubic square root term (unpublished results, see Supplemental Materials).
 A frequency model is generated for each scan, and then a single model using the scan with the square-root term closest to the median of the square-root terms from all scans.
 We observed that this single model better preserved the relative ordering of the peaks in both m/z and frequency-space compared to the scan specific models (see Results).
 
-To convert m/z back into frequency, we can use a similar model without the roots, as well as an extra simple linear term that doesn't have an equivalent in the frequency model.
+To convert m/z back into frequency, we can use a similar model without the roots, as well as an extra simple linear term that doesn't have an equivalent in the above frequency model.
 :::
 
 ::: {custom-style="MDPI_3.9_equation"}
@@ -928,7 +927,7 @@ Each **point** above is the equivalent of the difference between data points in 
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-To enable interval algebra, the frequency points are converted to single width intervals by multiplying (by a multiplier of 400 in this work), rounding to the nearest integer, and storing them as IRanges objects from the IRanges Bioconductor package [@lawrenceSoftwareComputingAnnotating2013a].
+To enable interval algebra, the frequency points are converted to single width intervals by multiplying by a constant factor to maintain the differences in individual points (a multiplier of 400 in this work), rounding to the nearest integer, and storing them as IRanges objects from the IRanges Bioconductor package [@lawrenceSoftwareComputingAnnotating2013a].
 The sliding and tiled windows are also converted to IRanges objects using this process.
 :::
 
@@ -1158,12 +1157,16 @@ This manuscript was generated from rmarkdown v 2.11 [@allaireRmarkdownDynamicDoc
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-The code used in the reporting of results is available on GitHub at https://github.com/MoseleyBioinformaticsLab/manuscript.peakCharacterization, and archived on Zenodo [ref].
-The scan-centric peak-characterization is packaged as an R package at https://github.com/MoseleyBioinformaticsLab/FTMS.peakCharacterization, and the specific version used in this work is archived on Zenodo [ref].
+The code used in the reporting of results is available on GitHub at https://github.com/MoseleyBioinformaticsLab/manuscript.peakCharacterization, and archived on Zenodo [@flightMoseleyBioinformaticsLabManuscriptPeakCharacterization2022].
+The scan-centric peak-characterization is packaged as an R package at https://github.com/MoseleyBioinformaticsLab/FTMS.peakCharacterization, and the specific version used in this work is archived on Zenodo [@flightMoseleyBioinformaticsLabFTMSPeakCharacterization2022].
 :::
 
 ::: {custom-style="MDPI_2.1_heading1"}
 ## Conclusions
+:::
+
+::: {custom-style="MDPI_3.1_text"}
+
 :::
 
 ::: {custom-style="MDPI_2.1_heading1"}
