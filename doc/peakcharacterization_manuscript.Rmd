@@ -247,10 +247,6 @@ Red line is the median x 1.5.
 **C** and **D** show the number of initial regions as a function of the percentile cutoff used for either the AA ECF (C) or lipid (D) samples.
 :::
 
-::: {custom-style="MDPI_3.1_text"}
-For each region initially created, the peaks in each scan within that region can be characterized using a quadratic fit of log(intensity) to m/z.
-:::
-
 
 ::: {custom-style="MDPI_2.2_heading2"}
 ### Peak Characterization Using Quadratic Fit
@@ -262,7 +258,8 @@ figure_count$increment("centroided_peaks")
 
 ::: {custom-style="MDPI_3.1_text"}
 Although many other types of mass-spectrometry data suffer from a variable and noisy baseline, the scan-level profile data from the Thermo Fusion has a baseline of 0 due to manipulations in the Thermo firmware, making the determination of the centroided values considerably easier. 
-For the peak characterization (centroiding), we use a simple quadratic model of log(intensity) to m/z. 
+For each region initially created, the peaks in each scan within that region can be characterized (i.e. centroiding).
+For centroiding, we use a simple weighted quadratic model of log(intensity) to m/z. 
 We add a small constant to enable using the zero values, and weight the values by their ratio to the most intense value, which is normally the value closest to the center of peak, helping to ensure that the **true** centroid is determined. 
 From the fitted model, we can derive the centroided center and the intensity of the peak, as shown in `r figure_count$label_text("centroided_peaks")`.
 :::
@@ -326,12 +323,12 @@ figure_count$increment("normalization_factors")
 ::: {custom-style="MDPI_3.1_text"}
 Due to differences in how many ions are captured in the trap and the limited dynamic range of the detector, the observed peak intensities for the same analyte vary between scans (see `r figure_count$label_text("breaking_regions")`A and B for example).
 Using the median peak differences between scans, it is possible to normalize the peak intensities across scans.
-However, there are two issues with these peak intensities across scans: 1) some peak intensities correlate with the scan number (i.e. scan acquisition order); and 2) some peak differences between scans are correlated with intensity.
-The solution to **1** is to do a two pass normalization.
+However, there are two issues with these peak intensities across scans: (i) some peak intensities correlate with the scan number (i.e. scan acquisition order); and (ii) some peak differences between scans are correlated with intensity.
+The solution to **i** is to do a two pass normalization.
 After the first pass, the peaks whose intensity is correlated with scan order are detected.
 In the second pass, the correlated peaks are removed, and normalization is carried out again.
 `r figure_count$label_text("intensity_scan")`A contains an example peak whose intensity across scans is correlated with scan number.
-The solution to **2** (peak differences correlated with intensity) is to only use the most intense peaks, as shown in `r figure_count$label_text("intensity_scan")`B.
+The solution to **ii** (peak differences correlated with intensity) is to only use the most intense peaks, as shown in `r figure_count$label_text("intensity_scan")`B.
 The highlighted peaks in `r figure_count$label_text("intensity_scan")`B are those with an intensity greater than 0.7 of the maximum intensity observed in that scan, and at least visually, their differences are **not** correlated with intensity.
 If *all* peaks are used for normalization, a very different set of normalization factors will be generated than by using only the *most intense* peaks, as shown in `r figure_count$label_text("normalization_factors")`A and B.
 Though the two-pass normalization (doublenorm) and single-pass normalization using the most intense peaks (singlenorm_int) generate very similar normalization factors (`r figure_count$label_text("normalization_factors")`B and C), removing the scan-correlated peaks does change some of the normalization factors.
@@ -360,7 +357,7 @@ compare_normalization[[1]]
 :::
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
-**`r figure_count$label_text("normalization_factors")`.** **A**: Histogram of scan normalization factors using either a single pass normalization using *all* peaks (singlenorm), single pass normalization using peaks with an intensity \>= 0.7 of the maximum intensity (singlenorm_int), or the double pass normalization removing peaks whose height is correlated with scan and using the most intense peaks (doublenorm).
+**`r figure_count$label_text("normalization_factors")`.** **A**: Histogram of scan normalization factors using either a single pass normalization using *all* peaks (singlenorm), single pass normalization using peaks with an intensity \>= 0.7 of the maximum intensity (singlenorm_int), or the two pass normalization removing peaks whose height is correlated with scan and using the most intense peaks (doublenorm).
 **B**: The difference of the normalization factors obtained from either doublenorm or singlenorm_int compared to singlenorm.
 **C**: **B**, but with a zoomed y-axis to illustrate the differences in the normalization factors obtained with the different methods.
 :::
@@ -428,6 +425,14 @@ table_count$increment("rsd_method")
 ::: {custom-style="MDPI_3.1_text"}
 Each step in the peak characterization either changes the overall number of peaks coming from each scan (sliding windows and breaking initial regions) or the overall intensity of the points within a scan.
 Therefore, one way to quantify any potential *improvements* in the characterized peaks is to look at the relative standard deviation (RSD) for the characterized scan level peak intensities (calculated as the standard deviation of peak heights across scans divided by the mean peak height) and compare them as each processing step is introduced.
+`r figure_count$label_text("rsd_method")` illustrates the peak height RSD distributions for four different samples.
+For samples 1ecf and 2ecf, there is a general shift in the RSD to the left, going from the bottom processing mehtods (msnbase only) to the top processing method (filtersd), representing a visually clear improvement.
+For samples 49lipid and 97lipid, the improvements are visually more subtle, having a slight shift to the left as well as a narrowing and smoothing of the RSD distribution.
+Part of this sublety is likely due to the bimodality of these two distributions.
+This is not surprising, since these two samples are non-polar extractions from tissue and are biochemically more complex.
+`r table_count$label_text("rsd_method")` provides more quantitative metrics.
+At two decimal places, the filtersd, doublenorm, and singlenorm processing methods give superior and nearly identical results for three of the four samples, especially in terms of mean and median RSD.
+However, for sample 1ecf, the max RSD is much higher for singlenorm, highlighting its instability.
 :::
 
 ::: {custom-style="MDPI_5.2_figure"}
@@ -475,6 +480,7 @@ Theoretically, we expect lower quality data to have both lower numbers of assign
 To compare relative NAP to relative abundances, we only examined the assignments from the two samples containing ECF derivatized amino-acids, as we can limit the assignments to those that match expected derivatizations of the known amino-acids (see Supplemental for the expected EMFs, and expected relative NAPs for the individual IMFs).
 
 `r figure_count$label_text("nap_intensity")` compares the peak-peak isotopic natural abundance probability and height log-ratio differences (Equation `r equation_count$label_text("napintensity")` in Methods) generated using heights from Xcalibur and from our scan-centric peak characterization.
+From this figure, it is clear that inconsistency in peak presence across scans leads to larger deviations between measured peak heights from aggregate spectra and expected relNAP.
 :::
 
 ::: {custom-style="MDPI_5.2_figure"}
@@ -644,8 +650,9 @@ One way to test this is to compare p-values generated from the different intensi
 Although all of the p-vaues are somewhat (and statistically) different from those reported by the raw intensities, there are some interesting patterns of differences.
 MSnbase generated p-values show the widest distribution of differences, as well as the smallest number of peaks that are present in 50% of both the cancer and non-cancer samples.
 This echoes the patterns of low overlapping assigned peaks observed in both ECF samples, where many of the scan-centric amino-acid peaks only found one match from the MSnbase peaks.
-Surprisingly, the corrected intensities generated very different p-values compared to the raw intensities, and XCalibur showed the most agreement with the raw p-values.
+Surprisingly, the truncated normal distribution corrected intensities generated very different p-values compared to the raw intensities, and XCalibur showed the most agreement with the raw p-values.
 We tested the statistical significance of these differences using a t-test of the actual difference in log-p-values (shown in `r figure_count$label_text("p_value_comparison")`D).
+It is clear that the raw scan-level intensities are superior.
 :::
 
 ::: {custom-style="MDPI_5.2_figure"}
@@ -793,7 +800,19 @@ If there are no scans with at least 25 peaks, then the processing of that sample
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-we should have some discussion here about the results
+FT-MS provides spectral scans; however, unlike nuclear magnetic resonance, these spectral scans are not identical, due to several instrumentation issues.
+Therefore, simple scan summation into an aggregate spectrum followed by peak characterization does not provide optimal data.
+Also, this approach prevents the calculation of useful peak-specific statistics, especially variance.
+In the results presented, we demonstrate superior performance by scan-level peak characterization in terms of: i) improved QC/QA and noise reduction, ii) improved peak height relative standard deviations, iii) improved peak intensity ratios that better match natural abundance probabilities, and iv) better separation between biological groups.
+These improvements are necessary for downstream derivation of molecular formula based on peak ratio matching to NAP in SMIRFE.
+However, scan-level peak characterization requires a sophisticated pipeline of QC/QA and processing steps to derive a superior characterization with informative statistics and QC/QA metrics.
+Years of methods development, testing, and optimization have gone into the methods presented here.
+But once implemented, large datasets can be processed in a straight-forward manner and in a manner that supports full computational reproducibility. 
+Not all of the methods presented here provided an improvement.
+We included our negative results with correcting mean and standard deviations for the intensity of peaks not detected in all scans, so that others do not waste effort pursuing this.
+We initially expected the data to follow a truncated normal distribution; however, upon further contemplation of the results presented here, we believe that the differences between scans still present after normalization imparts a dispersive variance component.
+Thus, we hypothesize that a truncated negative binomial distribution better represents the intensity of peaks not detected across all scans.
+Fortunately, this distribution has been previously studied [@sampfordTruncatedNegativeBinomial1955a] and we plan to explore this possibility for a future improvement to our methods. 
 :::
 
 ::: {custom-style="MDPI_2.1_heading1"}
@@ -805,13 +824,13 @@ we should have some discussion here about the results
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-Two different sets of samples were used to evaluate the various methods, ethylchloroformate (ECF) amino acid samples and non-small-cell-lung-cancer (NSCLC) lipid samples.
+Two different sets of samples were used to evaluate the various methods, ethylchloroformate (ECF) amino acid samples and non-small-cell-lung-cancer (NSCLC) lipid-extracted tissue samples.
 
 The method for generating the amino-acid samples was adapted from a previously published method for performing ECF amino acid derivatization [@yangChloroformateDerivatizationTracing2017]. 
 Two replicate samples were prepared and spectra were obtained for both samples using a Tribrid Fusion Orbitrap at 500k resolution and 150 to 1000m/z.
 
 The collection, preparation, and mass spectrometry analysis of the paired cancer and non-cancer samples has been previously described [@sellersPyruvateCarboxylaseCritical2015]. 
-In summary, cancer and non-cancer samples were acquired from eight-six non-diabetic patients with suspected resectable stage I or IIA non-small cell lung cancer. 
+In summary, cancer and nearby non-cancer tissue samples were acquired from eight-six non-diabetic patients with suspected resectable stage I or IIA non-small cell lung cancer. 
 Written informed consent was collected from all subjects prior to inclusion and all samples were collected under a University of Louisville or University of Kentucky IRB protocol. 
 Lipid extracts were prepared using a modified Folch extraction and reconstituted for direct infusion ultra-high resolution mass spectrometry on a pair of Thermo Tribrid Fusion Orbitrap instruments (FSN10115 and FSN10352, referred to as Fusion 1 and Fusion 2 respectively) coupled to an Advion nanoelectrospray system. 
 53 patients (102 spectra total) were acquired from Fusion 1 (serial # FSN10115) and 40 patients (77 spectra total) were acquired from Fusion 2 (serial # FSN10352). Fusion 1 samples were exclusively from the University of Louisville while Fusion 2 were a mix. 
@@ -881,7 +900,8 @@ These *useful* points can be used to construct a linear model relating m/z to fr
 
 ::: {custom-style="MDPI_3.1_text"}
 From the known physical properties of the Orbitrap, only the square root term should be necessary [@ledfordSpaceChargeEffects1984].
-Practically, we have found the combination of square and cube-roots to provide a better fit, likely due to issues with slight imperfections in the orbitrap geometry, contributions from space charge effects and magnetronic motion, control of the magnetic fields, and the Fourier-like transform conversion used by the spectrometer.
+Practically, we have found the combination of square and cube-roots to provide a better fit when processing data from the Thermo-Fisher Fusion instrument, likely due to issues with slight imperfections in the orbitrap geometry, contributions from space charge effects and magnetronic motion, control of the magnetic fields, and the Fourier-like transform conversion used by the spectrometer.
+We do note here that when working with Bruker SolariX ICR data, the equation is slightly different, and does not require the cubic square root term (unpublished results, see Supplemental Materials).
 A frequency model is generated for each scan, and then a single model using the scan with the square-root term closest to the median of the square-root terms from all scans.
 We observed that this single model better preserved the relative ordering of the peaks in both m/z and frequency-space compared to the scan specific models (see Results).
 

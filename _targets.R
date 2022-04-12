@@ -126,6 +126,8 @@ figures_tar = tar_plan(
              format = "file"),
   tar_render(manuscript_both,
              "doc/peakcharacterization_manuscript.Rmd"),
+  tar_render(supplemental_materials,
+             "doc/peakcharacterization_supplemental.Rmd"),
   tar_target(manuscript_nostyle,
              strip_mdpi_render(base_manuscript)),
   tar_target(manuscript_mdpi,
