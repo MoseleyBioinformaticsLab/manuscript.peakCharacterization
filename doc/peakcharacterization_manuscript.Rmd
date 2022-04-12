@@ -485,7 +485,7 @@ From this figure, it is clear that inconsistency in peak presence across scans l
 
 ::: {custom-style="MDPI_5.2_figure"}
 ```{r nap_intensity, dn_id = figure_count, fig.width = 16, fig.height = 8}
-nap_fontsize = 12
+nap_fontsize = 10
 tar_load(aa_diffs_filtersd_1ecf)
 tar_load(aa_diffs_filtersd_2ecf)
 
