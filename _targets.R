@@ -135,7 +135,8 @@ figures_tar = tar_plan(
 )
 
 tables_tar = tar_plan(
-  tar_target(rsd_values, summarize_rsd(rsd_combine))
+  tar_target(rsd_values, summarize_rsd(rsd_combine)),
+  tar_target(rsd_best, find_best_rsd(rsd_values))
 )
 
 # other_tar = tar_plan(
