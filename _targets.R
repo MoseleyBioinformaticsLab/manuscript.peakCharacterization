@@ -428,7 +428,12 @@ qcqa_tar = list(
   tar_target(coefficients_data,
              readRDS(coefficients_file)),
   tar_target(coefficients_qcqa,
-             coefficients_analysis(coefficients_data))
+             coefficients_analysis(coefficients_data)),
+  tar_target(bad_file,
+             "data/data_output/149Cpos.zip",
+             format = "file"),
+  tar_target(resolution_qcqa,
+             resolution_analysis(bad_file))
 )
 
 list(pkg_tar,

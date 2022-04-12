@@ -709,7 +709,7 @@ Green points denote the high, mean, and low-confidence limits reported from the 
 
 ```{r load_increment_qcqa}
 figure_count$increment("coefficients_qcqa")
-figure_count$increment("frequency_mode_qcqa")
+figure_count$increment("resolution_qcqa")
 tar_load(coefficients_qcqa)
 ```
 
@@ -720,8 +720,9 @@ We also sometimes find that from initial peak region that has been marked as a s
 This results in that peak being removed from that scan entirely.
 
 The conversion of m/z to frequency also provides opportunities to evaluate each scan and whether it should be kept for further processing.
-One way is to examine the coefficients of the square-root term for each scan (see term **y** in Equation `r equation_count$label_text("mzfrequency")`) and look for outliers there.
-Across the `r length(coefficients_qcqa$n_coef_out)` raw files that completed scan-centric processing, `r sum(coefficients_qcqa$n_coef_out > 0)` had at least one scan removed based on the square-root coefficient.
+Checks that have helped us in the development of the scan-centric peak characterization have included: (i) verifying that the ordering of data points remains identical in m/z and frequency space after conversion to frequency; and (ii) examining the R^2^ fit of the predicted frequency points to the original frequency points across scans for outliers.
+A third quality control step is to examine the coefficients of the square-root term for each scan (see term **y** in Equation `r equation_count$label_text("mzfrequency")`) and look for any outliers, and remove them before continuing the sample processing.
+Across the `r length(coefficients_qcqa$n_coef_out)` NSCLC raw files that completed scan-centric processing, `r sum(coefficients_qcqa$n_coef_out > 0)` had at least one scan removed based on the square-root coefficient.
 `r figure_count$label_text("coefficients_qcqa")`A shows a histogram of the number of scans removed based on being outliers of the overall distribution.
 `r figure_count$label_text("coefficients_qcqa")`B shows what outlier scan coefficients look like in a single sample.
 :::
@@ -747,13 +748,45 @@ coef_g2 = coefficients_qcqa$example %>%
 ::: {custom-style="MDPI_5.1_figure_caption"}
 `r figure_count$label_text("coefficients_qcqa")`.
 **A**: Number of scan outliers for each sample in the NSCLC dataset.
-**B**: Single example for sample 199Cpos of the scan square-root terms marked as outliers and removed from further consideration.
+**B**: Single example for sample 199Cpos of the scan square-root terms, with outliers marked and removed from further consideration.
 :::
 
-One other check we implemented in the conversion to frequency is checking the range of frequency point-point differences allowed for creating the m/z to frequency model, and making sure that they are the same across scans.
+::: {custom-style="MDPI_3.1_text"}
+A final check we implemented in the conversion to frequency was verifying that the range of frequency point-point differences allowed for creating the m/z to frequency model are the same across scans.
 The initial set of scans we allowed to use included **all** of the MS1 scans, including the precursor scans for the MS2 scans. 
-The samples were acquired as a mix of MS1 only scans for the first 7.5 minutes, and then a mix of MS1 precursor scans followed by MS2 scans for the second 7.5 minutes.
-In 20 samples, the MS1 precursor scans have a different mode in the frequency point-point difference than the primary MS1 scans, as shown in `r figure_count$label_text("frequency_mode_qcqa")`.
+However, the samples were acquired as a mix of MS1 only scans for the first 7.5 minutes, and then a mix of MS1 precursor scans followed by MS2 scans for the second 7.5 minutes.
+In 20 samples, the MS1 precursor scans have a different resolution than the MS1 main scans, as shown in `r figure_count$label_text("resolution_qcqa")`.
+This is actually easy to detect by differences in the square-root coefficients, but due to using a single frequency model for converting all scans actually **manifested** as different modes in the point-point frequency differences.
+Oddly enough, the check for outlier scans discussed previously, does not flag any of the scans as outliers in this case.
+Ultimately, we were able to resolve this anomaly by only using those scans with an injection time before 7.5 minutes.
+The package will be updated to include checks that the resolution used is the same across the scans, and produce an informative error for the end user before proceeding.
+:::
+
+::: {custom-style="MDPI_5.2_figure"}
+```{r resolution_qcqa}
+tar_load(resolution_qcqa)
+
+resolution_qcqa %>%
+  ggplot(aes(x = rtime, xend = rtime, y = 0, yend = tic, color = sqrt)) +
+  geom_segment() +
+  theme(legend.position = c(0.8, 0.8)) +
+  labs(x = "Injection Time (s)", y = "TIC", color = "Coefficient") +
+  coord_cartesian(ylim = c(NA, 2e7)) +
+  scale_y_continuous(expand = expansion(mult = c(0, .1))) +
+  scale_x_continuous(expand = expansion(mult = c(0, .1)))
+```
+:::
+
+::: {custom-style="MDPI_5.1_figure_caption"}
+`r figure_count$label_text("resolution_qcqa")`.
+Scan TIC plot noting the square-root coefficient for each scan, where the coefficient is reflective of the resolution used for each scan.
+The y-axis is cropped to 2x10^7^ so that the MS1 precursor scans are visible, as their TIC's are much smaller than the others.
+:::
+
+::: {custom-style="MDPI_3.1_text"}
+Finally, in the scan-scan normalization step, we require that there are at least 25 peaks in each of the scans that can be used to calculate normalization factors between the scans and the reference scan.
+If there are no scans with at least 25 peaks, then the processing of that sample will error and stop.
+:::
 
 ::: {custom-style="MDPI_2.1_heading1"}
 ## Discussion
