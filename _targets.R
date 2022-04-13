@@ -400,6 +400,10 @@ lungcancer_tar = list(
                     xcalibur = lung_xcalibur),
                reference = "raw")
              ),
+  tar_target(lung_wrong_ttest,
+             ttest_compare_diffs(
+               lung_compare_wrong
+             )),
   tar_target(lung_binomial,
              binomial_compare(lung_compare)),
   tar_target(lung_corrected,

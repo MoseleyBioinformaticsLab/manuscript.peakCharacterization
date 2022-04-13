@@ -32,8 +32,160 @@ editor_options:
     wrap: sentence
 ---
 
+```{r get_setup, include = FALSE}
+source(here::here("packages.R"))
+lapply(list.files(here::here("./R"), full.names = TRUE), source)
+
+
+figure_count = dn_counter$new("Figure ", prefix2 = "S")
+table_count = dn_counter$new("Table ", prefix2 = "S")
+equation_count = dn_counter$new("")
+```
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, 
+                      warning = FALSE, 
+                      message = FALSE, 
+                      fig.width = 8, 
+                      fig.height = 6, 
+                      fig.process = dn_modify_path,
+                      dpi = 600,
+                      dev.args = list(png = list(type = "cairo")))
+
+format_equation = function(equation_text, label){
+  number_out = equation_count$label_text(label)
+  paste0('$$\n\\begin{align}\n', equation_text, '&& \\text{(', number_out, ')}', '\n\\end{align}$$')
+}
+```
+
+
 ## Bruker SolariX ICR Frequency Conversion
 
 In contrast to the m/z to frequency conversion equations used for Thermo-Fisher Fusion and other Orbitrap instruments, the one we have used for Bruker SolariX ICR instruments is simpler:
 
 $$frequency = a + x * \frac{1}{mz} + y * \frac{1}{\sqrt{mz}}$$
+
+## Height - NAP Differences of Corrected vs Raw Scan-Centric
+
+```{r increment_nap_intensity}
+figure_count$increment("nap_intensity")
+```
+
+Here in `r figure_count$label_text("nap_intensity")` we show the differences in Height - NAP peaks using the corrected and raw scan-centric intensities so they can be compared with the differences we observed between XCalibur and scan-centric peaks.
+
+
+```{r nap_intensity, dn_id = figure_count, fig.width = 16, fig.height = 8}
+nap_fontsize = 12
+tar_load(aa_diffs_filtersd_1ecf)
+tar_load(aa_diffs_filtersd_2ecf)
+
+all_diffs = rbind(aa_diffs_filtersd_1ecf$all_diffs %>%
+                    dplyr::mutate(sample = "1ecf"),
+                  aa_diffs_filtersd_2ecf$all_diffs %>%
+                    dplyr::mutate(sample = "2ecf"))
+
+aa_diffplot = all_diffs %>%
+  dplyr::filter(source %in% "char_raw_corrected") %>%
+  dplyr::mutate(diff = -1 * diff) %>%
+  ggplot(aes(x = n_missing, y = diff)) +
+  geom_point() +
+  labs(x = "Number of Missing Scans",
+         y = "Corrected - Raw Scan-Centric NAP - Height Differences") +
+  theme(axis.title.y = element_text(size = nap_fontsize))
+
+aa_diffplot
+```
+
+`r figure_count$label_text("nap_intensity")`.
+The peak-peak NAP - intensity log differences between corrected and raw scan-centric peak heights as a function of the number of scans the peaks were not found in across all of the amino acid assignments in EMFs with more than a single peak in both ECF samples.
+
+## ICI-Kt Median Correlation Outliers
+
+```{r increment_icikt}
+figure_count$increment("icikt_outlier")
+```
+
+For the NSCLC dataset, we used information-content-informed Kendall-tau (ICI-Kt) correlation within each of non-cancer and cancer sample groups to determine outliers that should be removed prior to statistical testing.
+In `r figure_count$label_text("icikt_outlier")` we show the distribution of median ICI-Kt values and the samples determined as outliers.
+
+```{r icikt_outlier, dn_id = figure_count}
+tar_load(qcqa)
+outliers = qcqa$outlier_data
+
+outliers %>%
+  ggplot(aes(x = sample_class, y = med_cor, color = outlier, group = sample_class)) +
+  geom_sina() +
+  theme(legend.position = c(0.1, 0.9)) +
+  labs(x = "Sample Class", y = "Median ICI-Kt")
+```
+
+`r figure_count$label_text("icikt_outlier")`.
+Sina plot of median ICI-Kt correlation for samples within each of the cancer and non-cancer sample groups with outlier status indicated for each sample.
+
+
+## Incorrect Normalization in P-Value Differences
+
+```{r increment_p_value}
+figure_count$increment("p_value")
+```
+
+During the analysis of the p-values between the two classes of NSCLC samples, we didn't originally have the median intensities for the corrected peaks.
+Therefore, we went ahead and normalized the corrected intensities in each sample with the raw median intensities in each sample, and compared the p-values from each method.
+`r figure_count$label_text("p_value")` shows how this incorrect median normalization affects the difference in p-values between corrected and raw intensity.
+
+
+```{r p_value, dn_id = figure_count}
+lung_compare = tar_read(lung_compare_wrong)
+lung_compare = lung_compare %>%
+  dplyr::mutate(compare_id = dplyr::case_when(
+    id.test %in% "corrected" ~ "Corrected",
+    id.test %in% "xcalibur" ~ "XCalibur",
+    id.test %in% "msnbase" ~ "MSnbase"
+  ))
+
+lung_compare_corrected = lung_compare %>%
+  dplyr::filter(compare_id %in% "Corrected")
+
+lung_compare_ttest = tar_read(lung_wrong_ttest)
+
+long_ttest = lung_compare_ttest %>%
+  dplyr::select(p.adjust, comparison, estimate, conf.low, conf.high) %>%
+  tidyr::pivot_longer(cols = !comparison, names_to = "measure", values_to = "value") %>%
+  dplyr::mutate(compare_id = dplyr::case_when(
+    comparison %in% "corrected" ~ "Corrected",
+    comparison %in% "xcalibur" ~ "XCalibur",
+    comparison %in% "msnbase" ~ "MSnbase"
+  )) %>%
+  dplyr::filter(compare_id %in% "Corrected")
+
+long_pvalue = long_ttest %>%
+  dplyr::filter(measure %in% "p.adjust") %>%
+  dplyr::filter(compare_id %in% "Corrected")
+
+long_measure = long_ttest %>%
+  dplyr::filter(!(measure %in% "p.adjust")) %>%
+  dplyr::filter(compare_id %in% "Corrected")
+
+compare_sina = lung_compare_corrected %>%
+  ggplot(aes(x = compare_id, y = p_diff)) +
+  geom_hline(yintercept = 0, color = "red") +
+  geom_sina(alpha = 0.5) +
+  geom_point(data = long_measure, aes(x = compare_id, y = value), color = "green") +
+  geom_text(data = long_pvalue, aes(x = compare_id, y = -1, label = format(value, digits = 2))) +
+  labs(x = "", y = "Log-P-Value Difference")
+
+compare_pair = lung_compare_corrected %>%
+  ggplot(aes(x = log_p.ref, y = log_p.test)) +
+  geom_abline(slope = 1, color = "red") +
+  geom_point(alpha = 0.5) +
+  labs(x = "Log-P-Value Raw",
+         y = "Log-P-Value Corrected")
+compare_pair | compare_sina + plot_annotation(tag_levels = "A")
+```
+
+`r figure_count$label_text("p_value")`.
+**A**: Log-p-values generated by comparing non-cancer and cancer sample IMFs using peak intensities from raw and corrected peak intensities, where the corrected intensities were normalized using the sample raw median intensities.
+Red line denotes perfect agreement.
+**D**: Sina plot of differences in the log-p-values generated by corrected intensity normalized by the raw median intensities.
+Also shown are the Bonferroni adjusted p-values from a t-test of the log-p-value differences for each method.
+Green points denote the high, mean, and low-confidence limits reported from the t-test.
