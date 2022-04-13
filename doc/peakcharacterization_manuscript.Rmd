@@ -85,7 +85,7 @@ These cross-scan characterized peaks are suitable for use in our previously publ
 
 ::: {custom-style="MDPI_3.1_text"}
 Fourier transform mass spectrometry (FT-MS) provides high performance in terms of sensitivity, resolution and mass accuracy all in one analytical instrumentation.
-The combination of these capabilities provide several analytical and interpretive improvements including: (i) the ability to resolve distinct isotopologues with identical unit masses but different accurate masses [@higashiStableIsotopeLabeledTracers2014]; (ii)  enable multi-element isotopic natural abundance correction for at least the lower portion of the detected mass range  [@moseleyCorrectingEffectsNatural2010; @carreerComputationalFrameworkHighThroughput2013; @wangAccuCor2IsotopeNatural2021]; (iii) improved assignment accuracy [@kindMetabolomicDatabaseAnnotations2006; @mitchellSmallMoleculeIsotope2019]; and (iv) the detection of metabolites in the sub-femtomolar range, when combined with chromatographic separation  [@eylesMethodsStudyProtein2004; @dettmerMassSpectrometrybasedMetabolomics2007]. 
+The combination of these capabilities provide several analytical and interpretive improvements: (i) the ability to resolve distinct isotopologues with identical unit masses but different accurate masses [@higashiStableIsotopeLabeledTracers2014]; (ii)  enabling multi-element isotopic natural abundance correction for at least the lower portion of the detected mass range  [@moseleyCorrectingEffectsNatural2010; @carreerComputationalFrameworkHighThroughput2013; @wangAccuCor2IsotopeNatural2021]; (iii) improved assignment accuracy [@kindMetabolomicDatabaseAnnotations2006; @mitchellSmallMoleculeIsotope2019]; and (iv) the detection of metabolites in the sub-femtomolar range, when combined with chromatographic separation  [@eylesMethodsStudyProtein2004; @dettmerMassSpectrometrybasedMetabolomics2007]. 
 In the metabolomics field, these improvements permit more complicated, but more informative experimental designs such as the use of single and multiple isotope-labeled precursors in stable isotope-resolved metabolomics (SIRM) experiments [@yangChloroformateDerivatizationTracing2017].
 These stable isotop tracing experiments provide a wealth of isotope flux data that is interpretable in terms of metabolite flux information that is specific to a metabolic model, pathway, and subcellular location [@higashiStableIsotopeLabeledTracers2014; @creekStableIsotopeAssistedMetabolomics2012; @hillerNontargetedElucidationMetabolic2010; @fanStableIsotoperesolvedMetabolomics2012; @moseleyNovelDeconvolutionMethod2011; @sellersPyruvateCarboxylaseCritical2015; @verdegemMAIMSSoftwareTool2017; @jinMoietyModelingFramework2019; @jinRobustMoietyModel2020].
 
@@ -105,7 +105,7 @@ If the scan level data is not processed and aggregated correctly, the final peak
 In particular, if peaks are missing in some scans due to low abundance, the final aggregate peak intensities will not fit the expected relative intensity to NAP relationships.
 Here we describe novel scan-centric FT-MS metabolomics data processing methods that better preserve the expected relative intensity to NAP.
 In addition, due to the tendency of increasing point spacing with increasing m/z in Orbitrap type instruments, we derive a method for transforming the m/z data to axial frequency, which has the desirable property of being equally spaced across the full spectrum.
-Finally, we show that in addition to better preserving the expected intensity - NAP relationships, our scan-centric method also results in improved relative standard deviations, automatic identification of high-peak-density artifact peaks, and separation of samples in a lipidomics data analysis.
+Finally, we show that in addition to better preserving the expected intensity to- NAP relationships, our scan-centric method also results in improved relative standard deviations, automatic identification of high-peak-density artifact peaks, and better separation of samples in a lipidomics data analysis.
 :::
 
 ::: {custom-style="MDPI_2.1_heading1"}
@@ -560,6 +560,15 @@ In these two examples, there are some striking differences.
 The 1ecf sample has all of the scan-centric peaks shared with either Xcalibur or MSnbase peaks, whereas the 97lipid sample has 2/3 of the peaks specific to scan-centric characterization and not matched to either of the other methods.
 Notably, for both samples, the scan-centric characterization produces similar numbers of peaks, even though the upper mass limit in 1ecf is 1000 m/z compared to 1600 m/z for the 97lipid sample.
 Whereas the number of peaks from MSnbase and Xcalibur are three-fold and 40-fold higher in the 1ecf sample compared to the 97lipid sample.
+
+`r figure_count$label_text("assigned_mz_diff")` shows the distribution of differences between the observed and expected m/z of assigned peaks in the 1ecf and 97lipid spectra.
+For the 1ecf-specific histograms, it is clear that these differences have a narrower unimodal distribution from the scan-centric peak characterization, especially in comparison to MSnbase.
+Also, the MSnbase distribution has far fewer peaks that match a scan-level assigned peak.
+Given the large number of MSnbase-characterized peaks present in the spectrum, many peaks may be outside the matching tolerance of 2pmm. 
+This strongly implies that the peak center error is far higher in the MSnbase-characterized peaks than what the histogram directly shows.
+For the 97lipid-specific histograms, again the difference distribution for the scan-centric peak characterization is narrower, but the improvement is not as pronounced, likely due to the distribution being bimodal.
+Also, far fewer Xcalibur and MSnbase characterized peaks matched assigned scan-centric peaks.
+Again, this strongly implies that their peak centers have far higher error.
 :::
 
 ```{r unassigned_upset, dn_id = figure_count, fig.width = 16, fig.height = 8}
@@ -575,7 +584,7 @@ up_plot + plot_annotation(tag_levels = "A")
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
 `r figure_count$label_text("unassigned_upset")`.
-UpSet plot with the counts of common and specific peaks for each of scancentric, MSnbase and XCalibur generated peaks for the 1ecf (**A**) and 97lipid (**B**) samples.
+UpSet plot with the counts of common and specific peaks without consideration of assignments for each of scancentric, MSnbase and XCalibur generated peaks for the 1ecf (**A**) and 97lipid (**B**) samples.
 :::
 
 ::: {custom-style="MDPI_4.1_table_caption"}
@@ -594,6 +603,7 @@ um_peaks_1ecf$ft_table %>%
 `r table_count$label_text("unassigned_97lipid")`.
 Number of matched peaks between peak processing methods for 97lipid.
 :::
+
 ::: {custom-style="MDPI_4.2_table_body"}
 ```{r unassigned_97lipid}
 um_peaks_97lipid$ft_table %>%
@@ -601,31 +611,89 @@ um_peaks_97lipid$ft_table %>%
 ```
 :::
 
+
 ::: {custom-style="MDPI_5.2_figure"}
 ```{r assigned_mz_diff, dn_id = figure_count}
-diffs_1ecf = ass_peaks_1ecf$peaks %>%
-  dplyr::mutate(source = factor(source, levels = c("scanlevel", "xcalibur", "msnbase"), ordered = TRUE))
-diffs_97lipid = ass_peaks_97lipid$peaks %>%
-  dplyr::mutate(source = factor(source, levels = c("scanlevel", "xcalibur", "msnbase"), ordered = TRUE))
+get_base_limits = function(in_peaks, bins = 30){
+  in_base = in_peaks %>%
+  dplyr::filter(source2 %in% "MSnbase") %>%
+  ggplot(aes(x = ppm_diff)) + 
+  geom_histogram(bins = bins) 
+  in_limit = ggplot_build(in_base)$data[[1]]
+  in_limit
+}
 
-diffs_plot = (diffs_1ecf %>%
-                ggplot(aes(x = mz_diff)) +
-  geom_histogram(bins = 30) +
-  facet_wrap(~ source, ncol = 1) +
-  labs(x = "m/z Difference")) |
-  (diffs_97lipid %>%
-     ggplot(aes(x = mz_diff)) +
-     geom_histogram(bins = 30) +
-     facet_wrap(~ source, ncol = 1) +
-     labs(x = "m/z Difference")) +
-  plot_annotation(tag_levels = "A")
-diffs_plot
+plot_mz_diffs = function(in_peaks, limits, ylimit = NULL, inset = FALSE){
+  purrr::map(c("Scan-Centric", "XCalibur", "MSnbase"), function(in_method){
+    tmp_peaks = in_peaks %>%
+      dplyr::filter(source2 %in% in_method)
+    peak_count = purrr::map_dfr(seq(1, nrow(limits)), function(in_row){
+      data.frame(x = limits[in_row, "x"],
+                 y = sum(between(tmp_peaks$ppm_diff, limits[in_row, "xmin"], limits[in_row, "xmax"])))
+    })
+    base_plot = peak_count %>%
+      ggplot(aes(x = x, y = y)) +
+      geom_col() +
+      labs(x = "", y = "count", subtitle = in_method)
+    
+    if (in_method %in% "MSnbase") {
+      base_plot = base_plot +
+        labs(x = "abs(ppm) Difference")
+    }
+    
+    if (!is.null(ylimit)) {
+      base_plot = base_plot +
+        coord_cartesian(ylim = c(NA, ylimit))
+    }
+    if (inset && (in_method %in% c("XCalibur", "MSnbase"))) {
+      inset_plot = peak_count %>%
+        ggplot(aes(x = x, y = y)) +
+        geom_col() +
+        labs(x = "", y = "") +
+        theme(axis.text.x = element_blank(),
+              axis.text.y = element_text(size = 6))
+      out_plot = base_plot + inset_element(inset_plot, 0.2, 0.1, 1, 1)
+    } else {
+      out_plot = base_plot
+    }
+    out_plot
+  })
+}
+
+
+diffs_1ecf = ass_peaks_1ecf$peaks %>%
+  dplyr::mutate(source2 = dplyr::case_when(
+    source %in% "scanlevel" ~ "Scan-Centric",
+    source %in% "xcalibur" ~ "XCalibur",
+    source %in% "msnbase" ~ "MSnbase"
+  ),
+    ppm_diff = abs(mz_diff / mz) * 1e6) 
+
+ecf_limits = get_base_limits(diffs_1ecf)
+
+ecf_plots = plot_mz_diffs(diffs_1ecf, ecf_limits, ylimit = 40)
+
+diffs_97lipid = ass_peaks_97lipid$peaks %>%
+  dplyr::mutate(source2 = dplyr::case_when(
+    source %in% "scanlevel" ~ "Scan-Centric",
+    source %in% "xcalibur" ~ "XCalibur",
+    source %in% "msnbase" ~ "MSnbase"
+  ),
+    ppm_diff = abs(mz_diff / mz) * 1e6)
+
+
+lipid_limits = get_base_limits(diffs_97lipid)
+
+lipid_plots = plot_mz_diffs(diffs_97lipid, lipid_limits, ylimit = 800, inset = TRUE)
+
+wrap_plots(ecf_plots, ncol = 1) | wrap_plots(lipid_plots, ncol = 1) 
 ```
 :::
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
 `r figure_count$label_text("assigned_mz_diff")`.
-Histograms of the m/z differences to the assigned and matched peak for 1ecf (**A**) and 97lipid (**B**).
+Histograms of the differences between observed and expected m/z values for assigned peaks in the 1ecf (**left**) and 97lipid (**right**) spectra, measured in parts-per-million (ppm) respectively.
+Inset plots are scaled to the maximum counts observed for the particular method.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
@@ -807,7 +875,6 @@ If there are no scans with at least 25 peaks, then the processing of that sample
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-[**Is it just me, or does this feel like the conclusions? If so, do we need a Discussion? I think for MDPI they are optional ...**]
 FT-MS direct-injection data provides spectral scans; however, unlike nuclear magnetic resonance, these spectral scans are not identical, due to several instrumentation issues.
 Therefore, simple scan summation to an aggregate spectrum followed by peak characterization does not provide optimal data.
 Also, this approach prevents the calculation of useful peak-specific statistics, especially variance.
