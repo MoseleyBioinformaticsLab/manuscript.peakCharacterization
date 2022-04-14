@@ -527,6 +527,8 @@ RSD as a function of the log-mean peak intensity for the filtersd method peaks f
 ::: {custom-style="MDPI_3.1_text"}
 `r figure_count$label_text("rsd_intensity")` also provides information about the sources of variance or error in the FT-MS measurements.
 These trends or RSD with intensity (and SD with intensity, see `r supp_figure_count$label_text("peak_variance")`) imply both a constant, baseline additive error component that is independent of intensity, and a proportional error component where the variance increases with intensity.
+**When the intensity is log-transformed, this additive component becomes a dispersive variance component.**[this is true, but I'm not sure it describes these figures**]
+In addition, there is an unusual boot-shaped curve at the lower log mean intensities, representing left-censorship (truncation) effects due to detection limits.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
@@ -677,6 +679,9 @@ um_peaks_97lipid$ft_table %>%
 ```
 :::
 
+::: {custom-style="MDPI_2.2_heading2"}
+###
+:::
 
 ::: {custom-style="MDPI_5.2_figure"}
 ```{r assigned_mz_diff, dn_id = figure_count}
@@ -953,7 +958,7 @@ But once implemented, large datasets can be processed in a straight-forward mann
 Not all of the methods presented here provided an improvement.
 We included our negative results with correcting mean and standard deviations for the intensity of peaks not detected in all scans, so that others do not waste effort pursuing this.
 We initially expected the data to follow a truncated normal distribution, since `r figure_count$label_text("rsd_intensity")` clearly demonstrates truncation effects; however, upon further contemplation of the results presented here, we believe that the differences between scans still present after normalization imparts a dispersive variance component.
-Moreover, `r figure_count$label_text("rsd_intensity")` (and `r supp_figure_count$label_text("peak_variance"`) demonstrates the presence of a proportional error component.
+Moreover, `r figure_count$label_text("rsd_intensity")` (and `r supp_figure_count$label_text("peak_variance")`) demonstrates the presence of a proportional error component.
 Thus, we hypothesize that a truncated negative binomial distribution may better represent the intensity of peaks not detected across all scans.
 Fortunately, this distribution has been previously studied [@sampfordTruncatedNegativeBinomial1955a] and we plan to explore this possibility for a future improvement to our methods.
 However, correction may not be straight-forward.
@@ -1156,6 +1161,7 @@ To correct these, either a correction based on a model of the truncated normal d
 To simulate the effect of peaks missing from some scans on the standard deviations, the peaks present in all scans are used.
 For each peak, a sample of the heights across scans are taken (ranging from 5% to 95% of scans), and a new standard deviation calculated for that fraction, and a ratio of the fractional standard deviation to the "true" standard deviation calculated.
 The ratio standard deviation across peaks can then be fitted to a cubic model of the fraction used, and a correction factor predicted for those peaks that are present in fewer scans.
+Our correction uses log-transformed peak heights, and differences instead of raw heights and ratios directly to make some of the calculations easier.
 The corrected standard deviations can then be used to correct the mean height assuming that it is the result of a left-censored normal distribution [@TruncatedNormalDistribution2022; @burkardtTruncatedNormalDistribution].
 :::
 
