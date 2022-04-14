@@ -41,6 +41,9 @@ lapply(list.files(here::here("./R"), full.names = TRUE), source)
 figure_count = dn_counter$new("Figure ")
 table_count = dn_counter$new("Table ")
 equation_count = dn_counter$new("")
+
+supp_figure_count = readRDS("doc/supplemental_figure_count.rds")
+supp_table_count = readRDS("doc/supplemental_table_count.rds")
 ```
 
 ```{r setup, include = FALSE}
@@ -134,7 +137,7 @@ motivation_plot
 :::
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
-`r figure_count$label_text("motivation")`.
+**`r figure_count$label_text("motivation")`.**
 Xcalibur intensities (black) and theoretical intensities based on relative NAP (red) for ECF derived threonine.
 The 18O isotopologue is shifted by 0.01 m/z and the NAP peaks by 0.05 m/z to aid visualization.
 :::
@@ -169,7 +172,8 @@ frequency_conversion$all
 :::
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
-**`r figure_count$label_text("mz_frequency_conversion")`.** **A**: Intensity vs m/z for a single peak from a single scan.
+**`r figure_count$label_text("mz_frequency_conversion")`.** 
+**A**: Intensity vs m/z for a single peak from a single scan.
 Red lines denote the differences between each point, and red dots the average between the pair of points.
 The difference over the point is used to derive the frequency values in **B**.
 **B** plots the intensity vs the converted frequency points derived from **A**.
@@ -343,10 +347,11 @@ intensity_scan_cor_plot
 :::
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
-**`r figure_count$label_text("intensity_scan")`.** **A**: An example of a peak whose height across scans is correlated with scan number.
+**`r figure_count$label_text("intensity_scan")`.** 
+**A**: An example of a peak whose height across scans is correlated with scan number.
 **B**: The peak differences to the same peaks in a reference scan are plotted against peak height.
-Black: Peaks with a height \< 0.7 of the maximum.
-Red: Peaks with a height \>= 0.7 of the maximum.
+Black: Peaks with a height < 0.7 of the maximum.
+Red: Peaks with a height ≥ 0.7 of the maximum.
 :::
 
 ::: {custom-style="MDPI_5.2_figure"}
@@ -357,7 +362,7 @@ compare_normalization[[1]]
 :::
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
-**`r figure_count$label_text("normalization_factors")`.** **A**: Histogram of scan normalization factors using either a single pass normalization using *all* peaks (singlenorm), single pass normalization using peaks with an intensity \>= 0.7 of the maximum intensity (singlenorm_int), or the two pass normalization removing peaks whose height is correlated with scan and using the most intense peaks (doublenorm).
+**`r figure_count$label_text("normalization_factors")`.** **A**: Histogram of scan normalization factors using either a single pass normalization using *all* peaks (singlenorm), single pass normalization using peaks with an intensity ≥ 0.7 of the maximum intensity (singlenorm_int), or the two pass normalization removing peaks whose height is correlated with scan and using the most intense peaks (doublenorm).
 **B**: The difference of the normalization factors obtained from either doublenorm or singlenorm_int compared to singlenorm.
 **C**: **B**, but with a zoomed y-axis to illustrate the differences in the normalization factors obtained with the different methods.
 :::
@@ -403,7 +408,7 @@ hpd_right_panel = hpd_plots_2ecf$n %>%
 :::
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
-`r figure_count$label_text("hpd_compare_fsd")`.
+**`r figure_count$label_text("hpd_compare_fsd")`.**
 Comparison of HPD and high FSD sites in the 2ecf sample.
 **A** - **E**:Peak plots for various peak processing modalities in a single HPD site.
 **A**: *xcalibur* peaks exported from Thermo-Fisher Xcalibur after averaging scans.
@@ -427,6 +432,7 @@ table_count$increment("rsd_method")
 Each step in the peak characterization either changes the overall number of peaks coming from each scan (sliding windows and breaking initial regions) or the overall intensity of the points within a scan.
 Therefore, one way to quantify any potential *improvements* in the characterized peaks is to look at the relative standard deviation (RSD) for the characterized scan level peak intensities (calculated as the standard deviation of peak heights across scans divided by the mean peak height) and compare them as each processing step is introduced.
 `r figure_count$label_text("rsd_method")` illustrates the peak height RSD distributions for four different samples.
+Up to two modes are reported for each distribution, where a mode location is only reported if it is ≥ 0.2X the most intense mode.
 For samples 1ecf and 2ecf, there is a general shift in the RSD to the left, going from the bottom processing mehtods (msnbase only) to the top processing method (filtersd), representing a visually clear improvement.
 For samples 49lipid and 97lipid, the improvements are visually more subtle, having a slight shift to the left as well as a narrowing and smoothing of the RSD distribution.
 Part of this sublety is likely due to the bimodality of these two distributions.
@@ -439,21 +445,20 @@ However, for sample 1ecf, the max RSD is much higher for singlenorm, highlightin
 ::: {custom-style="MDPI_5.2_figure"}
 ```{r rsd_method, dn_id = figure_count}
 tar_load(rsd_plot)
-rsd_plot
+wrap_plots(rsd_plot, ncol = 2)
 ```
 :::
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
-`r figure_count$label_text("rsd_method")`.
+**`r figure_count$label_text("rsd_method")`.**
 Density plots of relative standard deviations (RSD) of peak heights across scans for each of the processing methods.
 A peak had to be present in at least three scans for the RSD value to be reported.
 :::
 
 ::: {custom-style="MDPI_4.1_table_caption"}
 `r table_count$label_text("rsd_method")`.
-Relative standard deviation means, medians, modes, and maximum observed values for each sample with different overall processing.
+RSD means, medians, modes, and maximum observed values for each sample with different overall processing.
 :::
-
 
 ::: {custom-style="MDPI_4.2_table_body"}
 ```{r rsd_table, results = 'asis'}
@@ -461,6 +466,67 @@ tar_load(rsd_best)
 rsd_best %>%
   autofit()
 ```
+:::
+
+```{r increment_rsd_intensity}
+figure_count$increment("rsd_intensity")
+```
+
+
+::: {custom-style="MDPI_3.1_text"}
+The 97lipid filtersd RSD distribution (as well as others) is bi-modal.
+`r figure_count$label_text("rsd_intensity")` plots each peaks RSD as a function of the mean intensity across scans, for every peak present in at least three scans (top), or the peaks present in at least 80% of the scans (bottom).
+At least part of the bi-modality in the RSD distribution appears to be related to this dependence of RSD on intensity, as well as truncation as peaks appear in fewer scans.
+This is supported by part of the distribution disappearing when we require that peaks are in at least 80% of the available scans (difference between `r figure_count$label_text("rsd_intensity")` top and bottom).
+
+We can remove a majority of the bi-modality by only examining those peaks with a Log10(mean) intensity ≥ 5.
+`r supp_figure_count$label_text("rsd_method")` and `r supp_table_count$label_text("rsd_method")` show how the RSD distributions change for each sample when only the peaks with Log10(mean) intensity ≥ 5 are used.
+The distributions are all shifted to lower RSD, however, the overall trends in RSD are the same.
+:::
+
+::: {custom-style="MDPI_5.2_figure"}
+```{r rsd_intensity, dn_id = figure_count, fig.height = 9}
+plot_alpha = 0.4
+x_lim = c(1.8, 7.4)
+y_lim = c(NA, 1)
+tar_load(rsd_combine)
+rsd_all = rsd_combine %>%
+  dplyr::filter(sample %in% "97lipid", processed %in% "filtersd") %>%
+  ggplot(aes(x = log10(mean), y = rsd)) +
+  geom_point(alpha = plot_alpha) + 
+  coord_cartesian(xlim = x_lim, ylim = y_lim) +
+  labs(subtitle = "N-Scan \u2265 3", x = "Log10(Mean)", y = "RSD")
+
+rsd_many = rsd_combine %>%
+  dplyr::filter(sample %in% "97lipid", 
+                processed %in% "filtersd",
+                n_perc >= 0.8) %>%
+  ggplot(aes(x = log10(mean), y = rsd)) +
+  geom_point(alpha = plot_alpha) +
+  coord_cartesian(xlim = x_lim, ylim = y_lim) +
+  labs(x = "Log10(Mean)", y = "RSD", subtitle = "N-Scan \u2265 80%")
+
+tar_load(corrected_rsd_combine)
+rsd_corrected = corrected_rsd_combine %>%
+  dplyr::filter(sample %in% "97lipid",
+                processed %in% "filtersd") %>%
+  ggplot(aes(x = log10(mean), y = rsd)) +
+  geom_point(alpha = plot_alpha) +
+  coord_cartesian(xlim = x_lim, ylim = y_lim) +
+  labs(x = "Log10(Mean)", y = "RSD", subtitle = "N-Scan \u2265 3, Corrected Height")
+(rsd_all / rsd_many / rsd_corrected) + plot_annotation(tag_levels = "A")
+```
+:::
+
+::: {custom-style="MDPI_5.1_figure_caption"}
+**`r figure_count$label_text("rsd_intensity")`.**
+RSD as a function of the log-mean peak intensity for the filtersd method peaks from the 97lipid sample.
+**A** shows all peaks in at least three scans using raw height; **B** shows peaks that were present in at least 80% of the scans; and **C** shows all peaks in at least three scans using the corrected height.
+:::
+
+::: {custom-style="MDPI_3.1_text"}
+`r figure_count$label_text("rsd_intensity")` also provides information about the sources of variance or error in the FT-MS measurements.
+These trends or RSD with intensity (and SD with intensity, see `r supp_figure_count$label_text("peak_variance")`) imply both a constant, baseline additive error component that is independent of intensity, and a proportional error component where the variance increases with intensity.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
@@ -524,14 +590,14 @@ out_plot
 :::
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
-`r figure_count$label_text("nap_intensity")`.
+**`r figure_count$label_text("nap_intensity")`.**
 **A**. The peak-peak NAP - intensity log differences from scan-centric peak heights (red) and Xcalibur peak heights (blue) from the threonine amino acid assignments with Na adduct, with point size reflecting how many peaks were missing across scans.
 **B**. The difference of Xcalibur to scan-centric ratios plotted directly as a function of the number of scans the peak was not found in.
 **C**. The differences of Xcalibur to scan-centric ratios for all of the amino acid assignments in EMFs with more than a single peak in both ECF samples.
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-Although we expected that the corrected scan-centric intensities would behave similarly or better compared to the raw intensities, Figure S1 shows that while they have smaller differences than XCalibur, there is still a trend of increasing difference with the raw scan-centric intensity - NAP ratios as the number of missing scans increases.
+Although we expected that the corrected scan-centric intensities would behave similarly or better compared to the raw intensities, `r supp_figure_count$label_text("nap_intensity")` shows that while they have smaller differences than XCalibur, there is still a trend of increasing difference with the raw scan-centric intensity - NAP ratios as the number of missing scans increases.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
@@ -583,7 +649,7 @@ up_plot + plot_annotation(tag_levels = "A")
 ```
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
-`r figure_count$label_text("unassigned_upset")`.
+**`r figure_count$label_text("unassigned_upset")`.**
 UpSet plot with the counts of common and specific peaks without consideration of assignments for each of scancentric, MSnbase and XCalibur generated peaks for the 1ecf (**A**) and 97lipid (**B**) samples.
 :::
 
@@ -691,7 +757,7 @@ wrap_plots(ecf_plots, ncol = 1) | wrap_plots(lipid_plots, ncol = 1)
 :::
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
-`r figure_count$label_text("assigned_mz_diff")`.
+**`r figure_count$label_text("assigned_mz_diff")`.**
 Histograms of the differences between observed and expected m/z values for assigned peaks in the 1ecf (**left**) and 97lipid (**right**) spectra, measured in parts-per-million (ppm) respectively.
 Inset plots are scaled to the maximum counts observed for the particular method.
 :::
@@ -772,7 +838,7 @@ lung_plot
 :::
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
-`r figure_count$label_text("p_value_comparison")`.
+**`r figure_count$label_text("p_value_comparison")`.**
 **A - C**: Log-p-values generated by comparing non-cancer and cancer sample IMFs using peak intensities from different methods.
 Red line denotes perfect agreement.
 **D**: Sina plot of differences in the log-p-values generated by different methods compared to the raw scan-centric log-p-values.
@@ -782,7 +848,7 @@ Green points denote the high, mean, and low-confidence limits reported from the 
 
 ::: {custom-style="MDPI_3.1_text"}
 It is vitally important however, to normalize the intensities correctly.
-Figure S3 of the Supplemental Materials shows that with the incorrecte normalization, the corrected and raw p-values become much closer to each other.
+`r supp_figure_count$label_text("p_value")` of the Supplemental Materials shows that with the incorrect normalization, the corrected and raw p-values become much closer to each other.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
@@ -828,7 +894,7 @@ coef_g2 = coefficients_qcqa$example %>%
 :::
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
-`r figure_count$label_text("coefficients_qcqa")`.
+**`r figure_count$label_text("coefficients_qcqa")`.**
 **A**: Number of scan outliers for each sample in the NSCLC dataset.
 **B**: Single example for sample 199Cpos of the scan square-root terms, with outliers marked and removed from further consideration.
 :::
@@ -860,7 +926,7 @@ resolution_qcqa %>%
 :::
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
-`r figure_count$label_text("resolution_qcqa")`.
+**`r figure_count$label_text("resolution_qcqa")`.**
 Scan TIC plot noting the square-root coefficient for each scan, where the coefficient is reflective of the resolution used for each scan.
 The y-axis is cropped to 2x10^7^ so that the MS1 precursor scans are visible, as their TIC's are much smaller than the others.
 :::
@@ -887,7 +953,8 @@ Not all of the methods presented here provided an improvement.
 We included our negative results with correcting mean and standard deviations for the intensity of peaks not detected in all scans, so that others do not waste effort pursuing this.
 We initially expected the data to follow a truncated normal distribution; however, upon further contemplation of the results presented here, we believe that the differences between scans still present after normalization imparts a dispersive variance component.
 Thus, we hypothesize that a truncated negative binomial distribution better represents the intensity of peaks not detected across all scans.
-Fortunately, this distribution has been previously studied [@sampfordTruncatedNegativeBinomial1955a] and we plan to explore this possibility for a future improvement to our methods. 
+Fortunately, this distribution has been previously studied [@sampfordTruncatedNegativeBinomial1955a] and we plan to explore this possibility for a future improvement to our methods.
+Access to the scan level peak intensity information also allows the inference of sources and types of error present in the measurements, which we believe have been previously under-described.
 :::
 
 ::: {custom-style="MDPI_2.1_heading1"}
@@ -916,7 +983,7 @@ The rest were included for the examination of changes in differential analysis p
 
 ::: {custom-style="MDPI_3.5_text_before_list"}
 For each of the two ECF and two lipid samples, the raw data file was converted to profile mzML format.
-Only the MS1 scans were used, and the scan-scan time difference had to be >= 4 seconds, and for the lipid samples only scans acquired before 450 seconds (7.5 minutes) were kept.
+Only the MS1 scans were used, and the scan-scan time difference had to be ≥ 4 seconds, and for the lipid samples only scans acquired before 450 seconds (7.5 minutes) were kept.
 The scan-centric data was then processed in the following eight ways:
 :::
 
@@ -1099,6 +1166,21 @@ Sliding windows that are 1000 frequency points wide with a stride of 100 points 
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
+### Calculation of Relative Standard Deviation
+:::
+
+::: {custom-style="MDPI_3.1_text"}
+For consistency across both the various scan-centric centroiding and MSnbase, the scan level Log10 heights were converted to raw heights, and then averages and standard deviations calculated across scans, removing missing values.
+Relative standard deviation (RSD) was calculated as standard deviation divided by the mean for each peak.
+The number of scans a peak was present in was also noted, as well as the percentage of total scans.
+Only peaks present in at least three scans were kept for analysis of the RSD.
+
+Modes of the RSD are calculated starting from a density approximation of the distribution using default settings in the density function of the R stats package.
+Peaks from the density approximation are determined with the findpeaks function in the pracma package.
+Up to two modes are reported from low to high RSD along the distribution: i) the most intense peak; ii) the next most intense peak if it is ≥ 0.2X the most intense peak.
+:::
+
+::: {custom-style="MDPI_2.2_heading2"}
 ### Scan-Centric Peak Assignment
 :::
 
@@ -1199,7 +1281,7 @@ Of the starting 181 samples, five did not finish during scan-centric characteriz
 In addition, some of the samples were acquired multiple times, creating duplicate samples.
 Not knowing which sample run was most appropriate to use, we removed all of the duplicated samples.
 Using information-content-informed Kendall-tau correlation (ICI-Kt) [@flightInformationContentInformedKendalltauCorrelation2022], we compared the median correlations of each sample to all others in the same disease class for outliers, and removed `r n_out_vector["cancer"]` cancer and `r n_out_vector["non-cancer"]` samples.
-The median ICI-Kt correlations are shown in Figure S2 of the Supplemental Materials.
+The median ICI-Kt correlations are shown in `r supp_figure_count$label_text("icikt_outlier")`.
 
 Each samples intensities were normalized by dividing by the median intensities from that sample and intensity method.
 Only those peaks present in 50% of both the non-cancer and cancer samples were kept for differential analysis.
@@ -1230,12 +1312,23 @@ This manuscript was generated from rmarkdown v 2.11 [@allaireRmarkdownDynamicDoc
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Availability
+###
 :::
 
-::: {custom-style="MDPI_3.1_text"}
-The code used in the reporting of results is available on GitHub at https://github.com/MoseleyBioinformaticsLab/manuscript.peakCharacterization, and archived on Zenodo [@flightMoseleyBioinformaticsLabManuscriptPeakCharacterization2022].
+::: {custom-style="MDPI_6.2_BackMatter"}
+**Author Contributions**: All authors have read and agreed to the published version of the manuscript. 
+Conceptualization, R.M.F, and H.N.B.M; Methodology, R.M.F and H.N.B.M.; Software, R.M.F.; Validation, R.M.F, J.M.M. and H.N.B.M.; Formal Analysis: R.M.F. and H.N.B.M.; Investigation: J.M.M., R.M.F, and H.N.B.M; Resources, H.N.B.M.; Data Curation, R.M.F; Writing – Original Draft Preparation, R.M.F, J.M.M. and H.N.B.M; Writing – Review & Editing, R.M.F, J.M.M. and H.N.B.M; Visualization, R.M.F. and H.N.B.M.; Supervision, H.N.B.M; Project Administration, H.N.B.M.; Funding Acquisition, H.N.B.M.
+ 
+**Funding**: The work was supported in part by grants NSF 1419282 (PI Moseley), NSF 2020026 (PI Moseley), NIH 1P01CA163223-01A1 (PD Lane), 1U24DK097215-01A1 (PD Higashi), and P30 CA177558 (B.M. Evers, PI) via the Markey Cancer Center Biostatistics and Bioinformatics Shared Resource Facility (MCC BB-SRF).
+
+**Data Availability Statement**: The code used in the reporting of results is available on GitHub at https://github.com/MoseleyBioinformaticsLab/manuscript.peakCharacterization, and archived on Zenodo [@flightMoseleyBioinformaticsLabManuscriptPeakCharacterization2022].
 The scan-centric peak-characterization is available as an R package at https://github.com/MoseleyBioinformaticsLab/FTMS.peakCharacterization, and the specific version used in this work is archived on Zenodo [@flightMoseleyBioinformaticsLabFTMSPeakCharacterization2022].
+
+**Acknowledgments**: We thank Timothy Fahrenholz and Qing Jun Wang for their efforts in mass spectrometry data collection. 
+We thank Andrew Lane, Teresa Fan, and Rick Higashi for their efforts in human tissue sample collection and sample preparation. 
+
+**Conflicts of Interest**: The authors declare no conflict of interest. 
+The funders had no role in the design of the study; in the collection, analyses, or interpretation of data; in the writing of the manuscript, or in the decision to publish the results.
 :::
 
 ::: {custom-style="MDPI_2.1_heading1"}
