@@ -1721,5 +1721,594 @@
 			]
 		},
 		"citation-key": "gattoMSnbaseEfficientElegant2020"
+	},
+	{
+		"id": "gentlemanGenefilterMethodsFiltering2021",
+		"type": "report",
+		"genre": "manual",
+		"title": "genefilter: methods for filtering genes from high-throughput experiments",
+		"author": [
+			{
+				"family": "Gentleman",
+				"given": "Robert"
+			},
+			{
+				"family": "Carey",
+				"given": "Vincent J."
+			},
+			{
+				"family": "Huber",
+				"given": "Wolfgang"
+			},
+			{
+				"family": "Hahne",
+				"given": "Florian"
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2021"
+				]
+			]
+		},
+		"citation-key": "gentlemanGenefilterMethodsFiltering2021"
+	},
+	{
+		"id": "rcoreteamLanguageEnvironmentStatistical2021a",
+		"type": "report",
+		"event-place": "Vienna, Austria",
+		"genre": "manual",
+		"note": "tex.organization: R Foundation for Statistical Computing",
+		"publisher-place": "Vienna, Austria",
+		"title": "R: A language and environment for statistical computing",
+		"URL": "https://www.R-project.org/",
+		"author": [
+			{
+				"literal": "R Core Team"
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2021"
+				]
+			]
+		},
+		"citation-key": "rcoreteamLanguageEnvironmentStatistical2021a"
+	},
+	{
+		"id": "vanrossumPython3",
+		"type": "book",
+		"event-place": "Scotts Valley, CA",
+		"ISBN": "1-4414-1269-7",
+		"publisher": "CreateSpace",
+		"publisher-place": "Scotts Valley, CA",
+		"title": "Python 3 reference manual",
+		"author": [
+			{
+				"family": "Van Rossum",
+				"given": "Guido"
+			},
+			{
+				"family": "Drake",
+				"given": "Fred L."
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2009"
+				]
+			]
+		},
+		"citation-key": "vanrossumPython3"
+	},
+	{
+		"id": "landauTargetsPackageDynamic2021",
+		"type": "article-journal",
+		"container-title": "Journal of Open Source Software",
+		"issue": "57",
+		"page": "2959",
+		"title": "The targets R package: a dynamic Make-like function-oriented pipeline toolkit for reproducibility and high-performance computing",
+		"URL": "https://doi.org/10.21105/joss.02959",
+		"volume": "6",
+		"author": [
+			{
+				"family": "Landau",
+				"given": "William Michael"
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2021"
+				]
+			]
+		},
+		"citation-key": "landauTargetsPackageDynamic2021"
+	},
+	{
+		"id": "wickhamGgplot2ElegantGraphics2016",
+		"type": "book",
+		"ISBN": "978-3-319-24277-4",
+		"publisher": "Springer-Verlag New York",
+		"title": "ggplot2: Elegant graphics for data analysis",
+		"URL": "https://ggplot2.tidyverse.org",
+		"author": [
+			{
+				"family": "Wickham",
+				"given": "Hadley"
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2016"
+				]
+			]
+		},
+		"citation-key": "wickhamGgplot2ElegantGraphics2016"
+	},
+	{
+		"id": "pedersenPatchworkComposerPlots2020",
+		"type": "report",
+		"genre": "manual",
+		"title": "patchwork: The composer of plots",
+		"URL": "https://CRAN.R-project.org/package=patchwork",
+		"author": [
+			{
+				"family": "Pedersen",
+				"given": "Thomas Lin"
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2020"
+				]
+			]
+		},
+		"citation-key": "pedersenPatchworkComposerPlots2020"
+	},
+	{
+		"id": "guComplexHeatmapsReveal2016a",
+		"type": "article-journal",
+		"container-title": "Bioinformatics (Oxford, England)",
+		"journalAbbreviation": "Bioinformatics",
+		"title": "Complex heatmaps reveal patterns and correlations in multidimensional genomic data",
+		"author": [
+			{
+				"family": "Gu",
+				"given": "Zuguang"
+			},
+			{
+				"family": "Eils",
+				"given": "Roland"
+			},
+			{
+				"family": "Schlesner",
+				"given": "Matthias"
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2016"
+				]
+			]
+		},
+		"citation-key": "guComplexHeatmapsReveal2016a"
+	},
+	{
+		"id": "usheyRenvProjectEnvironments2022",
+		"type": "report",
+		"genre": "manual",
+		"title": "renv: Project environments",
+		"URL": "https://CRAN.R-project.org/package=renv",
+		"author": [
+			{
+				"family": "Ushey",
+				"given": "Kevin"
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2022"
+				]
+			]
+		},
+		"citation-key": "usheyRenvProjectEnvironments2022"
+	},
+	{
+		"id": "allaireRmarkdownDynamicDocuments2021",
+		"type": "report",
+		"genre": "manual",
+		"title": "rmarkdown: Dynamic documents for r",
+		"URL": "https://github.com/rstudio/rmarkdown",
+		"author": [
+			{
+				"family": "Allaire",
+				"given": "JJ"
+			},
+			{
+				"family": "Xie",
+				"given": "Yihui"
+			},
+			{
+				"family": "McPherson",
+				"given": "Jonathan"
+			},
+			{
+				"family": "Luraschi",
+				"given": "Javier"
+			},
+			{
+				"family": "Ushey",
+				"given": "Kevin"
+			},
+			{
+				"family": "Atkins",
+				"given": "Aron"
+			},
+			{
+				"family": "Wickham",
+				"given": "Hadley"
+			},
+			{
+				"family": "Cheng",
+				"given": "Joe"
+			},
+			{
+				"family": "Chang",
+				"given": "Winston"
+			},
+			{
+				"family": "Iannone",
+				"given": "Richard"
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2021"
+				]
+			]
+		},
+		"citation-key": "allaireRmarkdownDynamicDocuments2021"
+	},
+	{
+		"id": "xieMarkdownDefinitiveGuide2018",
+		"type": "book",
+		"event-place": "Boca Raton, Florida",
+		"publisher": "Chapman and Hall/CRC",
+		"publisher-place": "Boca Raton, Florida",
+		"title": "R markdown: The definitive guide",
+		"URL": "https://bookdown.org/yihui/rmarkdown",
+		"author": [
+			{
+				"family": "Xie",
+				"given": "Yihui"
+			},
+			{
+				"family": "Allaire",
+				"given": "J.J."
+			},
+			{
+				"family": "Grolemund",
+				"given": "Garrett"
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2018"
+				]
+			]
+		},
+		"citation-key": "xieMarkdownDefinitiveGuide2018"
+	},
+	{
+		"id": "xieMarkdownCookbook2020",
+		"type": "book",
+		"event-place": "Boca Raton, Florida",
+		"publisher": "Chapman and Hall/CRC",
+		"publisher-place": "Boca Raton, Florida",
+		"title": "R markdown cookbook",
+		"URL": "https://bookdown.org/yihui/rmarkdown-cookbook",
+		"author": [
+			{
+				"family": "Xie",
+				"given": "Yihui"
+			},
+			{
+				"family": "Dervieux",
+				"given": "Christophe"
+			},
+			{
+				"family": "Riederer",
+				"given": "Emily"
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2020"
+				]
+			]
+		},
+		"citation-key": "xieMarkdownCookbook2020"
+	},
+	{
+		"id": "flightVisualizationQualityControlDevelopmentVisualization2021",
+		"type": "report",
+		"genre": "manual",
+		"title": "visualizationQualityControl: Development of visualization methods for quality control",
+		"URL": "https://moseleybioinformaticslab.github.io/visualizationQualityControl https://github.com/moseleybioinformaticslab/visualizationQualityControl",
+		"author": [
+			{
+				"family": "Flight",
+				"given": "Robert M"
+			},
+			{
+				"family": "Moseley",
+				"given": "Hunter NB"
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2021"
+				]
+			]
+		},
+		"citation-key": "flightVisualizationQualityControlDevelopmentVisualization2021"
+	},
+	{
+		"id": "wickhamDplyrGrammarData2022",
+		"type": "report",
+		"genre": "manual",
+		"title": "dplyr: A grammar of data manipulation",
+		"URL": "https://CRAN.R-project.org/package=dplyr",
+		"author": [
+			{
+				"family": "Wickham",
+				"given": "Hadley"
+			},
+			{
+				"family": "François",
+				"given": "Romain"
+			},
+			{
+				"family": "Henry",
+				"given": "Lionel"
+			},
+			{
+				"family": "Müller",
+				"given": "Kirill"
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2022"
+				]
+			]
+		},
+		"citation-key": "wickhamDplyrGrammarData2022"
+	},
+	{
+		"id": "wickhamTidyrTidyMessy2022",
+		"type": "report",
+		"genre": "manual",
+		"title": "tidyr: Tidy messy data",
+		"URL": "https://CRAN.R-project.org/package=tidyr",
+		"author": [
+			{
+				"family": "Wickham",
+				"given": "Hadley"
+			},
+			{
+				"family": "Girlich",
+				"given": "Maximilian"
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2022"
+				]
+			]
+		},
+		"citation-key": "wickhamTidyrTidyMessy2022"
+	},
+	{
+		"id": "vaughanFurrrApplyMapping2021a",
+		"type": "report",
+		"genre": "manual",
+		"title": "furrr: Apply mapping functions in parallel using futures",
+		"URL": "https://CRAN.R-project.org/package=furrr",
+		"author": [
+			{
+				"family": "Vaughan",
+				"given": "Davis"
+			},
+			{
+				"family": "Dancho",
+				"given": "Matt"
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2021"
+				]
+			]
+		},
+		"citation-key": "vaughanFurrrApplyMapping2021a"
+	},
+	{
+		"id": "wilkeGgridgesRidgelinePlots2021",
+		"type": "report",
+		"genre": "manual",
+		"title": "ggridges: Ridgeline Plots in 'ggplot2'",
+		"URL": "https://CRAN.R-project.org/package=ggridges",
+		"author": [
+			{
+				"family": "Wilke",
+				"given": "Claus O."
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2021"
+				]
+			]
+		},
+		"citation-key": "wilkeGgridgesRidgelinePlots2021"
+	},
+	{
+		"id": "pedersenGgforceAcceleratingGgplot22021",
+		"type": "report",
+		"genre": "manual",
+		"title": "ggforce: Accelerating 'ggplot2'",
+		"URL": "https://CRAN.R-project.org/package=ggforce",
+		"author": [
+			{
+				"family": "Pedersen",
+				"given": "Thomas Lin"
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2021"
+				]
+			]
+		},
+		"citation-key": "pedersenGgforceAcceleratingGgplot22021"
+	},
+	{
+		"id": "sampfordTruncatedNegativeBinomial1955a",
+		"type": "article-journal",
+		"container-title": "Biometrika",
+		"DOI": "10.2307/2333422",
+		"ISSN": "00063444",
+		"issue": "1/2",
+		"journalAbbreviation": "Biometrika",
+		"page": "58",
+		"source": "DOI.org (Crossref)",
+		"title": "The Truncated Negative Binomial Distribution",
+		"URL": "https://www.jstor.org/stable/2333422?origin=crossref",
+		"volume": "42",
+		"author": [
+			{
+				"family": "Sampford",
+				"given": "M. R."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					4,
+					12
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"1955",
+					6
+				]
+			]
+		},
+		"citation-key": "sampfordTruncatedNegativeBinomial1955a"
+	},
+	{
+		"id": "flightMoseleyBioinformaticsLabManuscriptPeakCharacterization2022",
+		"type": "article-journal",
+		"abstract": "first draft of manuscript w/ almost everything. need to get a doi ...",
+		"note": "DOI: 10.5281/zenodo.6453346",
+		"source": "Zenodo",
+		"title": "MoseleyBioinformaticsLab/manuscript.peakCharacterization:",
+		"title-short": "MoseleyBioinformaticsLab/manuscript.peakCharacterization",
+		"URL": "https://zenodo.org/record/6453346",
+		"author": [
+			{
+				"family": "Flight",
+				"given": "Robert M."
+			},
+			{
+				"family": "Mitchell",
+				"given": "Joshua M."
+			},
+			{
+				"family": "Moseley",
+				"given": "Hunter N. B."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					4,
+					12
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2022",
+					4,
+					12
+				]
+			]
+		},
+		"citation-key": "flightMoseleyBioinformaticsLabManuscriptPeakCharacterization2022"
+	},
+	{
+		"id": "flightMoseleyBioinformaticsLabFTMSPeakCharacterization2022",
+		"type": "book",
+		"abstract": "This is the version that was used for the manuscript describing the methods implemented here.",
+		"note": "DOI: 10.5281/zenodo.6453304",
+		"publisher": "Zenodo",
+		"source": "Zenodo",
+		"title": "MoseleyBioinformaticsLab/FTMS.peakCharacterization: v0.1.102",
+		"title-short": "MoseleyBioinformaticsLab/FTMS.peakCharacterization",
+		"URL": "https://zenodo.org/record/6453304",
+		"author": [
+			{
+				"family": "Flight",
+				"given": "Robert M."
+			},
+			{
+				"family": "Moseley",
+				"given": "Hunter N. B."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2022",
+					4,
+					12
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"2022",
+					4,
+					12
+				]
+			]
+		},
+		"citation-key": "flightMoseleyBioinformaticsLabFTMSPeakCharacterization2022"
 	}
 ]
