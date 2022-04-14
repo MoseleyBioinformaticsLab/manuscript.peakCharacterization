@@ -52,7 +52,8 @@ method_tar = tar_map(
   tar_target(zip, write_peaks_for_assignment(method)),
   tar_target(assign, assign_files(zip)),
   tar_target(n_peak, n_final_peak(method)),
-  tar_target(emf, get_assignments(assign))
+  tar_target(emf, get_assignments(assign)),
+  tar_target(corrected_rsd, single_rsd(method, "CorrectedLog10Height"))
 )
 
 
@@ -98,13 +99,22 @@ combine_noise_tar = tar_combine(
 #   rsd_data,
 #   values = ends_with("97lipid")
 # )
-
+min_perc = 0.8
+min_int = 5
 figures_tar = tar_plan(
   tar_target(frequency_conversion, plot_frequency_conversion(data_97lipid)),
   tar_target(peak_ordering, plot_peak_ordering(method_filtersd_97lipid)),
   tar_target(sliding_regions, plot_sliding_window_density(data_97lipid)),
   tar_target(peak_fit_plot, plot_peak_fitting(method_filtersd_97lipid)),
   tar_target(rsd_plot, plot_rsd_differences(rsd_combine)),
+  tar_target(rsd_plot_alt, plot_rsd_differences(rsd_combine %>%
+                                                  dplyr::filter(n_perc >= min_perc))),
+  tar_target(rsd_plot_int, plot_rsd_differences(rsd_combine %>%
+                                                  dplyr::filter(log10(mean) >= min_int),
+                                                limits = list(`1ecf` = c(0, 1),
+                                                              `2ecf` = c(0, 0.6),
+                                                              `49lipid` = c(0, 0.3),
+                                                              `97lipid` = c(0, 0.3)))),
 
   tar_target(find_sub_region, split_regions(method_perc99_nonorm_97lipid)
   ),
@@ -136,6 +146,11 @@ figures_tar = tar_plan(
 
 tables_tar = tar_plan(
   tar_target(rsd_values, summarize_rsd(rsd_combine)),
+  tar_target(rsd_values_alt, summarize_rsd(rsd_combine %>%
+                                             dplyr::filter(n_perc >= min_perc))),
+  tar_target(rsd_values_int, summarize_rsd(rsd_combine %>%
+                                             dplyr::filter(log10(mean) >= min_int))),
+  tar_target(rsd_best_int, find_best_rsd(rsd_values_int)),
   tar_target(rsd_best, find_best_rsd(rsd_values))
 )
 
@@ -168,6 +183,13 @@ msnbase_tar = tar_map(
 rsd_tar = tar_combine(
   rsd_combine,
   c(method_tar[[2]], msnbase_tar[[3]]),
+  command = merge_rsd(!!!.x),
+  iteration = "list"
+)
+
+corrected_rsd_tar = tar_combine(
+  corrected_rsd_combine,
+  method_tar[[7]],
   command = merge_rsd(!!!.x),
   iteration = "list"
 )
@@ -463,4 +485,5 @@ list(pkg_tar,
      aa_tar,
      lipid_tar,
      lungcancer_tar,
-     qcqa_tar)
+     qcqa_tar,
+     corrected_rsd_tar)
