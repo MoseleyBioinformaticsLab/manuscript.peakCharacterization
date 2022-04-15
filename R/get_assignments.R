@@ -530,3 +530,7 @@ motivating_plot = function(nap_height_1ecf, aa_id = "Threonine", formula_id = "C
     scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
   out_plot
 }
+
+other_diffs = function(aa_diffs_filtersd){
+  aa_diffs_filtersd = tar_read(aa_diffs_filtersd_1ecf)
+}

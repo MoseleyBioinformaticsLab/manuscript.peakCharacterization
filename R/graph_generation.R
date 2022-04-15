@@ -163,15 +163,26 @@ plot_peak_ordering = function(data_obj){
 }
 
 
-plot_rsd_differences = function(rsd_values){
+plot_rsd_differences = function(rsd_values, limits = list(`1ecf` = c(0, 1),
+                                                          `2ecf` = c(0, 0.6),
+                                                          `49lipid` = c(0, 0.8),
+                                                          `97lipid` = c(0, 1))){
 
   rsd_values = rsd_values %>%
     dplyr::filter(n >= 3)
   rsd_values$processed = forcats::fct_relevel(rsd_values$processed,"msnbase_only", "msnbase_pc", "noperc_nonorm", "perc99_nonorm", "singlenorm", "singlenorm_int", "doublenorm",  "filtersd")
-  rsd_comparison_plot = ggplot(rsd_values, aes(x = rsd, y = processed, fill = processed)) + geom_density_ridges() +
-    coord_cartesian(xlim = c(0, 1)) + theme(legend.position = "none") +
-    facet_wrap(~ sample)
-  rsd_comparison_plot
+  rsd_split = split(rsd_values, rsd_values$sample)
+
+  rsd_comp_plots = purrr::map(rsd_split, function(in_rsd){
+    use_limit = limits[[in_rsd$sample[1]]]
+    in_rsd %>%
+      ggplot(aes(x = rsd, y = processed, fill = processed)) +
+      geom_density_ridges() +
+      theme(legend.position = "none") +
+      coord_cartesian(xlim = use_limit) +
+      labs(y = "", subtitle = in_rsd$sample[1])
+  })
+  rsd_comp_plots
 }
 
 proportional_error = function(peak_data){

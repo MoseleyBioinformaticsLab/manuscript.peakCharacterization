@@ -2,5 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
-.drake/
 *.zip
+smirfe_related/
+data/
+ftms_artifacts/

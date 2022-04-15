@@ -9,6 +9,7 @@ strip_mdpi_render = function(in_rmd = "doc/peakcharacterization_manuscript.Rmd",
 
   cat(rmd_nostyle, file = out_rmd, sep = "\n")
   rmarkdown::render(out_rmd, knit_root_dir = getwd(), quiet = TRUE)
+  beepr::beep(4)
   out_rmd
 }
 
@@ -24,5 +25,6 @@ strip_headers_render = function(in_rmd = "doc/peakcharacterization_manuscript.Rm
   doc_out[has_bullet] = gsub("^\\* ", "", rmd_doc[has_bullet])
   cat(doc_out, file = out_rmd, sep = "\n")
   rmarkdown::render(out_rmd, knit_root_dir = getwd(), quiet = TRUE)
+  beepr::beep(4)
   out_rmd
 }

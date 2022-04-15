@@ -374,25 +374,41 @@ normalization_factors = function(...){
 
 }
 
-calc_rsd = function(in_char, processing){
-  scan_peaks = 10^in_char$zip_ms$peak_finder$peak_regions$scan_level_arrays$Log10Height
+calc_rsd = function(in_char, processing, use_height = "Log10Height"){
+  scan_peaks = 10^in_char$zip_ms$peak_finder$peak_regions$scan_level_arrays[[use_height]]
+  scan_mz = in_char$zip_ms$peak_finder$peak_regions$scan_level_arrays$ObservedMZ
   n_scan = ncol(scan_peaks)
   mean_peaks = rowMeans(scan_peaks, na.rm = TRUE)
+  mz_peaks = rowMeans(scan_mz, na.rm = TRUE)
   sd_peaks = apply(scan_peaks, 1, sd, na.rm = TRUE)
   n_peak = apply(scan_peaks, 1, function(.x){sum(!is.na(.x))})
 
+  if (processing %in% "filtersd") {
+    low_fsd = in_char$zip_ms$peak_finder$peak_regions$peak_data %>%
+      dplyr::filter(!HighSD) %>%
+      dplyr::pull(PeakID) %>%
+      as.character()
+    keep_peaks = rownames(scan_peaks) %in% low_fsd
+    scan_peaks = scan_peaks[keep_peaks, ]
+    mz_peaks = mz_peaks[keep_peaks]
+
+    mean_peaks = mean_peaks[keep_peaks]
+    sd_peaks = sd_peaks[keep_peaks]
+    n_peak = n_peak[keep_peaks]
+  }
   rsd_df = data.frame(mean = mean_peaks,
                       sd = sd_peaks,
                       rsd = sd_peaks / mean_peaks,
                       n = n_peak,
                       n_perc = n_peak / n_scan,
+                      mz = mz_peaks,
                       processed = processing,
                       sample = rename_samples( in_char$zip_ms$peak_finder$sample_id))
   rsd_df
 }
 
-single_rsd = function(char_list){
-  rsd_df = calc_rsd(char_list$char_obj, char_list$processed)
+single_rsd = function(char_list, use_height = "Log10Height"){
+  rsd_df = calc_rsd(char_list$char_obj, char_list$processed, use_height = use_height)
   rsd_df
 }
 
@@ -426,13 +442,18 @@ merge_rsd = function(...) {
 summarize_rsd = function(rsd_df){
   get_mode = function(in_values){
     d_estimate = stats::density(in_values)
-    y_max = which.max(d_estimate$y)
-    d_estimate$x[y_max]
+    peak_locs = pracma::findpeaks(d_estimate$y, nups = 2, ndowns = 2)
+    peak_max = max(peak_locs[, 1])
+    peak_perc = peak_locs[, 1] / peak_max
+    peak_locs = peak_locs[peak_perc >= 0.2, , drop = FALSE]
+    d_estimate$x[peak_locs[, 2]]
   }
+
   dplyr::group_by(rsd_df, processed, sample) %>%
     dplyr::summarize(mean = mean(rsd),
                      median = median(rsd),
-                     mode = get_mode(rsd),
+                     mode1 = get_mode(rsd)[1],
+                     mode2 = get_mode(rsd)[2],
                      max = max(rsd))
 }
 
