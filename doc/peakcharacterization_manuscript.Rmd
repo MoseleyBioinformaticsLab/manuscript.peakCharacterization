@@ -94,7 +94,7 @@ These stable isotope tracing experiments provide a wealth of isotope flux data t
 While these advantages of FT-MS are significant, when deployed in a high-throughput environment, the volume of data produced requires automated tools for data reduction, quality control, feature assignment, and downstream analyses. 
 Furthermore within the context of direct infusion, assignment of FT-MS spectral features lacks orthogonal sources of information such as chromatographic retention times, reducing the reliability of assignment with most MS assignment software tools.
 
-Within this combined high-throughput with direct injection context, we previously developed methods to remove high-peak-density artefacts [@mitchellNewMethodsIdentify2018], annotate peaks with assignments using SMIRFE [@mitchellSmallMoleculeIsotope2019], and generate lipid classifications for spectral peak assignments [@mitchellDerivingLipidClassification2020].
+Within this combined high-throughput with direct injection context, we previously developed methods to remove high-peak-density artifacts [@mitchellNewMethodsIdentify2018], annotate peaks with assignments using SMIRFE [@mitchellSmallMoleculeIsotope2019], and generate lipid classifications for spectral peak assignments [@mitchellDerivingLipidClassification2020].
 We applied all of these methods together in detecting and assigning differential lipids in non-small-cell lung carcinoma (NSCLC) [@mitchellUntargetedLipidomicsNonSmall2021].
 
 The input peak data in these studies are derived from multi-scan direct-injection FT-MS data.
@@ -367,7 +367,7 @@ compare_normalization[[1]]
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Mitigation of High Peak Density Artefacts
+### Mitigation of High Peak Density Artifacts
 :::
 
 ```{r increment_hpd}
@@ -375,7 +375,7 @@ figure_count$increment("hpd_compare_fsd")
 ```
 
 ::: {custom-style="MDPI_3.1_text"}
-We have previously described the presence of high peak density (HPD) artefacts in FT-MS spectra [@mitchellNewMethodsIdentify2018].
+We have previously described the presence of high peak density (HPD) artifacts in FT-MS spectra [@mitchellNewMethodsIdentify2018].
 Ideally, the peak characterization procedure should reduce and mitigate their presence and effect in the resultant reported peaks.
 Their presence should be minimized by removing noise peaks, and removing peak regions that have multiple reported peaks from the same scan.
 However, we expect they may also present as characterized peaks that have larger than expected frequency level standard deviations (FSD) when calculated across scans.
@@ -867,7 +867,7 @@ tar_load(coefficients_qcqa)
 
 ::: {custom-style="MDPI_3.1_text"}
 Having a scan-centric workflow for generating the peak centroids means that we have opportunities to evaluate the scans as a whole, as well as the peaks across scans.
-For example, we can mark peaks with unusually high frequency standard deviations (FSD) and mitigate the presence of high-peak-density artefacts (see **Mitigation of High Peak Density Artefacts**).
+For example, we can mark peaks with unusually high frequency standard deviations (FSD) and mitigate the presence of high-peak-density artifacts (see **Mitigation of High Peak Density Artifacts**).
 We also sometimes find that from initial peak region that has been marked as a single region, still results in two peaks being characterized in a single scan.
 This results in that peak being removed from that scan entirely.
 
@@ -1170,7 +1170,7 @@ The corrected standard deviations can then be used to correct the mean height as
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-High-peak-density (HPD) artefacts [@mitchellNewMethodsIdentify2018] present as groups of singular peaks with higher than expected frequency standard deviations (FSDs) calculated from the scan-to-scan frequency peak locations.
+High-peak-density (HPD) artifacts [@mitchellNewMethodsIdentify2018] present as groups of singular peaks with higher than expected frequency standard deviations (FSDs) calculated from the scan-to-scan frequency peak locations.
 Outliers are detected by calculating the interquartile range (IQR) of the distribution of FSDs across the entire spectrum, and peaks with FSDs greater than the median plus 1.5 times the IQR (as implemented in boxplot.stats) are marked.
 The HPD detection algorithm from Mitchell et al. was re-implemented in R for this work to allow comparisons between it and the use of the FSD.
 For HPD detection, the peaks in excel output from Xcalibur were used after converting the m/z peak centers into frequency space.
