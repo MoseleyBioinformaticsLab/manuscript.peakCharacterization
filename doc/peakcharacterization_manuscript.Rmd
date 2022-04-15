@@ -977,7 +977,7 @@ Therefore, access to the scan level peak intensity information as provided by th
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-Two different sets of samples were used to evaluate the various methods, ethylchloroformate (ECF) derived amino acid samples and non-small-cell-lung-carcinoma (NSCLC) lipid-extracted tissue samples.
+Two different sets of samples were used to evaluate the various methods, ethylchloroformate (ECF) derived amino acid samples described in [@mitchellSmallMoleculeIsotope2019] and non-small-cell-lung-carcinoma (NSCLC) lipid-extracted tissue samples described in [@mitchellUntargetedLipidomicsNonSmall2021].
 
 The method for generating the amino-acid samples was adapted from a previously published method for performing ECF amino acid derivatization [@yangChloroformateDerivatizationTracing2017]. 
 Two replicate samples were prepared and spectra were obtained for both samples using a Tribrid Fusion Orbitrap at 500k resolution and a mass range of 150 to 1000m/z.
@@ -985,9 +985,7 @@ Two replicate samples were prepared and spectra were obtained for both samples u
 The collection, preparation, and mass spectrometry analysis of the paired cancer and non-cancer samples has been previously described [@sellersPyruvateCarboxylaseCritical2015]. 
 In summary, cancer and nearby non-cancer tissue samples were acquired from eight-six non-diabetic patients with suspected resectable stage I or IIA non-small cell lung cancer. 
 Written informed consent was collected from all subjects prior to inclusion and all samples were collected under a University of Louisville or University of Kentucky IRB protocol. 
-Lipid extracts were prepared using a modified Folch extraction and reconstituted for direct infusion ultra-high resolution mass spectrometry on a pair of Thermo-Fisher Tribrid Fusion Orbitrap instruments (FSN10115 and FSN10352, referred to as Fusion 1 and Fusion 2 respectively) coupled to an Advion nanoelectrospray system. 
-53 patients (102 spectra total) were acquired from Fusion 1 (serial # FSN10115) and 40 patients (77 spectra total) were acquired from Fusion 2 (serial # FSN10352). Fusion 1 samples were exclusively from the University of Louisville while Fusion 2 were a mix. 
-Three of the patients had only a cancer or non-cancer sample acquired.
+Lipid extracts were prepared using a modified Folch extraction and reconstituted for direct infusion ultra-high resolution mass spectrometry on a pair of Thermo-Fisher Tribrid Fusion Orbitrap instruments coupled to an Advion nanoelectrospray system. 
 Two of the cancer lipid samples (49Cpos and 97Cpos) were used for the majority of examples in this manuscript.
 The rest were included for the examination of changes in differential analysis p-values using different peak source intensities (see **Differential Analysis of Large Dataset**).
 :::
@@ -1340,9 +1338,6 @@ Conceptualization, R.M.F, and H.N.B.M; Methodology, R.M.F and H.N.B.M.; Software
 
 **Data Availability Statement**: The code used in the reporting of results is available on GitHub at https://github.com/MoseleyBioinformaticsLab/manuscript.peakCharacterization, and archived on Zenodo [@flightMoseleyBioinformaticsLabManuscriptPeakCharacterization2022].
 The scan-centric peak-characterization is available as an R package at https://github.com/MoseleyBioinformaticsLab/FTMS.peakCharacterization, and the specific version used in this work is archived on Zenodo [@flightMoseleyBioinformaticsLabFTMSPeakCharacterization2022].
-
-**Acknowledgments**: We thank Timothy Fahrenholz and Qing Jun Wang for their efforts in mass spectrometry data collection. 
-We thank Andrew Lane, Teresa Fan, and Rick Higashi for their efforts in human tissue sample collection and sample preparation. 
 
 **Conflicts of Interest**: The authors declare no conflict of interest. 
 The funders had no role in the design of the study; in the collection, analyses, or interpretation of data; in the writing of the manuscript, or in the decision to publish the results.
