@@ -17,7 +17,6 @@ institute:
   - rcsirm: Resource Center for Stable Isotope Resolved Metabolomics, University of Kentucky, Lexington, KY 40536, USA
   - ibi: Institute for Biomedical Informatics, University of Kentucky, Lexington, KY 40536, USA
   - tox: Department of Toxicology and Cancer Biology, University of Kentucky, Lexington, KY 40536, USA
-date: "`r Sys.time()`"
 output: 
   word_document:
     keep_md: true
@@ -63,7 +62,7 @@ format_equation = function(equation_text, label){
 
 In contrast to the m/z to frequency conversion equations used for Thermo-Fisher Fusion and other Orbitrap instruments, the one we have used for Bruker SolariX ICR instruments is simpler:
 
-$$frequency = a + x * \frac{1}{mz} + y * \frac{1}{\sqrt{mz}}$$
+$$frequency = a + x \times \frac{1}{mz} + y \times \frac{1}{\sqrt{mz}}$$
 
 ## RSD of Methods for Higher Intensity Peaks
 

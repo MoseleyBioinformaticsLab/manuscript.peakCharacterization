@@ -1060,7 +1060,7 @@ To convert m/z back into frequency, we can use a similar model without the roots
 :::
 
 ::: {custom-style="MDPI_3.9_equation"}
-`r format_equation('mz = a + x \\times \\frac{1}{frequency} + y \\times \\frac{1}{frequency^2} + z *\\frac{1}{frequency^3}', 'frequencymz')`
+`r format_equation('mz = a + x \\times \\frac{1}{frequency} + y \\times \\frac{1}{frequency^2} + z \\times \\frac{1}{frequency^3}', 'frequencymz')`
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
