@@ -880,7 +880,7 @@ Across the `r length(coefficients_qcqa$n_coef_out)` NSCLC raw files that complet
 :::
 
 ::: {custom-style="MDPI_5.2_figure"}
-```{r coefficients_qcqa}
+```{r coefficients_qcqa, dn_id = figure_count}
 coef_df1 = data.frame(N_out = coefficients_qcqa$n_coef_out)
 coef_g1 = coef_df1 %>%
   ggplot(aes(x = N_out)) + 
@@ -915,7 +915,7 @@ In the future, the package will be updated to check that the resolution is the s
 :::
 
 ::: {custom-style="MDPI_5.2_figure"}
-```{r resolution_qcqa}
+```{r resolution_qcqa, dn_id = figure_count}
 tar_load(resolution_qcqa)
 
 resolution_qcqa %>%
