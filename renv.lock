@@ -1474,15 +1474,16 @@
     },
     "metabolomicsUtilities": {
       "Package": "metabolomicsUtilities",
-      "Version": "0.0.62",
+      "Version": "0.0.63",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteUsername": "MoseleyBioinformaticsLab",
+      "RemoteUsername": "rmflight",
       "RemoteRepo": "metabolomicsUtilities",
       "RemoteRef": "main",
-      "RemoteSha": "a692da0de4c16c854a0caf53f9b9db42ebe61ef7",
-      "Hash": "d3f62bcee2db87baa8cfc1e9f5ef2389",
+      "RemoteSha": "5f71938385f6de701ee6bbd65caf4532395bec8c",
+      "Remotes": "MoseleyBioinformaticsLab/visualizationQualityControl",
+      "Hash": "00ac508ff54f9d7454d0205d62bbba36",
       "Requirements": [
         "IRanges",
         "RColorBrewer",
@@ -1490,8 +1491,10 @@
         "assertthat",
         "broom",
         "circlize",
+        "dplyr",
         "magrittr",
         "purrr",
+        "readxl",
         "stringr",
         "visualizationQualityControl"
       ]
