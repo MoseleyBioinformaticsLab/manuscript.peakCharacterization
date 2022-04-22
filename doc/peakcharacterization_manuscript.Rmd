@@ -1332,10 +1332,6 @@ Conceptualization, R.M.F, and H.N.B.M; Methodology, R.M.F and H.N.B.M.; Software
  
 **Funding**: The work was supported in part by grants NSF 1419282 (PI Moseley), NSF 2020026 (PI Moseley), NIH 1P01CA163223-01A1 (PD Lane), 1U24DK097215-01A1 (PD Higashi), and P30 CA177558 (B.M. Evers, PI) via the Markey Cancer Center Biostatistics and Bioinformatics Shared Resource Facility (MCC BB-SRF).
 
-**Institutional Review Board Statement**: The study was conducted according to the guidelines of the Declaration of Helsinki and approved by the Institutional Review Boards of the University of Louisville (#05.0523, approval date: 10/19/2005) and the University of Kentucky (#14-0288-F6A, approval date: 05/07/2014).
-
-**Informed Consent Statement**: Informed consent was obtained from all subjects involved in the study.
-
 **Data Availability Statement**: The code used in the reporting of results is available on GitHub at https://github.com/MoseleyBioinformaticsLab/manuscript.peakCharacterization, and archived on Zenodo [@flightMoseleyBioinformaticsLabManuscriptPeakCharacterization2022].
 The scan-centric peak-characterization is available as an R package at https://github.com/MoseleyBioinformaticsLab/FTMS.peakCharacterization, and the specific version used in this work is archived on Zenodo [@flightMoseleyBioinformaticsLabFTMSPeakCharacterization2022].
 
