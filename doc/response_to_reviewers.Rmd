@@ -1,0 +1,161 @@
+---
+title: "Scan-Centric, Frequency-Based Method for Characterizing Peaks from Direct Injection Fourier transform Mass Spectrometry Experiments: Response to Reviewers"
+output: 
+  word_document:
+    reference_docx: response_to_reviewers_template.docx
+    keep_md: true
+editor_options: 
+  chunk_output_type: console
+  markdown: 
+    wrap: sentence
+---
+
+::: {custom-style="Response"}
+This is how our comments in return will show up.
+:::
+
+::: {custom-style="Modified"}
+And this is how any inserted text we want to highlight as to how we actually modified the text will show up.
+:::
+
+
+## Reviewer 1
+
+Mass spectrometry-based metabolite identification and characterization are rapidly developing. Ultra-sensitive detection, high throughput analysis, and intelligent data processing strategies are enabling the identification of very low abundant metabolites and other biomolecules. Downstream identification of metabolites is based on the FT-MS signal in mass spectra. The well-characterized peaks lead to confident identification. In the current manuscript, the authors reported the methods to characterize the peaks to improve the identification. The authors are quickly describing the different methods without much of its discussion. However, the manuscript is interesting and could be further improved.
+
+
+### Major Points:
+
+1. In Results section 2.1. the authors are trying to demonstrate that the Xcalibur calculated intensities and theoretical peak intensities differ with the help of Figure 1. The observed and theoretical intensities often differ and it is well-known fact. What new things that authors are trying to show are hard to find. Figure 1 is hard to understand and there is not enough description of that. 
+
+::: {custom-style="Response"}
+We need to add description of the importance that the deviations increase as the peak intensity gets lower.
+:::
+
+2. “The Thermo-Fisher Fusion instrument from which most of our collaborators data has been acquired, at a resolution of 450K or 500K depending on the sample, has a mode of 0.5, as shown in Figure 2C and D” is not clear as if the frequency difference range already within 0.5 or should be within that range? Also, the peak ordering calculations from m/z to frequency models need more description.
+
+::: {custom-style="Response"}
+I wonder if there is something we didn't explain very well here, like how M/Z does not have a constant difference?
+
+Or that we weren't sure if frequency would be constant? I'm also guessing it's not clear that Figure 2D that a whole lot of points are outside 0.5 +- 0.05 (i.e. the points in black).
+:::
+
+3. In the section “Sliding Window Density to Remove Noise” the authors describe the method to remove the noise. The authors need to give a real example demonstrating the removal of noise from the actual signal scans. Not all no-zero points are noise. This needs to be better explained as it is not clear how the authors reached a cutoff of 7.5.
+
+::: {custom-style="Response"}
+I'm not surprised, it's not the easiest thing to follow. I'm wondering if some kind of schematic might help here. Will have to think carefully on this one.
+:::
+
+4. Breaking up the peaks when the co-isolated ions are overlapped may be helpful. The authors may want to clearly demonstrate the advantages of splitting the peaks of non-zero values.
+
+::: {custom-style="Response"}
+I think this relates to Figure 6, splitting initial regions.
+
+I also think the figure caption needs more work, as we need to make sure we are indicating that each trace is a peak in a scan.
+:::
+
+5. Normalization of Scans, Mitigation of High Peak Density Artifacts, and Changes in Relative Standard Deviation (RSD) need more discussion. The singlenorm_int and the two-pass normalization are expected to be similar due to the most intense peak selection.  
+
+::: {custom-style="Response"}
+They are correct. I think the RSD comes back to visiting #28 (rsd changes at peak level) so we can actually talk about how the RSD changes for each individual peak across the incremental changes to SCPC.
+:::
+
+6. The authors indicated that not all methods reported in the manuscript are improved, and they also reported negative results. This is highly valuable in science. However, the authors need to include which methods are really improved and which are not. This would be very helpful to draw conclusions.
+
+::: {custom-style="Response"}
+I guess we need to be more convincing about which of the bits result in real improvements. Probably gets back to #36 honestly. And pushing more on the peak overlap amongst XCalibur and MSnbase??
+:::
+
+### Minor points:
+
+1. Abstract needs revision.
+
+2. Figure 1 could be improved. From where does the 18O isotopologue appear?
+
+::: {custom-style="Response"}
+I'm not 100% sure about this comment. the 18O comes from natural abundance, no? Again, does this come down to bad caption, because we don't emphasize enough that we use the LOG transform of the intensities? Or do we need an inset where we show the raw intensities ....
+:::
+
+3. Figure 13 is hard to understand and could be improved.
+
+::: {custom-style="Response"}
+UpSet plots are definitely hard to parse the first time they are encountered. We need to explain this better so that they see how it matches to a Venn diagram.
+:::
+
+## Reviewer 2
+
+### OVERVIEW AND GENERAL RECOMMENDATION
+
+The manuscript ‘Scan-Centric, Frequency-Based Method for Characterizing Peaks from Direct Injection Fourier transform Mass Spectrometry Experiments’ is on a topic of analytical relevance as complete analyses/characterization of complex samples makes complimentary of instrumentation inevitable. I must admit that I found the paper to be scientifically/analytically sound and well
+described. Please consider the following comments to polish the draft to a publishable standard.
+
+
+### SPECIFIC COMMENTS
+
+#### ABSTRACT
+
+* L13: introduce >> report.
+
+> Abstract: We introduce a novel, scan-centric method for characterizing peaks from direct injection
+
+::: {custom-style="Response"}
+I'm not sure I agree with this.
+:::
+
+* L21-22: This line needs to be rephrased; if it is suitable as stated, the authors should have applied the same method and reported the results in this submission.
+
+> These cross-scan characterized peaks are suitable for use in our previously published peak assignment methodology, Small Molecule Isotope Resolved Formula Enumeration (SMIRFE).
+
+::: {custom-style="Response"}
+I guess we need to be clear that we've been developing this for a while ....
+:::
+
+#### KEYWORDS
+
+A single keyword may reduce the article’s visibility in search engines. I suggest adding scan-centric peak characterization, molecular fingerprint, multiplex or Fellgett’s advantage, orbitrap and interferograms as author-suggested indexing keywords.
+
+::: {custom-style="Response"}
+We will definitely add some of these, and some others we can think of
+:::
+
+#### INTRODUCTION
+
+The section is well written but I am putting forth a suggestion as introductions are meant to start from a bigger picture before narrowing to the study context. Consider including a brief introduction on analytical techniques/instruments and the fact that a single technique may not achieve full characterization or analyses of (complex) samples. Thus, complementarity of techniques is becoming a powerful approach in the analyses of samples.
+
+::: {custom-style="Response"}
+I think we didn't go "big picture" enough here? And I think they would like us to mention DI, LC, GC, NMR??
+:::
+
+#### RESULTS
+
+* L75: I do not find ‘‘Naïvely’’ scientific enough to be used in this line.
+
+::: {custom-style="Response"}
+For reference, this refers to the topical heading of 2.1
+
+> 2.1. Naïvely Averaged Data Have Bad Relative Intensities
+
+I guess we look at synonyms ...
+:::
+
+* L190, 195: better to use (a) and (b) instead of i and ii, respectively.
+
+::: {custom-style="Response"}
+This should be simple to change, and part of the issue probably was that I didn't use brackets. We'll just switch to (a) and (b).
+:::
+
+* In Figure 10, rsd should not be used interchangeably with RSD, as only the latter was defined before.
+
+::: {custom-style="Response"}
+Yep, definitely. This was inconsistent on my part.
+:::
+
+* For consistency, supplementary figures (Figure S1 to S5) should be cited consecutively. In the present draft, Figures S3 and S5 were cited before Figures S2 and S4.
+
+::: {custom-style="Response"}
+Definitely. Thought we had fixed this, but I guess we didn't get it all right.
+:::
+
+## Reviewer 3
+
+The text suggests an important statistical approach to improve the data. More chemometric analyzes would be needed to improve data processing. good job
