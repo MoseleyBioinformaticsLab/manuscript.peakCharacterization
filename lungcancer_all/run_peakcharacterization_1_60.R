@@ -97,7 +97,7 @@ all_mzml_files <- data.frame(mzml_file = basename(all_mzml_files), mzml_path = a
 peak_pick_samples <- dplyr::left_join(peak_pick_samples, all_mzml_files, by = "sample")
 
 curr_date = Sys.Date()
-use_date = "2022-04-09"
+use_date = "2022-05-11"
 if (curr_date != use_date) {
   warning("current date and the use date dont match!")
 }
@@ -130,6 +130,10 @@ plan(multicore)
 set_internal_map(furrr::future_map)
 
 json_files = gsub(".mzML", ".json", use_files)
-zip_results = run_mzml_list_custom(use_files, json_files = json_files, save_loc = zip_save, raw_scan_filter = scan_time_rtime_filter)
 
-saveRDS(zip_results, file = file.path(zip_save, "zip_91_end.rds"))
+# using the updated frequency model from supplemental
+frequency_model = c(0, -1, -1/2, -1/3)
+peak_region_finder = PeakRegionFinder$new(frequency_fit_description = frequency_model)
+zip_results = run_mzml_list_custom(use_files, json_files = json_files, save_loc = zip_save, raw_scan_filter = scan_time_rtime_filter, peak_finder = peak_region_finder)
+
+saveRDS(zip_results, file = file.path(zip_save, "zip_1_60.rds"))

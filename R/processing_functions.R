@@ -41,7 +41,7 @@ time_filter = function(raw_ms, min_time_difference = 4){
   raw_ms
 }
 
-
+frequency_model = c(0, -1, -1/2, -1/3)
 # read in the scans and generate the sliding and tiling windows
 reading_scans_tile_windows <- function(in_file, pkg){
   #use_file = file.path('data_analysis', 'data_input', in_file)
@@ -51,7 +51,7 @@ reading_scans_tile_windows <- function(in_file, pkg){
   } else {
     use_filter = time_filter
   }
-  char_ms <- CharacterizeMSPeaks$new(use_file, peak_finder = PeakRegionFinder$new(), raw_scan_filter = use_filter)
+  char_ms <- CharacterizeMSPeaks$new(use_file, peak_finder = PeakRegionFinder$new(frequency_fit_description = frequency_model), raw_scan_filter = use_filter)
   char_ms$load_file()
   char_ms$peak_finder$start_time = Sys.time()
   char_ms$filter_raw_scans()
