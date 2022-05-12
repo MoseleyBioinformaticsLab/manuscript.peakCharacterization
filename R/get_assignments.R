@@ -525,7 +525,7 @@ motivating_plot = function(nap_height_1ecf, aa_id = "Threonine", formula_id = "C
     annotate("text", x = 242.45, y = 7, label = peak_data$complete_IMF[1]) +
     annotate("text", x = 243.3, y = 6.1, label = peak_data$complete_IMF[2]) +
     annotate("text", x = 243.7, y = 5, label = peak_data$complete_IMF[3]) +
-    annotate("text", x = 243.75, y = 4.2, label = peak_data$complete_IMF[3]) +
+    annotate("text", x = 243.75, y = 4.2, label = peak_data$complete_IMF[4]) +
     labs(x = "m/z", y = "Log10(Intensity)") +
     scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
   out_plot
