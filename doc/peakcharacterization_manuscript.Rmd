@@ -326,12 +326,12 @@ figure_count$increment("normalization_factors")
 ::: {custom-style="MDPI_3.1_text"}
 Due to differences in how many ions are captured in the trap and the limited dynamic range of the detector, the observed peak intensities for the same analyte vary between scans (see `r figure_count$label_text("breaking_regions")`A and B for example).
 Using the median peak differences between scans, it is possible to normalize the peak intensities across scans.
-However, there are two issues with these peak intensities across scans: (i) some peak intensities correlate with the scan number (i.e. scan acquisition order); and (ii) some peak differences between scans are correlated with intensity.
-The solution to **i** is to do a two-pass normalization.
+However, there are two issues with these peak intensities across scans: (a) some peak intensities correlate with the scan number (i.e. scan acquisition order); and (b) some peak differences between scans are correlated with intensity.
+The solution to (a) is to do a two-pass normalization.
 After the first pass, the peaks whose intensity is correlated with scan order are detected (absolute Pearson correlation > 0.5).
 In the second pass, the correlated peaks are removed, and normalization is carried out again.
 `r figure_count$label_text("intensity_scan")`A shows an example peak whose intensity across scans is correlated with scan number.
-The solution to **ii** (peak differences correlated with intensity) is to only use the most intense peaks, as shown in `r figure_count$label_text("intensity_scan")`B.
+The solution to (b) (peak differences correlated with intensity) is to only use the most intense peaks, as shown in `r figure_count$label_text("intensity_scan")`B.
 The highlighted peaks in `r figure_count$label_text("intensity_scan")`B are those with an intensity greater than 0.7 of the maximum intensity observed in that scan, and at least visually, their differences are **not** correlated with intensity.
 If *all* peaks are used for normalization, a very different set of normalization factors will be generated than by using only the *most intense* peaks, as shown in `r figure_count$label_text("normalization_factors")`A and B.
 Though the two-pass normalization (doublenorm) and single-pass normalization using the most intense peaks (singlenorm_int) generate very similar normalization factors (`r figure_count$label_text("normalization_factors")`B and C), removing the scan-correlated peaks does change some of the normalization factors.
