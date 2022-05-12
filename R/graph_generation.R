@@ -180,7 +180,8 @@ plot_rsd_differences = function(rsd_values, limits = list(`1ecf` = c(0, 1),
       geom_density_ridges() +
       theme(legend.position = "none") +
       coord_cartesian(xlim = use_limit) +
-      labs(y = "", subtitle = in_rsd$sample[1])
+      labs(y = "", subtitle = in_rsd$sample[1],
+           x = "RSD")
   })
   rsd_comp_plots
 }
