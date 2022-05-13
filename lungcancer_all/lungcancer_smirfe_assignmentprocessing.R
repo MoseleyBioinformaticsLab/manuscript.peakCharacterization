@@ -98,4 +98,4 @@ json_data = purrr::map(all_json_files, function(in_json){
   tmp_json = jsonlite::fromJSON(in_json)
 })
 names(json_data) = gsub(".json$", "", basename(all_json_files))
-saveRDS(json_data, file = "data/data_output/lung_json_data_2022-04-02.rds")
+saveRDS(json_data, file = "data/data_output/lung_data/lung_json_data_2022-04-02.rds")
