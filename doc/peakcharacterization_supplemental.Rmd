@@ -64,6 +64,80 @@ In contrast to the m/z to frequency conversion equations used for Thermo-Fisher 
 
 $$frequency = a + x \times \frac{1}{mz} + y \times \frac{1}{\sqrt{mz}}$$
 
+## Alternative Frequency Models
+
+We can define several models, and test them on the four samples.
+
+```{r increment_models}
+figure_count$increment("frequency_models")
+table_count$increment("frequency_models")
+```
+
+$$frequency = a + \frac{y}{\sqrt{mz}} (1)$$
+
+$$frequency = a + \frac{x}{mz} + \frac{y}{\sqrt{mz}} (2)$$
+
+$$frequency = a + \frac{x}{mz} + \frac{y}{\sqrt{mz}} + \frac{z}{\sqrt[3]{mz}} (3)$$
+
+$$frequency = a + \frac{y}{\sqrt{mz}} + \frac{z}{\sqrt[3]{mz}} (4)$$
+
+`r figure_count$label_text("frequency_models")` shows the median absolute deviation (MAD) and medians of the residuals between the calculated and predicted frequency values after fitting of frequency to m/z in each scan using each model, and then across each sample.
+It is clear that model 3 that includes all three of the m/z terms performs the best in terms of overall fit, although there may be some disagreement between the ECF and lipid samples based on median of the residual differences.
+`r table_count$label_text("frequency_models")` shows the coefficients for each term of the models for the 1ecf sample.
+The coefficients of the **y** term in each of the models is orders of magnitude larger than the coefficients for any of the other terms in the other models.
+That term also appears relatively constant, with some small variations to account for the presence and absence of the other terms of the model.
+
+```{r load_model_results}
+tar_load(frequency_1ecf)
+tar_load(frequency_2ecf)
+tar_load(frequency_49lipid)
+tar_load(frequency_97lipid)
+
+all_models = list(
+  `1ecf` = frequency_1ecf,
+  `2ecf` = frequency_2ecf,
+  `49lipid` = frequency_49lipid,
+  `97lipid` = frequency_97lipid
+)
+
+```
+
+```{r frequency_models, dn_id = figure_count, fig.width = 8, fig.height = 9}
+create_plot = function(in_sample){
+  mad_plot = in_sample$mad_data %>%
+    ggplot(aes(x = model, y = mad)) +
+    geom_sina() +
+    labs(x = "Frequency Model", y = "MAD(residuals)",
+         subtitle = in_sample$sample)
+  median_plot = in_sample$mad_data %>%
+    ggplot(aes(x = model, y = median)) +
+    geom_sina() +
+    labs(x = "Frequency Model", y = "Median(residuals)")
+  mad_plot | median_plot
+}
+sample_plots = purrr::map(all_models, create_plot)
+
+wrapped_plots = wrap_plots(sample_plots, ncol = 1)
+wrapped_plots
+```
+
+`r figure_count$label_text("frequency_models")`.
+Sina plots of the median absolute deviation (MAD) and median of the residuals between the calculated frequency using the m/z spacing and the predicted frequency after fitting a frequency model, for each of the four samples and for each of the models (1 - 4) defined above.
+
+
+`r table_count$label_text("frequency_models")`.
+Coefficients for each term in the models after fitting of the calculated frequency to m/z.
+
+```{r coefficient_table}
+ecf_coef_table = all_models[[1]]$model_data %>%
+  flextable() %>%
+  colformat_double(digits = 0) %>%
+  autofit()
+ecf_coef_table
+```
+
+
+
 ## RSD of Methods for Higher Intensity Peaks
 
 ```{r increment_rsd_method}
