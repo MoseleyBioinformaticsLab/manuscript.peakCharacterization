@@ -81,7 +81,7 @@ These cross-scan characterized peaks are suitable for use in our previously publ
 :::
 
 ::: {custom-style="MDPI_2.1_heading1"}
-## Introduction
+## 1. Introduction
 :::
 
 
@@ -111,11 +111,11 @@ Finally, we show that in addition to better preserving the expected intensity to
 :::
 
 ::: {custom-style="MDPI_2.1_heading1"}
-## Results
+## 2. Results
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Naïvely Averaged Data Have Bad Relative Intensities
+### 2.1 Naïvely Averaged Data Have Bad Relative Intensities
 :::
 
 ```{r increment_motivation}
@@ -142,7 +142,7 @@ The 18O isotopologue is shifted by 0.01 m/z and the NAP peaks by 0.05 m/z to aid
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### m/z to Frequency
+### 2.2 m/z to Frequency
 :::
 
 ```{r increment_mz_frequency}
@@ -209,7 +209,7 @@ Although the original model is created from only those points that had frequency
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Sliding Window Density to Remove Noise
+### 2.3 Sliding Window Density to Remove Noise
 :::
 
 ```{r increment_slidingwindow}
@@ -252,7 +252,7 @@ Red line is the median x 1.5.
 
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Peak Characterization Using Quadratic Fit
+### 2.4 Peak Characterization Using Quadratic Fit
 :::
 
 ```{r increment_fit}
@@ -281,7 +281,7 @@ Log-intensity (A) and Intensity (B) of points for a single peak against frequenc
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Breaking Up Initial Regions
+### 2.5 Breaking Up Initial Regions
 :::
 
 ```{r increment_breaking_regions}
@@ -315,7 +315,7 @@ Each group of non-zero adjacent regions will be merged to form a new peak region
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Normalization of Scans
+### 2.6 Normalization of Scans
 :::
 
 ```{r increment_intensity_scan}
@@ -367,7 +367,7 @@ compare_normalization[[1]]
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Mitigation of High Peak Density Artifacts
+### 2.7 Mitigation of High Peak Density Artifacts
 :::
 
 ```{r increment_hpd}
@@ -419,7 +419,7 @@ Comparison of HPD and high FSD sites in the 2ecf sample.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Changes in Relative Standard Deviation (RSD)
+### 2.8 Changes in Relative Standard Deviation (RSD)
 :::
 
 ```{r increment_rsd}
@@ -531,7 +531,7 @@ In addition, there is an unusual boot-shaped curve at the lower log mean intensi
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Difference to Relative Natural Abundance
+### 2.9 Difference to Relative Natural Abundance
 :::
 
 ```{r nap_intensity_increment}
@@ -602,7 +602,7 @@ Although we expected that the corrected scan-centric intensities would behave si
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Method Specific Peaks
+### 2.10 Method Specific Peaks
 :::
 
 ```{r increment_peak_comparisons}
@@ -767,7 +767,7 @@ Inset plots are scaled to the maximum counts observed for the particular method.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Changes in P-Values On a Large Dataset
+### 2.11 Changes in P-Values On a Large Dataset
 :::
 
 ```{r increment_p_value}
@@ -856,7 +856,7 @@ It is vitally important however, to normalize the intensities correctly.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Quality Control and Quality Analysis
+### 2.12 Quality Control and Quality Analysis
 :::
 
 ```{r load_increment_qcqa}
@@ -941,7 +941,7 @@ If there are no scans with at least 25 peaks, then the processing of that sample
 :::
 
 ::: {custom-style="MDPI_2.1_heading1"}
-## Discussion
+## 3. Discussion
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -969,11 +969,11 @@ Therefore, access to the scan level peak intensity information as provided by th
 :::
 
 ::: {custom-style="MDPI_2.1_heading1"}
-## Materials and Methods
+## 4. Materials and Methods
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Samples and Overall Processing
+### 4.1 Samples and Overall Processing
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1024,7 +1024,7 @@ The scan-centric data was then processed in the following eight ways:
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Matching Peaks
+### 4.2 Matching Peaks
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1032,7 +1032,7 @@ To associate the XCalibur and MSnbase peaks with the scan-centric peaks, a 4 ppm
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Conversion of m/z to Frequency
+### 4.3 Conversion of m/z to Frequency
 :::
 
 
@@ -1064,7 +1064,7 @@ To convert m/z back into frequency, we can use a similar model without the roots
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Frequency Intervals
+### 4.4 Frequency Intervals
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1075,7 +1075,7 @@ Each **point** above is the equivalent of the difference between data points in 
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Interval Range Based Data
+### 4.5 Interval Range Based Data
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1084,7 +1084,7 @@ The sliding and tiled windows are also converted to IRanges objects using this p
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Peak Containing Intervals
+### 4.6 Peak Containing Intervals
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1101,7 +1101,7 @@ These interval regions should contain a single **real** peak that was detected i
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Peak Detection and Centroided Values
+### 4.7 Peak Detection and Centroided Values
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1123,7 +1123,7 @@ Any regions that subsequently contain zero peaks are removed.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Scan to Scan Normalization
+### 4.8 Scan to Scan Normalization
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1136,7 +1136,7 @@ Peaks correlated to scan order represent an artifact that we speculate results f
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Full Scan-Centric Characterization
+### 4.9 Full Scan-Centric Characterization
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1148,7 +1148,7 @@ In addition to these values, the frequency point-to-point median difference is c
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Correction of Height and Standard Deviation
+### 4.10 Correction of Height and Standard Deviation
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1164,7 +1164,7 @@ The corrected standard deviations can then be used to correct the mean height as
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Marking High Frequency Standard Deviation Peaks
+### 4.11 Marking High Frequency Standard Deviation Peaks
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1176,7 +1176,7 @@ Sliding windows that are 1000 frequency points wide with a stride of 100 points 
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Calculation of Relative Standard Deviation
+### 4.12 Calculation of Relative Standard Deviation
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1191,7 +1191,7 @@ Up to two modes are reported from low to high RSD along the distribution: i) the
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Scan-Centric Peak Assignment
+### 4.13 Scan-Centric Peak Assignment
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1207,7 +1207,7 @@ We attempted to create peaks that could be assigned by SMIRFE from the MSnbase a
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Consistently Assigned Lipid Spectral Feature (Corresponded Peak) Generation and Peak Intensity Normalization
+### 4.14 Consistently Assigned Lipid Spectral Feature (Corresponded Peak) Generation and Peak Intensity Normalization
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1251,7 +1251,7 @@ All lipid isotopologue intensities were normalized by dividing the isotopologue 
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Peak - Peak NAP Height Ratios
+### 4.15 Peak - Peak NAP Height Ratios
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1270,7 +1270,7 @@ This calculation is done for the final characterized intensity, as well as the i
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Differential Analysis of Large Dataset
+### 4.16 Differential Analysis of Large Dataset
 :::
 
 ```{r load_qcqa}
@@ -1305,7 +1305,7 @@ The reference peak p-value is the raw scan-centric p-values.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### Software Used
+### 4.17 Software Used
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
