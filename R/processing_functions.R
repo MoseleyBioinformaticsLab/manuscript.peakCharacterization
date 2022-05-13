@@ -548,7 +548,7 @@ split_regions = function(p99_nonorm_data){
   summary_region = n_each %>%
     dplyr::group_by(region) %>%
     dplyr::summarise(min_scan = min(n_peak), n_region = n()) %>%
-    dplyr::filter(min_scan > 40)
+    dplyr::filter(min_scan > 35)
 
   use_list = point_regions_list[summary_region[["region"]]]
 
