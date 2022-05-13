@@ -145,7 +145,7 @@ plot_peak_ordering = function(data_obj){
     use_mz = scan_level_peaks[in_row, "ObservedMZ"]
     use_model = dplyr::filter(scan_models, scan %in% scan_level_peaks[in_row, "scan"])
 
-    out_freq = FTMS.peakCharacterization:::predict_exponentials(use_mz, unlist(use_model[1, c("V1", "V2", "V3")]),
+    out_freq = FTMS.peakCharacterization:::predict_exponentials(use_mz, unlist(use_model[1, c("V1", "V2", "V3", "V4")]),
                                                                 peak_data$zip_ms$peak_finder$peak_regions$frequency_point_regions$metadata$frequency_fit_description)
     data.frame(mz = use_mz, single_frequency = scan_level_peaks[in_row, "ObservedFrequency"],
                scan_frequency = out_freq)
@@ -155,10 +155,16 @@ plot_peak_ordering = function(data_obj){
     dplyr::arrange(single_frequency) %>% dplyr::mutate(single_order = seq(1, nrow(.))) %>%
     dplyr::arrange(scan_frequency) %>% dplyr::mutate(scan_order = seq(1, nrow(.)))
 
-  by_scan = tidyr::gather(by_scan, key = "type_order", value = "order", single_order, scan_order)
+  by_scan = tidyr::gather(by_scan, key = "type_order", value = "order", single_order, scan_order) %>%
+    dplyr::mutate(ordering = dplyr::case_when(
+      type_order %in% "single_order" ~ "Single Model",
+      type_order %in% "scan_order" ~ "Individual Models"
+    ))
 
-  peak_ordering_plot = ggplot(by_scan, aes(x = mz_order, y = order, color = type_order)) + geom_point(size = 3) +
-    theme(legend.position = c(0.8, 0.9))
+  peak_ordering_plot = ggplot(by_scan, aes(x = mz_order, y = order, color = ordering)) + geom_point(size = 3) +
+    theme(legend.position = c(0.75, 0.9)) +
+    labs(x = "m/z Order", y = "Predicted Frequency Order",
+         color = "Frequency Source")
   peak_ordering_plot
 }
 
