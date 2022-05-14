@@ -124,8 +124,8 @@ figure_count$increment("motivation")
 
 ::: {custom-style="MDPI_3.1_text"}
 To motivate our solution, we generated peak lists using the peak exporting functionality in Xcalibur as well as our scan-centric peak characterization, and found matching Xcalibur peaks to our assignments.
-As an example, in `r figure_count$label_text("motivation")`, we show the Xcalibur calculated intensities and theoretical peak intensities based on NAP for four peaks matching threonine.
-As the NAP gets lower, the deviations of the Xcalibur calculated intensities from the NAP become larger.
+As an example, in `r figure_count$label_text("motivation")`, we show the Xcalibur calculated intensities and theoretical peak intensities based on NAP for four peaks assigned to threonine.
+As the NAP decreases, the deviations of the Xcalibur calculated intensities from the NAP become larger.
 :::
 
 ::: {custom-style="MDPI_5.2_figure"}
@@ -137,8 +137,10 @@ motivation_plot
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
 **`r figure_count$label_text("motivation")`.**
-Xcalibur intensities (black) and theoretical intensities based on relative NAP (red) for ECF derived threonine.
+**A** Xcalibur intensities (black) and theoretical intensities based on relative NAP (red) for ECF derived threonine.
 The 18O isotopologue is shifted by 0.01 m/z and the NAP peaks by 0.05 m/z to aid visualization.
+**B** Theoretical NAP-based-Log10-intensities and Log10 XCalibur intensities.
+The red line indicates perfect agreement.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
