@@ -465,6 +465,14 @@ qcqa_tar = list(
              resolution_analysis(bad_file))
 )
 
+frequency_mzml = data_mzml
+frequency_mzml$data_function = rlang::syms("run_frequency_models")
+frequency_model_tar = tar_map(
+  frequency_mzml,
+  names = "name",
+  tar_target(frequency, run_frequency_models(mzml))
+)
+
 list(pkg_tar,
      data_tar,
      method_tar,
@@ -486,4 +494,5 @@ list(pkg_tar,
      lipid_tar,
      lungcancer_tar,
      qcqa_tar,
-     corrected_rsd_tar)
+     corrected_rsd_tar,
+     frequency_model_tar)

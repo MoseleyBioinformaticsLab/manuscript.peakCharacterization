@@ -515,20 +515,33 @@ motivating_plot = function(nap_height_1ecf, aa_id = "Threonine", formula_id = "C
 
   peak_data = dplyr::left_join(peak_data, nap_height_1ecf[[aa_id]][[formula_id]]$characterized$peaks[, c("Sample_Peak", "complete_IMF")], by = "Sample_Peak")
 
-  out_plot = peak_data %>%
+  font_size = 2.5
+  mz_plot = peak_data %>%
     ggplot(aes(x = ObservedMZ, xend = ObservedMZ,
                y = 0, yend = log10intensity)) +
     geom_segment() +
     geom_segment(aes(x = mzNAP, xend = mzNAP,
                      y = 0, yend = log10intNAP),
                  color = "red") +
-    annotate("text", x = 242.45, y = 7, label = peak_data$complete_IMF[1]) +
-    annotate("text", x = 243.3, y = 6.1, label = peak_data$complete_IMF[2]) +
-    annotate("text", x = 243.7, y = 5, label = peak_data$complete_IMF[3]) +
-    annotate("text", x = 243.75, y = 4.2, label = peak_data$complete_IMF[4]) +
+    annotate("text", x = 242.45, y = 7, label = peak_data$complete_IMF[1],
+             size = font_size) +
+    annotate("text", x = 243.3, y = 6.1, label = peak_data$complete_IMF[2],
+             size = font_size) +
+    annotate("text", x = 243.7, y = 5, label = peak_data$complete_IMF[3],
+             size = font_size) +
+    annotate("text", x = 243.75, y = 4.2, label = peak_data$complete_IMF[4],
+             size = font_size) +
     labs(x = "m/z", y = "Log10(Intensity)") +
     scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
-  out_plot
+  nap_int_plot = peak_data %>%
+    ggplot(aes(x = log10intNAP, y = log10intensity)) +
+    geom_point(size = 2.5) +
+    geom_abline(slope = 1, color = "red") +
+    labs(x = "Log10(NAP-Intensity)",
+         y = "Log10(Intensity)") +
+    coord_equal()
+
+  (mz_plot | nap_int_plot) + plot_annotation(tag_levels = "A")
 }
 
 other_diffs = function(aa_diffs_filtersd){
