@@ -115,7 +115,7 @@ Finally, we show that in addition to better preserving the expected intensity to
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 2.1 Naïvely Averaged Data Have Bad Relative Intensities
+### 2.1 Simplistically Averaged Data Have Bad Relative Intensities
 :::
 
 ```{r increment_motivation}
@@ -124,8 +124,9 @@ figure_count$increment("motivation")
 
 ::: {custom-style="MDPI_3.1_text"}
 To motivate our solution, we generated peak lists using the peak exporting functionality in Xcalibur as well as our scan-centric peak characterization, and found matching Xcalibur peaks to our assignments.
-As an example, in `r figure_count$label_text("motivation")`, we show the Xcalibur calculated intensities and theoretical peak intensities based on NAP for four peaks assigned to threonine.
-As the NAP decreases, the deviations of the Xcalibur calculated intensities from the NAP become larger.
+As an example, in `r figure_count$label_text("motivation")`, we show the Xcalibur calculated intensities from the simplistically averaged spectrum and theoretical peak intensities based on NAP for four peaks assigned to threonine.
+As the peak intensity decreases, the deviation between the Xcalibur calculated intensity and its corresponding NAP-based theoretical intensity become larger.
+This becomes more apparent when plotting the two sets of intensities directly against each other, as shown in `r figure_count$label_text("motivation")`B.
 :::
 
 ::: {custom-style="MDPI_5.2_figure"}
@@ -152,15 +153,18 @@ figure_count$increment("mz_frequency_conversion")
 ```
 
 ::: {custom-style="MDPI_3.1_text"}
-FT-MS data from the Thermo-Fisher Orbitrap instruments used to acquire the data does not provide any information about the raw frequency data.
+FT-MS data from the Thermo-Fisher Orbitrap instruments used to acquire the data does not provide any information about the raw spectral frequency data.
 Outside of the meta-data, it merely contains the m/z and intensity values for profile spectra acquired across multiple scans.
-However, the frequency can be calculated by dividing the average m/z of two adjacent points by their difference (`r figure_count$label_text("mz_frequency_conversion")`A, red points representing the average m/z of two adjacent points, red lines representing the difference between the two adjacent points).
-The subsequent differences in frequency should be relatively constant with respect to m/z, in contrast to the differences of adjacent m/z points, as shown in `r figure_count$label_text("mz_frequency_conversion")`B and C.
-The Thermo-Fisher Fusion instrument from which most of our collaborators data has been acquired, at a resolution of 450K or 500K depending on the sample, has a mode of 0.5, as shown in `r figure_count$label_text("mz_frequency_conversion")`C, D and E.
+However, the spectral frequency can be calculated by dividing the midpoint m/z of two adjacent points by their difference (`r figure_count$label_text("mz_frequency_conversion")`A, red points representing the midpoint m/z of two adjacent points, length of red lines representing the difference between the two adjacent points).
+The subsequent adjacent point differences in frequency are expected to be relatively constant with respect to m/z, as shown in `r figure_count$label_text("mz_frequency_conversion")`C, D and E, in contrast to the adjacent point differences in m/z, which are not constant with respect to m/z.
+The Thermo-Fisher Fusion instrument from which most of our collaborators data has been acquired, at a resolution of 450K or 500K depending on the sample, has an adjacent frequency point difference mode of 0.5, as shown in  `r figure_count$label_text("mz_frequency_conversion")`D.
 It is important to note that although the frequency difference has been consistent regardless of instrument resolution, we do not know a priori what it should be, and the method makes no assumptions about the frequency difference, but rather calculates the mode of the frequency differences from those observed in the data itself.
-Restricting to those points that fall into a narrow range around the mode of frequency differences (0.49 - 0.51 in this work), a model of frequency to m/z can be generated (see Methods), with an example shown in `r figure_count$label_text("mz_frequency_conversion")`F.
-This model seems to fit the known relationship between frequency and m/z, where the frequency is related to $1/\sqrt{mz}$.
-This is useful, because some of the subsequent steps in our workflow use sliding and tiled windows where it is assumed that the sliding windows contain the same number of data points.
+Restricting to those points that fall into a narrow range around the mode of frequency differences (0.49 - 0.51 in this work), a regression model of frequency to m/z can be generated (see Methods), with an example shown in `r figure_count$label_text("mz_frequency_conversion")`F.
+This regression model seems to fit the known relationship between frequency and m/z, where the frequency is related to $1/\sqrt{mz}$.
+The actual regression model used in this work includes terms of the m/z, $\sqrt{m/z}$, and $\sqrt[3]{m/z}$ (see **Conversion of m/z to Frequency** in Methods for further description of the regression model).
+We did investigate a variety of frequency regression models to see which one seemed to be the best, as shown in Supplemental `r supp_figure_count$label_text("frequency_models")` and `r supp_table_count$label_text("frequency_models")`.
+
+The constant point difference of frequency space is useful, because some of the subsequent steps in our workflow use sliding and tiled windows where it is assumed that the sliding windows contain the same number of data points.
 The m/z point-to-point differences are not constant, but can be approximated by a LOESS linear model [@Cleveland1992loess]; however, it is very difficult to create a LOESS model with an intercept of 0.
 In addition, we would also need to vary the width of sliding windows according to the m/z difference at a particular m/z based on the LOESS model.
 Frequency-based points suffer none of these drawbacks, and the conversion from m/z can be derived from the raw profile level data itself, which is incredibly useful.
@@ -176,12 +180,13 @@ frequency_conversion$all
 ::: {custom-style="MDPI_5.1_figure_caption"}
 **`r figure_count$label_text("mz_frequency_conversion")`.** 
 **A**: Intensity vs m/z for a single peak from a single scan.
-Red lines denote the differences between each point, and red dots the average between the pair of points.
-The difference over the point is used to derive the frequency values in **B**.
+Red lines denote the difference between each adjacent pair of points, and red dots the m/z midpoint between the pair of points.
+The difference divided by the midpoint is used to derive the frequency values in **B**.
 **B** plots the intensity vs the converted frequency points derived from **A**.
-The red lines denote pairwise differences, which are shown in **C** for this single peak.
-The differences for all peaks across all scans vs m/z are shown in **D**, with those differences that lie within 0.49 - 0.51 shown in red.
-**E** shows the plot of derived frequency vs m/z, with fitted values from the linear model in red.
+The red lines denote the differenc between adjacent points, which are shown in the y-axis of **C** for this single peak.
+A histogram of adjacent point differences for all points is shown in **D**.
+The differences for all points in a single scan vs m/z are shown in **E**, with those differences that lie within 0.49 - 0.51 shown in red.
+**F** shows the plot of derived spectral frequency vs m/z, with fitted values from the linear regression model in red.
 :::
 
 ```{r increment_peak_ordering}
@@ -189,7 +194,7 @@ figure_count$increment("peak_ordering")
 ```
 
 ::: {custom-style="MDPI_3.1_text"}
-The m/z to frequency models are calculated for each scan, and the square root term from all scan level models are checked for outliers based on the interquartile ranges across all scans in a sample.
+The m/z to frequency regression models are calculated for each scan, and the square root term from all scan level models are checked for outliers based on the interquartile ranges across all scans in a sample.
 While scan specific models **could** be used in the conversion of m/z to frequency, doing so results in changes to the relative peak ordering compared to m/z space, as shown in `r figure_count$label_text("peak_ordering")`.
 Therefore, a single model for all scans based on the scan with the slope closest to the median of slopes across scans is used for converting *all* remaining scan level data.
 :::
@@ -203,8 +208,8 @@ peak_ordering
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
 **`r figure_count$label_text("peak_ordering")`.** Peak ordering in m/z compared with ordering in frequency space when a single m/z to frequency model is used or scan specific m/z to frequency models are used.
-For a single peak, the scan level peak m/z's were extracted, and then frequency values for those m/z generated using a single common model of m/z to frequency (*single_order*), or models derived from each scan (*scan_order*).
-A subset of the peaks end up out of order using scan specific models, implying that a single model should be used across all the scan level data.
+For a single peak, the scan level peak m/z's were extracted, and then frequency values for those m/z generated using a single common model of m/z to frequency (*Single Model*), or models derived from each scan (*Individual Models*).
+A subset of the peaks ends up out of order using scan specific models, implying that a single model should be used across all the scan level data.
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1049,12 +1054,12 @@ These *useful* points can be used to construct a linear model relating m/z to fr
 :::
 
 ::: {custom-style="MDPI_3.9_equation"}
-`r format_equation('frequency = a + y \\times \\frac{1}{\\sqrt{mz}} + z \\times \\frac{1}{\\sqrt[3]{mz}}', 'mzfrequency')`
+`r format_equation('frequency = a + \\frac{x}{mz} + \\frac{y}{\\sqrt{mz}} + \\frac{z}{\\sqrt[3]{mz}}', 'mzfrequency')`
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
 From the known physical properties of the Orbitrap, only the square root term should be necessary [@ledfordSpaceChargeEffects1984].
-Practically, we have found the combination of square and cube-roots to provide a better fit when processing data from the Thermo-Fisher Fusion instrument, likely due to issues with slight imperfections in the orbitrap geometry, contributions from space charge effects and magnetronic motion, control of the magnetic fields, and the Fourier-like transform conversion used by the spectrometer.
+Practically, we have found the combination of no root, square and cube-roots to provide a better fit when processing data from the Thermo-Fisher Fusion instrument, likely due to issues with slight imperfections in the orbitrap geometry, contributions from space charge effects and magnetronic motion, control of the magnetic fields, and the Fourier-like transform conversion used by the spectrometer.
 We do note that when working with Bruker SolariX ICR data, the equation is slightly different, and does not require the cubic square root term (unpublished results, see Supplemental Materials).
 A frequency model is generated for each scan, and then a single model using the scan with the square-root term closest to the median of the square-root terms from all scans.
 We observed that this single model better preserved the relative ordering of the peaks in both m/z and frequency-space compared to the scan specific models (see Results).
