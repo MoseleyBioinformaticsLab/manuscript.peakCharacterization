@@ -5,7 +5,7 @@
 library(FTMS.peakCharacterization)
 library(knitrProgressBar)
 
-zip_files <- dir("/mlab/scratch/cesb_data/zip_files/lung_matched_tissue-2022-04-02",
+zip_files <- dir("/mlab/scratch/cesb_data/zip_files/lung_matched_tissue-2022-05-11",
                       full.names = TRUE, pattern = ".zip$")
 pb <- progress_estimated(length(zip_files))
 
@@ -20,4 +20,4 @@ corrected_medians <- purrr::map_df(zip_files, function(in_file){
   out_df
 })
 
-saveRDS(corrected_medians, file = "data/data_output/lung_data/corrected_medians_2022-04-02.rds")
+saveRDS(corrected_medians, file = "data/data_output/lung_data/corrected_medians_2022-05-11.rds")
