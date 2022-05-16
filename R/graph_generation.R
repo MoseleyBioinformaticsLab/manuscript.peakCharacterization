@@ -49,6 +49,7 @@ plot_nap_peaks = function(raw_data, processed_data, assignments, interesting_reg
 }
 
 plot_frequency_conversion = function(char_obj){
+  # char_obj = tar_read(data_97lipid)
   raw_points = as.data.frame(char_obj$zip_ms$peak_finder$peak_regions$frequency_point_regions$frequency[[1]]@elementMetadata)
   is_convertable = dplyr::between(raw_points$mean_freq_diff, 0.49, 0.51)
   is_convertable[is.na(is_convertable)] = FALSE
@@ -95,8 +96,17 @@ plot_frequency_conversion = function(char_obj){
   point_difference_plot = ggplot(example_data, aes(x = pair_frequency, y = pair_frequency_offset)) + geom_point() +
     labs(x = "Frequency", y = "Frequency Differences")
 
-  all_frequency_difference_plot = ggplot(raw_points, aes(x = mz, y = log10(abs(mean_freq_diff)))) + geom_point() +
-    geom_point(data = dplyr::filter(raw_points, org_convertable), color = "red") + labs(x = "M/Z", y = "Log10(Frequency Differences)")
+  all_frequency_difference_hist = ggplot(raw_points, aes(x = log10(abs(mean_freq_diff)))) +
+    geom_histogram(bins = 100) +
+    geom_vline(xintercept = log10(0.5), color = "red") +
+    scale_y_continuous(expand = expansion(mult = c(0, .01))) +
+    labs(x = "Log10(Frequency Differences)",
+         y = "Number of Points")
+
+  y_title_size = 12
+  all_frequency_difference_plot = ggplot(raw_points, aes(x = mz, y = log10(abs(mean_freq_diff)))) + geom_point(alpha = 0.5) +
+    geom_point(data = dplyr::filter(raw_points, org_convertable), color = "red") + labs(x = "M/Z", y = "Log10(Frequency Differences)") +
+    theme(axis.title.y = element_text(size = y_title_size))
 
   convertable_raw2 = dplyr::filter(raw_points, org_convertable)
   raw2_model = FTMS.peakCharacterization:::fit_exponentials(convertable_raw2$mean_mz, convertable_raw2$mean_frequency, c(0, -1/2, -1/3))
@@ -123,7 +133,7 @@ plot_frequency_conversion = function(char_obj){
     dplyr::mutate(residuals = (predicted - frequency) / frequency)
 
   frequency_plot =  ((mz_point_plot / frequency_point_plot / point_difference_plot)  |
-    (all_frequency_difference_plot / mz_frequency_plot)) + plot_annotation(tag_levels = "A")
+    (all_frequency_difference_hist / all_frequency_difference_plot / mz_frequency_plot)) + plot_annotation(tag_levels = "A")
   frequency_histogram = raw_points %>%
     ggplot(aes(x = log10(mean_freq_diff))) +
     geom_histogram(bins = 100) +
