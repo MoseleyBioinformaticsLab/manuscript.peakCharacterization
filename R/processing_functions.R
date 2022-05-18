@@ -451,6 +451,7 @@ summarize_rsd = function(rsd_df){
 
   dplyr::group_by(rsd_df, processed, sample) %>%
     dplyr::summarize(mean = mean(rsd),
+                     sd = sd(rsd),
                      median = median(rsd),
                      mode1 = get_mode(rsd)[1],
                      mode2 = get_mode(rsd)[2],
