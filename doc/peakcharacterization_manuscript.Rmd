@@ -77,7 +77,7 @@ These cross-scan characterized peaks are suitable for use in our previously publ
 :::
 
 ::: {custom-style="MDPI_1.8_keywords"}
-**Keywords**: Fourier-transform mass spectrometry
+**Keywords**: Fourier-transform mass spectrometry, orbitrap, scan-centric peak characterization, Fellgett's advantage, interferograms, frequency spectrum
 :::
 
 ::: {custom-style="MDPI_2.1_heading1"}
@@ -124,8 +124,8 @@ figure_count$increment("motivation")
 
 ::: {custom-style="MDPI_3.1_text"}
 To motivate our solution, we generated peak lists using the peak exporting functionality in Xcalibur as well as our scan-centric peak characterization, and found matching Xcalibur peaks to our assignments.
-As an example, in `r figure_count$label_text("motivation")`, we show the Xcalibur calculated intensities from the simplistically averaged spectrum and theoretical peak intensities based on NAP for four peaks assigned to threonine.
-As the peak intensity decreases, the deviation between the Xcalibur calculated intensity and its corresponding NAP-based theoretical intensity become larger.
+As an example, in `r figure_count$label_text("motivation")`, we show the Xcalibur calculated intensities from the simplistically averaged spectrum and theoretical peak intensities based on NAP for four peaks matching threonine.
+As the peak intensity decreases, the deviation between the Xcalibur calculated intensity and its corresponding NAP-based theoretical intensity becomes larger.
 This becomes more apparent when plotting the two sets of intensities directly against each other, as shown in `r figure_count$label_text("motivation")`B.
 :::
 
@@ -300,7 +300,7 @@ From the fitted model, we can derive the centroided center and the intensity of 
 
 ::: {custom-style="MDPI_5.2_figure"}
 ```{r centroided_peaks, dn_id = figure_count}
-# figure showing fit of quadratic model to actual data points
+# showing fit of quadratic model to actual data points
 tar_load(peak_fit_plot)
 peak_fit_plot
 ```
@@ -329,7 +329,7 @@ Adjacent non-zero frequency bins are merged to comprise a single peak region.
 
 ::: {custom-style="MDPI_5.2_figure"}
 ```{r breaking_regions, dn_id = figure_count}
-# figure showing multiple "peaks" in what is initially a single region
+# showing multiple "peaks" in what is initially a single region
 tar_load(split_region_plot)
 split_region_plot
 ```
@@ -372,7 +372,7 @@ But removing the scan-correlated peaks does change the majority of the normaliza
 
 ::: {custom-style="MDPI_5.2_figure"}
 ```{r intensity_scan, dn_id = figure_count}
-# figure showing peak intensity correlation with m/z, intensity varying with m/z
+# showing peak intensity correlation with m/z, intensity varying with m/z
 tar_load(intensity_scan_cor_plot)
 intensity_scan_cor_plot
 ```
@@ -413,7 +413,7 @@ Ideally, the peak characterization procedure should reduce and mitigate their pr
 Their presence should be minimized by removing noise peaks, and removing peak regions that have multiple reported peaks from the same scan.
 However, we expect they may also present as characterized peaks that have larger than expected frequency level standard deviations (FSD) when calculated across scans.
 These peaks can be detected by simply examining the distribution of FSDs and marking outlier peaks.
-To verify the mitigation of HPD regions, we converted centroided m/z's from Xcalibur to frequency values using the previously calculated model for that sample, and measured peak density to detect HPD regions, and compare them with the scan-centric peaks and FSD outliers.
+To verify the mitigation of HPD regions, we converted centroided m/z's from Xcalibur to frequency values using the previously calculated regression model for that sample, measured peak density to detect HPD regions, and compared them with the scan-centric peaks and FSD outliers.
 Xcalibur peak density was measured using a sliding window ten points wide and a stride of one point.
 
 `r figure_count$label_text("hpd_compare_fsd")` shows a single HPD site detected in the 2ecf sample, with the peaks from Xcalibur, as well as various scan-centric processing and the peaks from centroiding using MSnbase.
@@ -1095,7 +1095,7 @@ We do note that when working with Bruker SolariX ICR data, the equation is sligh
 A frequency model is generated for each scan, and then a single model using the scan with the square-root term closest to the median of the square-root terms from all scans.
 We observed that this single model better preserved the relative ordering of the peaks in both m/z and frequency-space compared to the scan specific models (see Results).
 
-To convert m/z back into frequency, we can use a similar model without the roots, as well as an extra simple linear term that doesn't have an equivalent in the above frequency model.
+To convert m/z back into frequency, we can use a similar model without the roots, as well as an extra simple linear term that does not have an equivalent in the above frequency model.
 :::
 
 ::: {custom-style="MDPI_3.9_equation"}
