@@ -1,6 +1,6 @@
 # this is where we are running some stuff to check where we are getting scan
 # level QC/QA, besides in the actual peaks.
-all_zip = dir("/mlab/scratch/cesb_data/zip_files/lung_matched_tissue-2022-04-02", pattern = "zip$", full.names = TRUE)
+all_zip = dir("/mlab/scratch/cesb_data/zip_files/lung_matched_tissue-2022-05-11", pattern = "zip$", full.names = TRUE)
 library(FTMS.peakCharacterization)
 
 scan_time_rtime_filter = function(scan_times, min_time_difference = 4, rtime_limit = 7.5*60){
@@ -133,4 +133,4 @@ check_scans_removed = function(in_zip){
 
 checked_zip = purrr::map(all_zip, check_scans_removed)
 
-saveRDS(checked_zip, file = "data/data_output/lung_data/lung_scandiffs_2022-04-02.rds")
+saveRDS(checked_zip, file = "data/data_output/lung_data/lung_scandiffs_2022-05-11.rds")

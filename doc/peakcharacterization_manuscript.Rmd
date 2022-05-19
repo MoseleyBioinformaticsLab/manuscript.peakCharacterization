@@ -115,7 +115,7 @@ Finally, we show that in addition to better preserving the expected intensity to
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 2.1 Simplistically Averaged Data Have Bad Relative Intensities
+### 2.1. Simplistically Averaged Data Have Bad Relative Intensities
 :::
 
 ```{r increment_motivation}
@@ -145,7 +145,7 @@ The red line indicates perfect agreement.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 2.2 m/z to Frequency
+### 2.2. m/z to Frequency
 :::
 
 ```{r increment_mz_frequency}
@@ -160,7 +160,7 @@ The subsequent adjacent point differences in frequency are expected to be relati
 The Thermo-Fisher Fusion instrument from which most of our collaborators data has been acquired, at a resolution of 450K or 500K depending on the sample, has an adjacent frequency point difference mode of 0.5, as shown in  `r figure_count$label_text("mz_frequency_conversion")`D.
 It is important to note that although the frequency difference has been consistent regardless of instrument resolution, we do not know a priori what it should be, and the method makes no assumptions about the frequency difference, but rather calculates the mode of the frequency differences from those observed in the data itself.
 Restricting to those points that fall into a narrow range around the mode of frequency differences (0.49 - 0.51 in this work), a regression model of frequency to m/z can be generated (see Methods), with an example shown in `r figure_count$label_text("mz_frequency_conversion")`F.
-This regression model seems to fit the known relationship between frequency and m/z, where the frequency is related to $1/\sqrt{mz}$.
+This regression model seems to fit the known relationship between frequency and m/z, where the frequency is related to $1/\sqrt{m/z}$.
 The actual regression model used in this work includes terms of the m/z, $\sqrt{m/z}$, and $\sqrt[3]{m/z}$ (see **Conversion of m/z to Frequency** in Methods for further description of the regression model).
 We did investigate a variety of frequency regression models to see which one seemed to be the best, as shown in Supplemental `r supp_figure_count$label_text("frequency_models")` and `r supp_table_count$label_text("frequency_models")`.
 
@@ -217,7 +217,7 @@ Although the original model is created from only those points that had frequency
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 2.3 Sliding Window Density to Remove Noise
+### 2.3. Sliding Window Density to Remove Noise
 :::
 
 ```{r increment_slidingwindow}
@@ -254,7 +254,7 @@ A non-zero point density based method to removing potential noise is desirable b
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
 **`r figure_count$label_text("slidingwindow_count")`.**
-**A - E**: A single tiled region 2000 data points wide.
+**A - E**: A single tiled region 1000 frequency wide.
 **A**: Non-zero point intensities in frequency space across all scans.
 **B**: Number of non-zero points in sliding regions. Blue line indicates 99th percentile of non-zero counts in this one region.
 Red line is the rounded value of median x 1.5 of 99th percentiles from **F**.
@@ -283,7 +283,7 @@ The number of initial regions as a function of the percentile cutoff used for ei
 
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 2.4 Peak Characterization Using Quadratic Fit
+### 2.4. Peak Characterization Using Quadratic Fit
 :::
 
 ```{r increment_fit}
@@ -312,7 +312,7 @@ Log-intensity (A) and Intensity (B) of points for a single peak against frequenc
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 2.5 Breaking Up Initial Regions
+### 2.5. Breaking Up Initial Regions
 :::
 
 ```{r increment_breaking_regions}
@@ -347,7 +347,7 @@ Each group of non-zero adjacent regions will be merged to form a new peak region
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 2.6 Normalization of Scans
+### 2.6. Normalization of Scans
 :::
 
 ```{r increment_intensity_scan}
@@ -359,14 +359,14 @@ figure_count$increment("normalization_factors")
 Due to differences in how many ions are captured in the trap and the limited dynamic range of the detector, the observed peak intensities for the same analyte vary between scans (see `r figure_count$label_text("breaking_regions")`A and B for example).
 Using the median peak differences between scans, it is possible to normalize the peak intensities across scans.
 However, there are two issues with these peak intensities across scans: (a) some peak intensities correlate with the scan number (i.e., scan acquisition order); and (b) some peak differences between scans are correlated with intensity.
-The solution to (a) is to do a two-pass normalization.
+The solution to **a** is to do a two-pass normalization.
 After the first pass, the peaks whose intensity is correlated with scan order are detected (absolute Pearson correlation > 0.5).
 In the second pass, the correlated peaks are removed, and normalization is carried out again.
 `r figure_count$label_text("intensity_scan")`A shows an example peak whose intensity across scans is correlated with scan number.
-The solution to (b) (peak differences correlated with intensity) is to only use the most intense peaks, as shown in `r figure_count$label_text("intensity_scan")`B.
+The solution to **b** (peak differences correlated with intensity) is to only use the most intense peaks, as shown in `r figure_count$label_text("intensity_scan")`B.
 The highlighted peaks in `r figure_count$label_text("intensity_scan")`B are those with an intensity greater than 0.7 of the maximum intensity observed in that scan, and at least visually, their differences are **not** correlated with intensity.
 If *all* peaks are used for normalization, a very different set of normalization factors will be generated than by using only the *most intense* peaks, as shown in `r figure_count$label_text("normalization_factors")`A and B.
-Though the two-pass normalization (doublenorm) and single-pass normalization using the most intense peaks (singlenorm_int) generate very similar normalization factors (`r figure_count$label_text("normalization_factors")`B and C), which is expected as they both use the most intense peaks. 
+Though the two-pass normalization (doublenorm) and single-pass normalization using the most intense peaks (singlenorm_int) generate very similar normalization factors (`r figure_count$label_text("normalization_factors")`B), which is expected as they both use the most intense peaks. 
 But removing the scan-correlated peaks does change the majority of the normalization factors.
 :::
 
@@ -396,11 +396,10 @@ compare_normalization[[1]]
 ::: {custom-style="MDPI_5.1_figure_caption"}
 **`r figure_count$label_text("normalization_factors")`.** **A**: Histogram of scan normalization factors using either a single-pass normalization using *all* peaks (singlenorm), single-pass normalization using peaks with an intensity ≥ 0.7 of the maximum intensity (singlenorm_int), or the two-pass normalization removing peaks whose height is correlated with scan and using the most intense peaks (doublenorm).
 **B**: The difference of the normalization factors obtained from either doublenorm or singlenorm_int compared to singlenorm.
-**C**: **B**, but with a zoomed y-axis to illustrate the differences in the normalization factors obtained with the different methods.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 2.7 Mitigation of High Peak Density Artifacts
+### 2.7. Mitigation of High Peak Density Artifacts
 :::
 
 ```{r increment_hpd}
@@ -452,7 +451,7 @@ Comparison of HPD and high FSD sites in the 2ecf sample.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 2.8 Changes in Relative Standard Deviation (RSD)
+### 2.8. Changes in Relative Standard Deviation (RSD)
 :::
 
 ```{r increment_rsd}
@@ -467,7 +466,8 @@ Therefore, one way to quantify any potential *improvements* in the characterized
 Up to two modes are reported for each distribution, where a mode location is only reported if it is ≥ 0.2X the most intense mode.
 For samples 1ecf and 2ecf, there is a general shift in the RSD to the left, going from the bottom processing methods (msnbase_only) to the top processing method (filtersd), representing a visually clear improvement.
 For samples 49lipid and 97lipid, the improvements are visually more subtle, having a slight shift to the left as well as a narrowing and smoothing of the RSD distribution.
-Part of this subtlety is likely due to the bi-modality of these two distributions.
+The narrowing of the distribution is detected in the change of the standard deviations (SD) of the RSDs.
+Part of this visual subtlety is likely due to the bi-modality of these two distributions.
 This is not surprising, since these two samples are non-polar extractions from tissue and are biochemically more complex.
 `r table_count$label_text("rsd_method")` provides more quantitative metrics.
 At two decimal places, the filtersd, doublenorm, and singlenorm processing methods give superior and nearly identical results for three of the four samples, especially in terms of mean and median RSD.
@@ -489,7 +489,7 @@ A peak had to be present in at least three scans for the RSD value to be reporte
 
 ::: {custom-style="MDPI_4.1_table_caption"}
 `r table_count$label_text("rsd_method")`.
-RSD means, medians, modes, and maximum observed values for each sample with different overall processing.
+RSD means, standard deviations (sd), medians, modes, and maximum observed values for each sample with different overall processing.
 :::
 
 ::: {custom-style="MDPI_4.2_table_body"}
@@ -564,7 +564,7 @@ In addition, there is an unusual boot-shaped curve at the lower log mean intensi
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 2.9 Difference to Relative Natural Abundance
+### 2.9. Difference to Relative Natural Abundance
 :::
 
 ```{r nap_intensity_increment}
@@ -635,7 +635,7 @@ Although we expected that the corrected scan-centric intensities would behave si
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 2.10 Method Specific Peaks
+### 2.10. Method Specific Peaks
 :::
 
 ```{r increment_peak_comparisons}
@@ -669,6 +669,7 @@ This strongly implies that the peak center error is far higher in the MSnbase-ch
 For the 97lipid-specific histograms, again the difference distribution for the scan-centric peak characterization is narrower, but the improvement is not as pronounced, likely due to the distribution being bi-modal.
 Also, far fewer Xcalibur and MSnbase characterized peaks matched assigned scan-centric peaks.
 Again, this strongly implies that their peak centers have far higher error.
+When we matched assigned peaks across the NSCLC samples for examination of changes in p-values (see **Changes in P-Values On a Large Dataset**), the standard deviation of the peak locations in frequency space was 0.5 (results not shown).
 :::
 
 ```{r unassigned_upset, dn_id = figure_count, fig.width = 16, fig.height = 8}
@@ -802,7 +803,7 @@ Inset plots are scaled to the maximum counts observed for the particular method.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 2.11 Changes in P-Values On a Large Dataset
+### 2.11. Changes in P-Values On a Large Dataset
 :::
 
 ```{r increment_p_value}
@@ -865,7 +866,7 @@ compare_sina = lung_compare %>%
   geom_hline(yintercept = 0, color = "red") +
   geom_sina(alpha = 0.5) +
   geom_point(data = long_measure, aes(x = compare_id, y = value), color = "green") +
-  geom_text(data = long_pvalue, aes(x = compare_id, y = -5, label = format(value, digits = 2))) +
+  geom_text(data = long_pvalue, aes(x = compare_id, y = 2, label = format(value, digits = 2))) +
   labs(x = "", y = "Log-P-Value Difference")
 
 lung_plot = (compare_plots$Corrected | compare_plots$MSnbase) / (compare_plots$Xcalibur | compare_sina) +
@@ -891,7 +892,7 @@ It is vitally important however, to normalize the intensities correctly.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 2.12 Quality Control and Quality Analysis
+### 2.12. Quality Control and Quality Analysis
 :::
 
 ```{r load_increment_qcqa}
@@ -907,7 +908,7 @@ We also sometimes find that from initial peak region that has been marked as a s
 This results in that peak being removed from that scan entirely.
 
 The conversion of m/z to frequency also provides opportunities to evaluate each scan and whether it should be kept for further processing.
-Checks that have helped us in the development of the scan-centric peak characterization have included: (i) verifying that the ordering of data points remains identical in m/z and frequency space after conversion to frequency; and (ii) examining the R^2^ fit of the predicted frequency points to the original frequency points across scans for outliers.
+Checks that have helped us in the development of the scan-centric peak characterization have included: (a) verifying that the ordering of data points remains identical in m/z and frequency space after conversion to frequency; and (b) examining the R^2^ fit of the predicted frequency points to the original frequency points across scans for outliers.
 A third quality control step is to examine the coefficients of the square-root term for each scan (see term **y** in Equation `r equation_count$label_text("mzfrequency")`) and look for any outliers, and remove them before continuing the sample processing.
 Across the `r length(coefficients_qcqa$n_coef_out)` NSCLC raw files that completed scan-centric processing, `r sum(coefficients_qcqa$n_coef_out > 0)` had at least one scan removed based on the square-root coefficient.
 `r figure_count$label_text("coefficients_qcqa")`A shows a histogram of the number of scans removed based on being outliers of the overall distribution.
@@ -971,7 +972,7 @@ The y-axis is cropped to 2x10^7^ so that the MS1 precursor scans are visible, as
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-Finally, in the scan-scan normalization step, we require that there are at least 25 peaks in each of the scans that can be used to calculate normalization factors between the scans and the reference scan.
+Finally, in the scan-scan normalization step, we require that there be at least 25 peaks in each of the scans that can be used to calculate normalization factors between the scans and the reference scan.
 If there are no scans with at least 25 peaks, then the processing of that sample will error and stop.
 :::
 
@@ -1012,7 +1013,7 @@ Therefore, access to the scan level peak intensity information as provided by th
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 4.1 Samples and Overall Processing
+### 4.1. Samples and Overall Processing
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1063,7 +1064,7 @@ The scan-centric data was then processed in the following eight ways:
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 4.2 Matching Peaks
+### 4.2. Matching Peaks
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1071,7 +1072,7 @@ To associate the Xcalibur and MSnbase peaks with the scan-centric peaks, a 4 ppm
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 4.3 Conversion of m/z to Frequency
+### 4.3. Conversion of m/z to Frequency
 :::
 
 
@@ -1103,7 +1104,7 @@ To convert m/z back into frequency, we can use a similar model without the roots
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 4.4 Frequency Intervals
+### 4.4. Frequency Intervals
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1114,7 +1115,7 @@ Each **point** above is the equivalent of the difference between data points in 
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 4.5 Interval Range Based Data
+### 4.5. Interval Range Based Data
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1123,7 +1124,7 @@ The sliding and tiled windows are also converted to IRanges objects using this p
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 4.6 Peak Containing Intervals
+### 4.6. Peak Containing Intervals
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1140,7 +1141,7 @@ These interval regions should contain a single **real** peak that was detected i
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 4.7 Peak Detection and Centroided Values
+### 4.7. Peak Detection and Centroided Values
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1162,7 +1163,7 @@ Any regions that subsequently contain zero peaks are removed.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 4.8 Scan to Scan Normalization
+### 4.8. Scan to Scan Normalization
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1175,7 +1176,7 @@ Peaks correlated to scan order represent an artifact that we speculate results f
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 4.9 Full Scan-Centric Characterization
+### 4.9. Full Scan-Centric Characterization
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1187,7 +1188,7 @@ In addition to these values, the frequency point-to-point median difference is c
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 4.10 Correction of Height and Standard Deviation
+### 4.10. Correction of Height and Standard Deviation
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1203,7 +1204,7 @@ The corrected standard deviations can then be used to correct the mean height as
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 4.11 Marking High Frequency Standard Deviation Peaks
+### 4.11. Marking High Frequency Standard Deviation Peaks
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1215,7 +1216,7 @@ Sliding windows that are 1000 frequency points wide with a stride of 100 points 
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 4.12 Calculation of Relative Standard Deviation
+### 4.12. Calculation of Relative Standard Deviation
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1230,7 +1231,7 @@ Up to two modes are reported from low to high RSD along the distribution: i) the
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 4.13 Scan-Centric Peak Assignment
+### 4.13. Scan-Centric Peak Assignment
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1246,7 +1247,7 @@ We attempted to create peaks that could be assigned by SMIRFE from the MSnbase a
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 4.14 Consistently Assigned Lipid Spectral Feature (Corresponded Peak) Generation and Peak Intensity Normalization
+### 4.14. Consistently Assigned Lipid Spectral Feature (Corresponded Peak) Generation and Peak Intensity Normalization
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1290,7 +1291,7 @@ All lipid isotopologue intensities were normalized by dividing the isotopologue 
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 4.15 Peak - Peak NAP Height Ratios
+### 4.15. Peak - Peak NAP Height Ratios
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -1309,7 +1310,7 @@ This calculation is done for the final characterized intensity, as well as the i
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 4.16 Differential Analysis of Large Dataset
+### 4.16. Differential Analysis of Large Dataset
 :::
 
 ```{r load_qcqa}
@@ -1327,10 +1328,10 @@ We started with the 181 matched non-cancer and cancer samples previously used fo
 All samples were characterized using the full scan-centric workflow, assigned using SMIRFE (see **Scan-Centric Peak Assignments**), and then peaks matched by shared EMFs across samples (see **Consistently Assigned Lipid Spectral Feature (Corresponded Peak) Generation and Peak Intensity Normalization**).
 After extraction of the scan-centric IMF peak locations across all samples, Xcalibur and MSnbase peaks were matched within each sample, and locations and intensities extracted.
 
-Of the starting 181 samples, five did not finish during scan-centric characterization due to not having any scans left during normalization.
+Of the starting 181 samples, nine did not finish during scan-centric characterization for various reasons.
 In addition, some of the samples were acquired multiple times, creating duplicate samples.
 Not knowing which sample run was most appropriate to use, we removed all of the duplicated samples.
-Using information-content-informed Kendall-tau correlation (ICI-Kt) [@flightInformationContentInformedKendalltauCorrelation2022], we compared the median correlations of each sample to all others in the same disease class for outliers, and removed `r n_out_vector["cancer"]` cancer and `r n_out_vector["non-cancer"]` samples.
+Using information-content-informed Kendall-tau correlation (ICI-Kt) [@flightInformationContentInformedKendalltauCorrelation2022], we compared the median correlations of each sample to all others in the same disease class for outliers, and removed `r n_out_vector["cancer"]` cancer and `r n_out_vector["non-cancer"]` non-cancer samples.
 The median ICI-Kt correlations are shown in `r supp_figure_count$label_text("icikt_outlier")`.
 
 Each samples intensities were normalized by dividing by the median intensities from that sample and intensity method.
@@ -1344,7 +1345,7 @@ The reference peak p-value is the raw scan-centric p-values.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 4.17 Software Used
+### 4.17. Software Used
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
