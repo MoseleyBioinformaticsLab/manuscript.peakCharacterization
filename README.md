@@ -34,10 +34,10 @@ cd manuscript.peakCharacterization
 We also need the data files and the _targets directory.
 
 ```
-wget https://zenodo.org/record/6468443/files/scancentric_manuscript_targets.zip
+wget https://zenodo.org/record/6568053/files/scancentric_manuscript_targets.zip
 unzip scancentric_manuscript_targets.zip
 
-wget https://zenodo.org/record/6471357/files/scancentric_manuscript_data.zip
+wget https://zenodo.org/record/6568016/files/scancentric_manuscript_data.zip
 unzip scancentric_manuscript_data.zip
 ```
 
