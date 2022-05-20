@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6568098.svg)](https://doi.org/10.5281/zenodo.6568098)
+
 This is a code repository to reproduce the following manuscript:
 
 Scan-Centric, Frequency-Based Method for Characterizing Peaks from Direct Injection Fourier transform Mass Spectrometry Experiments
@@ -23,11 +25,24 @@ If you are looking for the scan-centric peak characterization R package, it is a
 
 ## Get A Copy of the Repository
 
+### From GitHub
+
 ```
 git clone https://github.com/MoseleyBioinformaticsLab/manuscript.peakCharacterization.git
 
 cd manuscript.peakCharacterization
 ```
+
+### From Zenodo
+
+[HTML Page](https://zenodo.org/record/6568098#.Yof1muPMKV4)
+
+```
+wget https://zenodo.org/record/6568098/files/manuscript.peakCharacterization-reproducible_v4.zip
+
+unzip manuscript.peakCharacterization-reproducible_v4.zip
+```
+
 
 ## Download the Various Data and the _targets Directory
 
