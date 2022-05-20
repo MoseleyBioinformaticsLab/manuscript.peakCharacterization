@@ -188,7 +188,7 @@ run_mzml_list_SC = function(mzml_files, json_files = NULL, progress = TRUE, save
   list(time = tmp, zip_files = zip_files)
 }
 ScanCentricPeakCharacterization::set_internal_map(furrr::future_map)
-zip_sc_dir = file.path("/mlab/scratch/cesb_data/zip_files/check_frequency_models", "SC_new_model")
+zip_sc_dir = file.path("/mlab/scratch/cesb_data/zip_files/check_frequency_models", "SC_new_model_2")
 dir.create(zip_sc_dir)
 zip_sc = run_mzml_list_SC(use_files, json_files = json_files, save_loc = zip_sc_dir)
 saveRDS(zip_sc, file = file.path(zip_sc_dir, "zip_data.rds"))
