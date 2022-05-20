@@ -100,7 +100,7 @@ We applied all of these methods together in detecting and assigning differential
 The input peak data in these studies are derived from multi-scan direct-injection FT-MS data.
 SMIRFE uses expected relationships of relative peak height or intensity to natural abundance probability (NAP) across multiple peak pairs to determine the likelihood of an assignment for the peaks in question.
 In the Thermo-Fisher Orbitrap FT-MS instruments, data is acquired in microscans and scans, where each scan is an aggregate of multiple microscans.
-While these micro-scan and subsequent scans are expected to be analytical replicates, spray instability and temporal delay in automatic gain control pragmatically break this expectation.
+While these microscan and subsequent scans are expected to be analytical replicates, spray instability and temporal delay in automatic gain control pragmatically break this expectation.
 Therefore, it is advantageous to keep the data at the scan level, so that any given poor quality (i.e., "bad") scan can be removed prior to aggregating the data across scans and generating a centroided peak m/z and intensity.
 If the scan level data is not processed and aggregated correctly, the final peak intensities in arbitrary units and centers in m/z will have high uncertainty (total variance) [@moseleyErrorAnalysisPropagation2013].
 
@@ -124,7 +124,7 @@ figure_count$increment("motivation")
 
 ::: {custom-style="MDPI_3.1_text"}
 To motivate our solution, we generated peak lists using the peak exporting functionality in Xcalibur as well as our scan-centric peak characterization, and found matching Xcalibur peaks to our assignments.
-As an example, in `r figure_count$label_text("motivation")`, we show the Xcalibur calculated intensities from the simplistically averaged spectrum and theoretical peak intensities based on NAP for four peaks matching threonine.
+As an example, in `r figure_count$label_text("motivation")`A, we show the Xcalibur calculated intensities from the simplistically averaged spectrum and theoretical peak intensities based on NAP for four peaks matching threonine.
 As the peak intensity decreases, the deviation between the Xcalibur calculated intensity and its corresponding NAP-based theoretical intensity becomes larger.
 This becomes more apparent when plotting the two sets of intensities directly against each other, as shown in `r figure_count$label_text("motivation")`B.
 :::
@@ -138,9 +138,9 @@ motivation_plot
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
 **`r figure_count$label_text("motivation")`.**
-**A** Xcalibur intensities (black) and theoretical intensities based on relative NAP (red) for ECF derived threonine.
+**A**: Xcalibur intensities (black) and theoretical intensities based on relative NAP (red) for ECF derived threonine.
 The 18O isotopologue is shifted by 0.01 m/z and the NAP peaks by 0.05 m/z to aid visualization.
-**B** Theoretical NAP-based-Log10-intensities and Log10 Xcalibur intensities.
+**B**: Theoretical NAP-based-Log10-intensities and Log10 Xcalibur intensities.
 The red line indicates perfect agreement.
 :::
 
@@ -156,12 +156,12 @@ figure_count$increment("mz_frequency_conversion")
 FT-MS data from the Thermo-Fisher Orbitrap instruments used to acquire the data does not provide any information about the raw spectral frequency data.
 Outside of the meta-data, it merely contains the m/z and intensity values for profile spectra acquired across multiple scans.
 However, the spectral frequency can be calculated by dividing the midpoint m/z of two adjacent points by their difference (`r figure_count$label_text("mz_frequency_conversion")`A, red points representing the midpoint m/z of two adjacent points, length of red lines representing the difference between the two adjacent points).
-The subsequent adjacent point differences in frequency are expected to be relatively constant with respect to m/z, as shown in `r figure_count$label_text("mz_frequency_conversion")`C, D and E, in contrast to the adjacent point differences in m/z, which are not constant with respect to m/z.
-The Thermo-Fisher Fusion instrument from which most of our collaborators data has been acquired, at a resolution of 450K or 500K depending on the sample, has an adjacent frequency point difference mode of 0.5, as shown in  `r figure_count$label_text("mz_frequency_conversion")`D.
+The subsequent adjacent point differences in frequency are expected to be relatively constant with respect to m/z, as shown in `r figure_count$label_text("mz_frequency_conversion")`C, `r figure_count$just_count("mz_frequency_conversion")`D and `r figure_count$just_count("mz_frequency_conversion")`E, in contrast to the adjacent point differences in m/z, which are not constant with respect to m/z.
+The Thermo-Fisher Fusion instrument from which most of our collaborators' data has been acquired, at a resolution of 450K or 500K depending on the sample, has an adjacent frequency point difference mode of 0.5, as shown in  `r figure_count$label_text("mz_frequency_conversion")`D.
 It is important to note that although the frequency difference has been consistent regardless of instrument resolution, we do not know a priori what it should be, and the method makes no assumptions about the frequency difference, but rather calculates the mode of the frequency differences from those observed in the data itself.
 Restricting to those points that fall into a narrow range around the mode of frequency differences (0.49 - 0.51 in this work), a regression model of frequency to m/z can be generated (see Methods), with an example shown in `r figure_count$label_text("mz_frequency_conversion")`F.
 This regression model seems to fit the known relationship between frequency and m/z, where the frequency is related to $1/\sqrt{m/z}$.
-The actual regression model used in this work includes terms of the m/z, $\sqrt{m/z}$, and $\sqrt[3]{m/z}$ (see **Conversion of m/z to Frequency** in Methods for further description of the regression model).
+The actual regression model used in this work includes terms for m/z, $\sqrt{m/z}$, and $\sqrt[3]{m/z}$ (see **Conversion of m/z to Frequency** in Methods for further description of the regression model).
 We did investigate a variety of frequency regression models to see which one seemed to be the best, as shown in Supplemental `r supp_figure_count$label_text("frequency_models")` and `r supp_table_count$label_text("frequency_models")`.
 
 The constant point difference of frequency space is useful, because some of the subsequent steps in our workflow use sliding and tiled windows where it is assumed that the sliding windows contain the same number of data points.
@@ -184,7 +184,7 @@ Red lines denote the difference between each adjacent pair of points, and red do
 The difference divided by the midpoint is used to derive the spectral frequency values in **B**.
 **B** plots the intensity vs the converted frequency points derived from **A**.
 The red lines denote the difference between adjacent points, which are shown in the y-axis of **C** for this single peak.
-A histogram of adjacent point differences for all points is shown in **D**.
+**D** shows a histogram of adjacent point differences for all points. Note that the y-axis is Log10 scaled.
 The differences for all points in a single scan vs m/z are shown in **E**, with those differences that lie within 0.49 - 0.51 shown in red.
 **F** shows the plot of derived spectral frequency vs m/z, with fitted values from the linear regression model in red.
 :::
@@ -233,14 +233,14 @@ tar_load(noise_plot)
 In a dataset of this nature, we expect that much of the data is really just noise, and does not contribute meaningfully to the analysis.
 Furthermore, it is expected that noise is randomly distributed across the scans.
 Therefore, if we slide a window across the data and sum the number of non-zero points in each window, we expect that most of the data we encounter is actually noise.
-Subsequently, we divide the counts into tiled regions of a set size (1000 frequency in this work), and examine the 99th percentile of the sliding window counts within the tiled region.
-In `r figure_count$label_text("slidingwindow_count")`A we plotted the non-zero point intensities from all scans for one tiled region 2000 points wide.
-The number of non-zero points in the sliding windows across this region are shown in `r figure_count$label_text("slidingwindow_count")`B, and zoomed in in C.
+Subsequently, we divide the counts into tiled regions of a set size (1000 frequency in this work), and examine the cumulative 99^th^ percentile of the sliding window counts within the tiled region.
+In `r figure_count$label_text("slidingwindow_count")`A, we plotted the non-zero point intensities from all scans for one tiled region 1000 frequency wide.
+The number of non-zero points in the sliding windows across this region are shown in `r figure_count$label_text("slidingwindow_count")`B, and zoomed closer in `r figure_count$just_count("slidingwindow_count")`C.
 These provide a measure of the non-zero point density across this region.
-The blue line indicates the cumulative 99th percentile for this one region, and is high, given that it looks like there are some consistent peaks across the scans in this region.
-However, examining the cumulative 99th percentiles across all the regions of the spectrum, as shown in the histogram of `r figure_count$label_text("slidingwindow_count")`F, a rather large fraction of the regions have very low cumulative 99th percentile values, with a median value of 5, which results in a cutoff value of 8 (ceiling of 5 x 1.5).
-Keeping only those sliding regions with a non-zero point count greater than 8 (above the red line in `r figure_count$label_text("slidingwindow_count")`B and C) results in those sliding regions shown in D, and then the point intensities in E.
-A non-zero point density based method to removing potential noise is desirable because the peak intensities across scans are not identical, as shown by the need for normalization (see **Normalization of Scans**), and the distribution of RSD values before and after normalization (see **Changes in Relative Standard Deviation**).
+The blue line indicates the cumulative 99^th^ percentile for this one region, and is high, given that it looks like there are some consistent peaks across the scans in this region.
+However, examining the cumulative 99^th^ percentiles across all the regions of the spectrum, as shown in the histogram of `r figure_count$label_text("slidingwindow_count")`F, a rather large fraction of the regions have very low cumulative 99^th^ percentile values, with a median value of 5, which results in a cutoff value of 8 (ceiling of 5 x 1.5).
+Keeping only those sliding regions with a non-zero point count greater than 8 (above the red line in `r figure_count$label_text("slidingwindow_count")`B and `r figure_count$just_count("slidingwindow_count")`C) results in those sliding regions shown in `r figure_count$just_count("slidingwindow_count")`D, and then the point intensities in `r figure_count$just_count("slidingwindow_count")`E.
+A non-zero point density based method for removing potential noise is desirable because the peak intensities across scans are not identical, as shown by the need for normalization (see **Normalization of Scans**), and the distribution of RSD values before and after normalization (see **Changes in Relative Standard Deviation**).
 :::
 
 
@@ -254,18 +254,18 @@ A non-zero point density based method to removing potential noise is desirable b
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
 **`r figure_count$label_text("slidingwindow_count")`.**
-**A - E**: A single tiled region 1000 frequency wide.
+**A – E**: A single tiled region 1000 frequency wide.
 **A**: Non-zero point intensities in frequency space across all scans.
-**B**: Number of non-zero points in sliding regions. Blue line indicates 99th percentile of non-zero counts in this one region.
-Red line is the rounded value of median x 1.5 of 99th percentiles from **F**.
+**B**: Number of non-zero points in sliding regions. The blue line indicates 99^th^ percentile of non-zero counts in this one region.
+The red line is the rounded value of median x 1.5 of 99^th^ percentiles from **F**.
 **C**: Zoomed y-axis of **B** to show the non-zero counts that are below the median cutoff.
 **D**: Sliding region non-zero counts that are greater than the cutoff.
 **E**: Non-zero point intensities across scans in the regions from D.
-**F**: Histogram of the 99th percentile cutoffs from all of the tiled windows. Red line is the median x 1.5.
+**F**: Histogram of the 99^th^ percentile cutoffs from all of the tiled windows. The red line is the median x 1.5.
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-Although it appears that only a handful of potential signal regions are removed between `r figure_count$label_text("slidingwindow_count")`A and E with a cutoff of 8 non-zero points in a sliding region, the number of initial signal regions rapidly explodes as the cumulative percentile cutoff is lowered, going from thousands to tens of thousands of potential peak regions to find and fit peaks within, as shown in `r figure_count$label_text("percentile_variation")`A and B for both the amino-acid ECF and lipid samples, respectively.
+Although it appears that only a handful of potential signal regions are removed between `r figure_count$label_text("slidingwindow_count")`A and `r figure_count$just_count("slidingwindow_count")`E with a cutoff of 8 non-zero points in a sliding region, the number of initial signal regions rapidly explodes as the cumulative percentile cutoff is lowered, going from thousands to tens of thousands of potential peak regions to find and fit peaks within, as shown in `r figure_count$label_text("percentile_variation")`A and `r figure_count$just_count("percentile_variation")`B for both the amino-acid ECF and lipid samples, respectively.
 :::
 
 ::: {custom-style="MDPI_5.2_figure"}
@@ -356,7 +356,7 @@ figure_count$increment("normalization_factors")
 ```
 
 ::: {custom-style="MDPI_3.1_text"}
-Due to differences in how many ions are captured in the trap and the limited dynamic range of the detector, the observed peak intensities for the same analyte vary between scans (see `r figure_count$label_text("breaking_regions")`A and B for example).
+Due to differences in how many ions are captured in the trap and the limited dynamic range of the detector, the observed peak intensities for the same analyte vary between scans (see `r figure_count$label_text("breaking_regions")`A and `r figure_count$just_count("breaking_regions")`B for example).
 Using the median peak differences between scans, it is possible to normalize the peak intensities across scans.
 However, there are two issues with these peak intensities across scans: (a) some peak intensities correlate with the scan number (i.e., scan acquisition order); and (b) some peak differences between scans are correlated with intensity.
 The solution to **a** is to do a two-pass normalization.
@@ -365,7 +365,7 @@ In the second pass, the correlated peaks are removed, and normalization is carri
 `r figure_count$label_text("intensity_scan")`A shows an example peak whose intensity across scans is correlated with scan number.
 The solution to **b** (peak differences correlated with intensity) is to only use the most intense peaks, as shown in `r figure_count$label_text("intensity_scan")`B.
 The highlighted peaks in `r figure_count$label_text("intensity_scan")`B are those with an intensity greater than 0.7 of the maximum intensity observed in that scan, and at least visually, their differences are **not** correlated with intensity.
-If *all* peaks are used for normalization, a very different set of normalization factors will be generated than by using only the *most intense* peaks, as shown in `r figure_count$label_text("normalization_factors")`A and B.
+If *all* peaks are used for normalization, a very different set of normalization factors will be generated than by using only the *most intense* peaks, as shown in `r figure_count$label_text("normalization_factors")`A and `r figure_count$just_count("normalization_factors")`B.
 Though the two-pass normalization (doublenorm) and single-pass normalization using the most intense peaks (singlenorm_int) generate very similar normalization factors (`r figure_count$label_text("normalization_factors")`B), which is expected as they both use the most intense peaks. 
 But removing the scan-correlated peaks does change the majority of the normalization factors.
 :::
@@ -413,7 +413,7 @@ Their presence should be minimized by removing noise peaks, and removing peak re
 However, we expect they may also present as characterized peaks that have larger than expected frequency level standard deviations (FSD) when calculated across scans.
 These peaks can be detected by simply examining the distribution of FSDs and marking outlier peaks.
 To verify the mitigation of HPD regions, we converted centroided m/z's from Xcalibur to frequency values using the previously calculated regression model for that sample, measured peak density to detect HPD regions, and compared them with the scan-centric peaks and FSD outliers.
-Xcalibur peak density was measured using a sliding window ten points wide and a stride of one point.
+The Xcalibur peak density was measured using a sliding window ten points wide and a stride of one point.
 
 `r figure_count$label_text("hpd_compare_fsd")` shows a single HPD site detected in the 2ecf sample, with the peaks from Xcalibur, as well as various scan-centric processing and the peaks from centroiding using MSnbase.
 From this figure, we can see that the point-density-based noise filtering removes a large number of the peaks in the HPD site, while the FSD outliers removes further peaks that may be suspect.
@@ -466,7 +466,7 @@ Therefore, one way to quantify any potential *improvements* in the characterized
 Up to two modes are reported for each distribution, where a mode location is only reported if it is ≥ 0.2X the most intense mode.
 For samples 1ecf and 2ecf, there is a general shift in the RSD to the left, going from the bottom processing methods (msnbase_only) to the top processing method (filtersd), representing a visually clear improvement.
 For samples 49lipid and 97lipid, the improvements are visually more subtle, having a slight shift to the left as well as a narrowing and smoothing of the RSD distribution.
-The narrowing of the distribution is detected in the change of the standard deviations (SD) of the RSDs.
+The narrowing of the distribution is detected in the change of the standard deviations (SD) of the RSDs, however.
 Part of this visual subtlety is likely due to the bi-modality of these two distributions.
 This is not surprising, since these two samples are non-polar extractions from tissue and are biochemically more complex.
 `r table_count$label_text("rsd_method")` provides more quantitative metrics.
@@ -1129,8 +1129,8 @@ The sliding and tiled windows are also converted to IRanges objects using this p
 
 ::: {custom-style="MDPI_3.1_text"}
 To find intervals that contain points that represent actual signal and not just random noise, the number of non-zero intensity points in each sliding window are counted.
-Subsequently, we break these counts into fixed width tiles (default width of 1000 in frequency space) and calculate the 99th percentile of non-zero points for each tile.
-The rounded up median value x 1.5 of these 99th percentile values from the fixed width tiles is used as the cutoff value to determine which of the initial sliding regions should be kept as regions containing potential signal.
+Subsequently, we break these counts into fixed width tiles (default width of 1000 in frequency space) and calculate the cumulative 99^th^ percentile of non-zero points for each tile.
+The rounded up median value x 1.5 of these 99^th^ percentile values from the fixed width tiles is used as the cutoff value to determine which of the initial sliding regions should be kept as regions containing potential signal.
 Any sliding window with a non-zero count less than or equal to the cutoff value is removed, and the remaining sliding windows are kept and overlapping sliding windows are merged to create the initial peak regions.
 The presence of zero intensity points in these Thermo-Fisher Orbitrap spectra are primarily due to flooring implemented by the spectrometer when local spectral quality falls below a certain threshold.
 When this flooring is unstable and incomplete, a partial ringing phenomenon is observed [@mitchellNewMethodsIdentify2018].
@@ -1154,7 +1154,7 @@ These possible peaks are then characterized using a weighted parabolic fit of lo
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-From this weighted parabolic fit, the center, intensity, integrated area and sum-of-square residuals can be extracted for the peak.
+From this weighted parabolic fit, the center, intensity, integrated area, and sum-of-square residuals can be extracted for the peak.
 The center and intensity from this model are equivalent to the centroided peak center and intensity.
 
 Before further processing, each region is verified to have only one peak from each scan.
@@ -1226,7 +1226,7 @@ The number of scans a peak was present in was also noted, as well as the percent
 Only peaks present in at least three scans were kept for analysis of the RSD.
 
 Modes of the RSD are calculated starting from a density approximation of the distribution using default settings in the density function of the R stats package.
-Peaks from the density approximation are determined with the findpeaks function in the pracma package.
+Peaks from the density approximation are determined with the find_peaks function in the pracma package.
 Up to two modes are reported from low to high RSD along the distribution: i) the most intense peak; ii) the next most intense peak if it is ≥ 0.2X the most intense peak.
 :::
 
@@ -1328,7 +1328,7 @@ We started with the 181 matched non-cancer and cancer samples previously used fo
 All samples were characterized using the full scan-centric workflow, assigned using SMIRFE (see **Scan-Centric Peak Assignments**), and then peaks matched by shared EMFs across samples (see **Consistently Assigned Lipid Spectral Feature (Corresponded Peak) Generation and Peak Intensity Normalization**).
 After extraction of the scan-centric IMF peak locations across all samples, Xcalibur and MSnbase peaks were matched within each sample, and locations and intensities extracted.
 
-Of the starting 181 samples, nine did not finish during scan-centric characterization for various reasons.
+Of the starting 181 samples, 12 did not finish during scan-centric peak characterization for various reasons, leaving 169.
 In addition, some of the samples were acquired multiple times, creating duplicate samples.
 Not knowing which sample run was most appropriate to use, we removed all of the duplicated samples.
 Using information-content-informed Kendall-tau correlation (ICI-Kt) [@flightInformationContentInformedKendalltauCorrelation2022], we compared the median correlations of each sample to all others in the same disease class for outliers, and removed `r n_out_vector["cancer"]` cancer and `r n_out_vector["non-cancer"]` non-cancer samples.
