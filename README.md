@@ -4,7 +4,21 @@ Scan-Centric, Frequency-Based Method for Characterizing Peaks from Direct Inject
 
 Robert M Flight, Joshua M Mitchell, Hunter N.B. Moseley
 
-doi: https://doi.org/10.1101/2022.04.14.488423
+doi: https://doi.org/10.1101/2022.04.14.488423 (V1 on bioRxiv)
+
+## Copies of Manuscript
+
+Copies of manuscript & supplemental materials:
+
+  * [html manuscript](https://moseleybioinformaticslab.github.io/manuscript.peakCharacterization/scancentricpeakcharacterization.html)
+  * [html supplemental](https://moseleybioinformaticslab.github.io/manuscript.peakCharacterization/scancentricpeakcharacterization_supplemental.html)
+  * [pdf manuscript](https://moseleybioinformaticslab.github.io/manuscript.peakCharacterization/scancentricpeakcharacterization.pdf)
+  * [pdf supplemental](https://moseleybioinformaticslab.github.io/manuscript.peakCharacterization/scancentricpeakcharacterization_supplemental.pdf)
+
+
+## ScanCentricPeakCharacterization Package
+
+If you are looking for the scan-centric peak characterization R package, it is available here: https://github.com/MoseleyBioinformaticsLab/ScanCentricPeakCharacterization
 
 
 ## Get A Copy of the Repository
@@ -71,7 +85,7 @@ All of the various analysis pieces seem to be mostly intact, which means that it
     * lung_data: outputs related to the lung data
 * lungcancer_all: scripts related to running all the NSCLC files on remote machines.
   * assignments: all of the assignment files from the NSCLC samples in JSON form.
-* ftms_artifacts/peaklists: the peak lists from XCalibur for all of the NSCLC samples in JSON form. 
+* ftms_artifacts/peaklists: the peak lists from Xcalibur for all of the NSCLC samples in JSON form. 
 
 ## Notes on Re-Running Pieces
 
