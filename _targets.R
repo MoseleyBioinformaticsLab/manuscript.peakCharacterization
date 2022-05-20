@@ -105,6 +105,7 @@ figures_tar = tar_plan(
   tar_target(frequency_conversion, plot_frequency_conversion(data_97lipid)),
   tar_target(peak_ordering, plot_peak_ordering(method_filtersd_97lipid)),
   tar_target(sliding_regions, plot_sliding_window_density(data_97lipid)),
+  tar_target(example_sliding_region, plot_example_sliding_counts(data_97lipid)),
   tar_target(peak_fit_plot, plot_peak_fitting(method_filtersd_97lipid)),
   tar_target(rsd_plot, plot_rsd_differences(rsd_combine)),
   tar_target(rsd_plot_alt, plot_rsd_differences(rsd_combine %>%
@@ -452,7 +453,7 @@ lungcancer_tar = list(
 
 qcqa_tar = list(
   tar_target(coefficients_file,
-             "data/data_output/lung_data/lung_scandiffs_2022-04-02.rds",
+             "data/data_output/lung_data/lung_scandiffs_2022-05-11.rds",
              format = "file"),
   tar_target(coefficients_data,
              readRDS(coefficients_file)),
