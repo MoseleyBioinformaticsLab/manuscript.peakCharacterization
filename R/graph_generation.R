@@ -99,7 +99,7 @@ plot_frequency_conversion = function(char_obj){
   all_frequency_difference_hist = ggplot(raw_points, aes(x = log10(abs(mean_freq_diff)))) +
     geom_histogram(bins = 100) +
     geom_vline(xintercept = log10(0.5), color = "red") +
-    scale_y_continuous(expand = expansion(mult = c(0, .01))) +
+    scale_y_log10(expand = expansion(mult = c(0, .01))) +
     labs(x = "Log10(Frequency Differences)",
          y = "Number of Points")
 
