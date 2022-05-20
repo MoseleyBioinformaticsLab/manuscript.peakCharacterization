@@ -139,8 +139,17 @@ figures_tar = tar_plan(
              "doc/peakcharacterization_manuscript.Rmd"),
   tar_render(supplemental_materials,
              "doc/peakcharacterization_supplemental.Rmd"),
+  tar_render(supplemental_html,
+             "doc/peakcharacterization_supplemental.Rmd",
+             output_file = here::here("docs/scancentricpeakcharacterization_supplemental.html"),
+             output_format = "html_document"),
+             # output_format = "pdf_document"),
   tar_target(manuscript_nostyle,
              strip_mdpi_render(base_manuscript)),
+  tar_target(manuscript_html,
+             strip_mdpi_render(base_manuscript,
+                               out_file = here::here("docs/scancentricpeakcharacterization.html"),
+                               output_format = "html_document")),
   tar_target(manuscript_mdpi,
              strip_headers_render(base_manuscript))
 )
