@@ -13,7 +13,7 @@ coefficients_analysis <- function(coefficients_data) {
     length(.x$frequency$bad)
   })
 
-  example_freq = coefficients_data[[(which(n_freq == 7)[1])]]
+  example_freq = coefficients_data[[(which(n_freq == 5)[1])]]
 
   df_freq = data.frame(coefficient = example_freq$frequency$coefficients,
                        sample = gsub(".zip$", "", basename(example_freq$zip)))
