@@ -74,14 +74,14 @@ equation_count$increment("napintensity")
 
 
 ::: {custom-style="MDPI_1.7_abstract"}
-**Abstract:** We present a novel, scan-centric method for characterizing peaks from direct injection multi-scan Fourier transform mass spectra of complex samples that utilizes frequency values derived directly from the spacing of raw m/z points in spectral scans.
+**Abstract:** We present a novel, scan-centric method for characterizing peaks from direct injection multi-scan Fourier transform mass spectra of complex samples that utilizes frequency values derived directly from the spacing of raw *m/z* points in spectral scans.
 Our peak characterization method utilizes intensity independent noise removal and normalization of scan-level data to provide a much better fit of relative intensity to natural abundance probabilities for low abundance isotopologues that are not present in all of the acquired scans.
 Moreover, our method calculates both peak- and scan-specific statistics incorporated within a series of quality control steps that are designed to robustly derive peak centers, intensities and intensity ratios with their scan-level variances.
 These cross-scan characterized peaks are suitable for use in our previously published peak assignment methodology, Small Molecule Isotope Resolved Formula Enumeration (SMIRFE).
 :::
 
 ::: {custom-style="MDPI_1.8_keywords"}
-**Keywords**: Fourier-transform mass spectrometry, orbitrap, scan-centric peak characterization, Fellgett's advantage, interferograms, frequency spectrum
+**Keywords**: Fourier-transform mass spectrometry; orbitrap; scan-centric peak characterization; Fellgett's advantage; interferograms; frequency spectrum
 :::
 
 ::: {custom-style="MDPI_2.1_heading1"}
@@ -91,7 +91,7 @@ These cross-scan characterized peaks are suitable for use in our previously publ
 
 ::: {custom-style="MDPI_3.1_text"}
 Fourier-transform mass spectrometry (FT-MS) provides high performance in terms of sensitivity, resolution, and mass accuracy all in one analytical instrumentation.
-The combination of these capabilities provide several analytical and interpretive improvements: (i) the ability to resolve distinct isotopologues with identical unit masses but different accurate masses [@higashiStableIsotopeLabeledTracers2014]; (ii)  enabling multi-element isotopic natural abundance correction for at least the lower portion of the detected mass range  [@moseleyCorrectingEffectsNatural2010; @carreerComputationalFrameworkHighThroughput2013; @wangAccuCor2IsotopeNatural2021]; (iii) improved assignment accuracy [@kindMetabolomicDatabaseAnnotations2006; @mitchellSmallMoleculeIsotope2019]; and (iv) the detection of metabolites in the sub-femtomolar range, when combined with chromatographic separation  [@eylesMethodsStudyProtein2004; @dettmerMassSpectrometrybasedMetabolomics2007]. 
+The combination of these capabilities provides several analytical and interpretive improvements: (i) the ability to resolve distinct isotopologues with identical unit masses but different accurate masses [@higashiStableIsotopeLabeledTracers2014]; (ii)  enabling multi-element isotopic natural abundance correction for at least the lower portion of the detected mass range  [@moseleyCorrectingEffectsNatural2010; @carreerComputationalFrameworkHighThroughput2013; @wangAccuCor2IsotopeNatural2021]; (iii) improved assignment accuracy [@kindMetabolomicDatabaseAnnotations2006; @mitchellSmallMoleculeIsotope2019]; and (iv) the detection of metabolites in the sub-femtomolar range, when combined with chromatographic separation  [@eylesMethodsStudyProtein2004; @dettmerMassSpectrometrybasedMetabolomics2007]. 
 In the metabolomics field, these improvements permit more complicated, but more informative experimental designs such as the use of single and multiple isotope-labeled precursors in stable isotope-resolved metabolomics (SIRM) experiments [@yangChloroformateDerivatizationTracing2017].
 These stable isotope tracing experiments provide a wealth of isotope flux data that is interpretable in terms of metabolite flux information that is specific to a metabolic model, pathway, and subcellular location [@higashiStableIsotopeLabeledTracers2014; @creekStableIsotopeAssistedMetabolomics2012; @hillerNontargetedElucidationMetabolic2010; @fanStableIsotoperesolvedMetabolomics2012; @moseleyNovelDeconvolutionMethod2011; @sellersPyruvateCarboxylaseCritical2015; @verdegemMAIMSSoftwareTool2017; @jinMoietyModelingFramework2019; @jinRobustMoietyModel2020].
 
@@ -103,14 +103,14 @@ We applied all of these methods together in detecting and assigning differential
 
 The input peak data in these studies are derived from multi-scan direct-injection FT-MS data.
 SMIRFE uses expected relationships of relative peak height or intensity to natural abundance probability (NAP) across multiple peak pairs to determine the likelihood of an assignment for the peaks in question.
-In the Thermo-Fisher Orbitrap FT-MS instruments, data is acquired in microscans and scans, where each scan is an aggregate of multiple microscans.
+In the Thermo-Fisher Orbitrap FT-MS instruments, data are acquired in microscans and scans, where each scan is an aggregate of multiple microscans.
 While these microscan and subsequent scans are expected to be analytical replicates, spray instability and temporal delay in automatic gain control pragmatically break this expectation.
-Therefore, it is advantageous to keep the data at the scan level, so that any given poor quality (i.e., "bad") scan can be removed prior to aggregating the data across scans and generating a centroided peak m/z and intensity.
-If the scan level data is not processed and aggregated correctly, the final peak intensities in arbitrary units and centers in m/z will have high uncertainty (total variance) [@moseleyErrorAnalysisPropagation2013].
+Therefore, it is advantageous to keep the data at the scan level, so that any given poor quality (i.e., "bad") scan can be removed prior to aggregating the data across scans and generating a centroided peak *m/z* and intensity.
+If the scan level data are not processed and aggregated correctly, the final peak intensities in arbitrary units and centers in *m/z* will have high uncertainty (total variance) [@moseleyErrorAnalysisPropagation2013].
 
 In particular, if peaks are missing in some scans due to low abundance, the final aggregate peak intensities will not fit the expected relative intensity to NAP relationships.
 Here we describe novel scan-centric FT-MS metabolomics data processing methods that better preserve the expected relative intensity to NAP.
-In addition, due to the tendency of increasing point spacing with increasing m/z in Orbitrap type instruments, we derive a method for transforming the m/z data to axial frequency, which has the desirable property of being equally spaced across the full spectrum.
+In addition, due to the tendency of increasing point spacing with increasing *m/z* in Orbitrap type instruments, we derive a method for transforming the *m/z* data to axial frequency, which has the desirable property of being equally spaced across the full spectrum.
 Finally, we show that in addition to better preserving the expected intensity to NAP relationships, our scan-centric method also results in improved relative standard deviations, automatic identification of high-peak-density artifact peaks, and better separation of samples in a lipidomics data analysis.
 :::
 
@@ -143,13 +143,13 @@ motivation_plot
 ::: {custom-style="MDPI_5.1_figure_caption"}
 **`r figure_count$label_text("motivation")`.**
 **A**: Xcalibur intensities (black) and theoretical intensities based on relative NAP (red) for ECF derived threonine.
-The 18O isotopologue is shifted by 0.01 m/z and the NAP peaks by 0.05 m/z to aid visualization.
+The 18O isotopologue is shifted by 0.01 *m/z* and the NAP peaks by 0.05 *m/z* to aid visualization.
 **B**: Theoretical NAP-based-Log10-intensities and Log10 Xcalibur intensities.
 The red line indicates perfect agreement.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
-### 2.2. m/z to Frequency
+### 2.2. *m/z* to Frequency
 :::
 
 ```{r increment_mz_frequency}
@@ -158,20 +158,15 @@ figure_count$increment("mz_frequency_conversion")
 
 ::: {custom-style="MDPI_3.1_text"}
 FT-MS data from the Thermo-Fisher Orbitrap instruments used to acquire the data does not provide any information about the raw spectral frequency data.
-Outside of the meta-data, it merely contains the m/z and intensity values for profile spectra acquired across multiple scans.
-However, the spectral frequency can be calculated by dividing the midpoint m/z of two adjacent points by their difference (`r figure_count$label_text("mz_frequency_conversion")`A, red points representing the midpoint m/z of two adjacent points, length of red lines representing the difference between the two adjacent points).
-The subsequent adjacent point differences in frequency are expected to be relatively constant with respect to m/z, as shown in `r figure_count$label_text("mz_frequency_conversion")`C, `r figure_count$just_count("mz_frequency_conversion")`D and `r figure_count$just_count("mz_frequency_conversion")`E, in contrast to the adjacent point differences in m/z, which are not constant with respect to m/z.
-The Thermo-Fisher Fusion instrument from which most of our collaborators' data has been acquired, at a resolution of 450K or 500K depending on the sample, has an adjacent frequency point difference mode of 0.5, as shown in  `r figure_count$label_text("mz_frequency_conversion")`D.
+Outside of the meta-data, it merely contains the *m/z* and intensity values for profile spectra acquired across multiple scans.
+However, the spectral frequency can be calculated by dividing the midpoint *m/z* of two adjacent points by their difference (`r figure_count$label_text("mz_frequency_conversion")`A, red points representing the midpoint *m/z* of two adjacent points, length of red lines representing the difference between the two adjacent points).
+The subsequent adjacent point differences in frequency are expected to be relatively constant with respect to *m/z*, as shown in `r figure_count$label_text("mz_frequency_conversion")`C, `r figure_count$just_count("mz_frequency_conversion")`D and `r figure_count$just_count("mz_frequency_conversion")`E, in contrast to the adjacent point differences in *m/z*, which are not constant with respect to *m/z*.
+The Thermo-Fisher Fusion instrument from which most of our collaborators' data has been acquired, at a resolution of 450 K or 500 K depending on the sample, has an adjacent frequency point difference mode of 0.5, as shown in  `r figure_count$label_text("mz_frequency_conversion")`D.
 It is important to note that although the frequency difference has been consistent regardless of instrument resolution, we do not know a priori what it should be, and the method makes no assumptions about the frequency difference, but rather calculates the mode of the frequency differences from those observed in the data itself.
-Restricting to those points that fall into a narrow range around the mode of frequency differences (0.49 - 0.51 in this work), a regression model of frequency to m/z can be generated (see Methods), with an example shown in `r figure_count$label_text("mz_frequency_conversion")`F.
-This regression model seems to fit the known relationship between frequency and m/z, where the frequency is related to $1/\sqrt{m/z}$.
+Restricting to those points that fall into a narrow range around the mode of frequency differences (0.49 - 0.51 in this work), a regression model of frequency to *m/z* can be generated (see Methods), with an example shown in `r figure_count$label_text("mz_frequency_conversion")`F.
+This regression model seems to fit the known relationship between frequency and *m/z*, where the frequency is related to $1/\sqrt{m/z}$.
 The actual regression model used in this work includes terms for m/z, $\sqrt{m/z}$, and $\sqrt[3]{m/z}$ (see **Conversion of m/z to Frequency** in Methods for further description of the regression model).
 We did investigate a variety of frequency regression models to see which one seemed to be the best, as shown in Supplemental `r supp_figure_count$label_text("frequency_models")` and `r supp_table_count$label_text("frequency_models")`.
-
-The constant point difference of frequency space is useful, because some of the subsequent steps in our workflow use sliding and tiled windows where it is assumed that the sliding windows contain the same number of data points.
-The m/z point-to-point differences are not constant, but can be approximated by a LOESS linear model [@Cleveland1992loess]; however, it is exceedingly difficult to create a LOESS model with an intercept of 0.
-In addition, we would also need to vary the width of sliding windows according to the m/z difference at a particular m/z based on the LOESS model.
-Frequency-based points suffer none of these drawbacks, and the conversion from m/z can be derived from the raw profile level data itself, which is incredibly useful.
 :::
 
 ::: {custom-style="MDPI_5.2_figure"}
@@ -183,23 +178,33 @@ frequency_conversion$all
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
 **`r figure_count$label_text("mz_frequency_conversion")`.** 
-**A**: Intensity vs m/z for a single peak from a single scan.
-Red lines denote the difference between each adjacent pair of points, and red dots the m/z midpoint between the pair of points.
+**A**: Intensity vs *m/z* for a single peak from a single scan.
+Red lines denote the difference between each adjacent pair of points, and red dots the *m/z* midpoint between the pair of points.
 The difference divided by the midpoint is used to derive the spectral frequency values in **B**.
 **B** plots the intensity vs the converted frequency points derived from **A**.
 The red lines denote the difference between adjacent points, which are shown in the y-axis of **C** for this single peak.
 **D** shows a histogram of adjacent point differences for all points. Note that the y-axis is Log10 scaled.
-The differences for all points in a single scan vs m/z are shown in **E**, with those differences that lie within 0.49 - 0.51 shown in red.
-**F** shows the plot of derived spectral frequency vs m/z, with fitted values from the linear regression model in red.
+The differences for all points in a single scan vs *m/z* are shown in **E**, with those differences that lie within 0.49 - 0.51 shown in red.
+**F** shows the plot of derived spectral frequency vs *m/z*, with fitted values from the linear regression model in red.
 :::
+
+
+::: {custom-style="MDPI_3.1_text"}
+The constant point difference in frequency space is useful, because some of the subsequent steps in our workflow use sliding and tiled windows where it is assumed that the sliding windows contain the same number of data points.
+The *m/z* point-to-point differences are not constant, but can be approximated by a LOESS linear model [@Cleveland1992loess]; however, it is exceedingly difficult to create a LOESS model with an intercept of 0.
+In addition, we would also need to vary the width of sliding windows according to the *m/z* difference at a particular *m/z* based on the LOESS model.
+Frequency-based points suffer from none of these drawbacks, and the conversion from *m/z* can be derived from the raw profile level data itself, which is incredibly useful.
+:::
+
+
 
 ```{r increment_peak_ordering}
 figure_count$increment("peak_ordering")
 ```
 
 ::: {custom-style="MDPI_3.1_text"}
-The m/z to frequency regression models are calculated for each scan, and the square root term from all scan level models are checked for outliers based on the interquartile ranges across all scans in a sample.
-While scan specific models **could** be used in the conversion of m/z to frequency, doing so results in changes to the relative peak ordering compared to m/z space, as shown in `r figure_count$label_text("peak_ordering")`.
+The *m/z* to frequency regression models are calculated for each scan, and the square root term from all scan level models are checked for outliers based on the interquartile ranges across all scans in a sample.
+While scan specific models **could** be used in the conversion of *m/z* to frequency, doing so results in changes to the relative peak ordering compared to *m/z* space, as shown in `r figure_count$label_text("peak_ordering")`.
 Therefore, a single model for all scans based on the scan with the slope closest to the median of slopes across scans is used for converting *all* remaining scan level data.
 :::
 
@@ -211,13 +216,13 @@ peak_ordering
 :::
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
-**`r figure_count$label_text("peak_ordering")`.** Peak ordering in m/z compared with ordering in frequency space when a single m/z to frequency model is used or scan specific m/z to frequency models are used.
-For a single peak, the scan level peak m/z's were extracted, and then frequency values for those m/z generated using a single common model of m/z to frequency (*Single Model*), or models derived from each scan (*Individual Models*).
+**`r figure_count$label_text("peak_ordering")`.** Peak ordering in *m/z* compared with ordering in frequency space when a single *m/z* to frequency model is used or scan specific *m/z* to frequency models are used.
+For a single peak, the scan level peak *m/z*'s were extracted, and then frequency values for those *m/z* generated using a single common model of *m/z* to frequency (*Single Model*), or models derived from each scan (*Individual Models*).
 A subset of the peaks ends up out of order using scan specific models, implying that a single model should be used across all the scan level data.
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-Although the original model is created from only those points that had frequency point-to-point differences within a narrow range, **all** m/z points are converted to frequency for subsequent steps in the workflow.
+Although the original model is created from only those points that had frequency point-to-point differences within a narrow range, **all** *m/z* points are converted to frequency for subsequent steps in the workflow.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
@@ -234,7 +239,7 @@ tar_load(noise_plot)
 ```
 
 ::: {custom-style="MDPI_3.1_text"}
-In a dataset of this nature, we expect that much of the data is really just noise, and does not contribute meaningfully to the analysis.
+In a dataset of this nature, we expect that much of the data are really just noise, and do not contribute meaningfully to the analysis.
 Furthermore, it is expected that noise is randomly distributed across the scans.
 Therefore, if we slide a window across the data and sum the number of non-zero points in each window, we expect that most of the data we encounter is actually noise.
 Subsequently, we divide the counts into tiled regions of a set size (1000 frequency in this work), and examine the cumulative 99^th^ percentile of the sliding window counts within the tiled region.
@@ -295,10 +300,10 @@ figure_count$increment("centroided_peaks")
 ```
 
 ::: {custom-style="MDPI_3.1_text"}
-Although many other types of mass spectrometry data suffer from a variable and noisy baseline, the scan-level profile data from the Thermo-Fisher Fusion has a baseline of 0 due to manipulations in the Thermo-Fisher firmware, making the determination of the centroided values considerably easier. 
+Although many other types of mass spectrometry data suffer from a variable and noisy baseline, the scan-level profile data from the Thermo-Fisher Fusion have a baseline of 0 due to manipulations in the Thermo-Fisher firmware, making the determination of the centroided values considerably easier. 
 For each region initially created, the peaks in each scan within that region can be characterized (i.e., centroiding).
-For centroiding, we use a simple weighted quadratic model of log(intensity) to m/z. 
-We add a small constant to enable using the zero values, and weight the values by their ratio to the most intense value, which is normally the value closest to the center of peak, helping to ensure that the **true** centroid is determined. 
+For centroiding, we use a simple weighted quadratic model of log(intensity) to *m/z*. 
+We add a small constant to enable using the zero values, and weight the values by their ratio to the most intense value, which is normally the value closest to the center of the peak, helping to ensure that the **true** centroid is determined. 
 From the fitted model, we can derive the centroided center and the intensity of the peak, as shown in `r figure_count$label_text("centroided_peaks")`.
 :::
 
@@ -312,7 +317,7 @@ peak_fit_plot
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
 **`r figure_count$label_text("centroided_peaks")`.**
-Log-intensity (A) and Intensity (B) of points for a single peak against frequency. Black points are the original data points, and the blue point represents the calculated centroid.
+Log-intensity (A) and intensity (B) of points for a single peak against frequency. Black points are the original data points, and the blue point represents the calculated centroid.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
@@ -344,9 +349,9 @@ split_region_plot
 **A**: The full set of raw frequency and intensity data across all scans for the region are shown.
 Each horizontal trace are the point intensities in a single scan.
 Clearly the region has two separate peaks within it.
-**B**: The peak centroids (frequency and intensity) for each peak in black.
+**B**: The peak centroids (frequency and intensity) for each peak are in black.
 The tiled regions (red) are used to quantify the number of peaks.
-**C**: The number of peaks within each tiled region shown as a histogram.
+**C**: The number of peaks within each tiled region are shown as a histogram.
 Each group of non-zero adjacent regions will be merged to form a new peak region.
 :::
 
@@ -370,13 +375,13 @@ In the second pass, the correlated peaks are removed, and normalization is carri
 The solution to **b** (peak differences correlated with intensity) is to only use the most intense peaks, as shown in `r figure_count$label_text("intensity_scan")`B.
 The highlighted peaks in `r figure_count$label_text("intensity_scan")`B are those with an intensity greater than 0.7 of the maximum intensity observed in that scan, and at least visually, their differences are **not** correlated with intensity.
 If *all* peaks are used for normalization, a very different set of normalization factors will be generated than by using only the *most intense* peaks, as shown in `r figure_count$label_text("normalization_factors")`A and `r figure_count$just_count("normalization_factors")`B.
-Though the two-pass normalization (doublenorm) and single-pass normalization using the most intense peaks (singlenorm_int) generate very similar normalization factors (`r figure_count$label_text("normalization_factors")`B), which is expected as they both use the most intense peaks. 
-But removing the scan-correlated peaks does change the majority of the normalization factors.
+Though the two-pass normalization (doublenorm) and single-pass normalization using the most intense peaks (singlenorm_int) generate very similar normalization factors (`r figure_count$label_text("normalization_factors")`B), this is expected as they both use the most intense peaks. 
+However, removing the scan-correlated peaks does change the majority of the normalization factors.
 :::
 
 ::: {custom-style="MDPI_5.2_figure"}
 ```{r intensity_scan, dn_id = figure_count}
-# showing peak intensity correlation with m/z, intensity varying with m/z
+# showing peak intensity correlation with *m/z*, intensity varying with *m/z*
 tar_load(intensity_scan_cor_plot)
 intensity_scan_cor_plot
 ```
@@ -398,8 +403,8 @@ compare_normalization[[1]]
 :::
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
-**`r figure_count$label_text("normalization_factors")`.** **A**: Histogram of scan normalization factors using either a single-pass normalization using *all* peaks (singlenorm), single-pass normalization using peaks with an intensity ≥ 0.7 of the maximum intensity (singlenorm_int), or the two-pass normalization removing peaks whose height is correlated with scan and using the most intense peaks (doublenorm).
-**B**: The difference of the normalization factors obtained from either doublenorm or singlenorm_int compared to singlenorm.
+**`r figure_count$label_text("normalization_factors")`.** **A**: Histogram of scan normalization factors using either a single-pass normalization using *all* peaks (*singlenorm*), single-pass normalization using peaks with an intensity ≥ 0.7 of the maximum intensity (*singlenorm_int*), or the two-pass normalization removing peaks whose height is correlated with scan and using the most intense peaks (*doublenorm*).
+**B**: The difference of the normalization factors obtained from either *doublenorm* or *singlenorm_int* compared to *singlenorm*.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
@@ -416,7 +421,7 @@ Ideally, the peak characterization procedure should reduce and mitigate their pr
 Their presence should be minimized by removing noise peaks, and removing peak regions that have multiple reported peaks from the same scan.
 However, we expect they may also present as characterized peaks that have larger than expected frequency level standard deviations (FSD) when calculated across scans.
 These peaks can be detected by simply examining the distribution of FSDs and marking outlier peaks.
-To verify the mitigation of HPD regions, we converted centroided m/z's from Xcalibur to frequency values using the previously calculated regression model for that sample, measured peak density to detect HPD regions, and compared them with the scan-centric peaks and FSD outliers.
+To verify the mitigation of HPD regions, we converted centroided *m/z*'s from Xcalibur to frequency values using the previously calculated regression model for that sample, measured peak density to detect HPD regions, and compared them with the scan-centric peaks and FSD outliers.
 The Xcalibur peak density was measured using a sliding window ten points wide and a stride of one point.
 
 `r figure_count$label_text("hpd_compare_fsd")` shows a single HPD site detected in the 2ecf sample, with the peaks from Xcalibur, as well as various scan-centric processing and the peaks from centroiding using MSnbase.
@@ -487,8 +492,8 @@ wrap_plots(rsd_plot, ncol = 2)
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
 **`r figure_count$label_text("rsd_method")`.**
-Density plots of relative standard deviations (RSD) of peak heights across scans for each of the processing methods.
-A peak had to be present in at least three scans for the RSD value to be reported.
+Density plots for relative standard deviations (RSD) of peak heights across scans for each of the processing methods.
+A peak was required to be present in at least three scans for the RSD value to be reported.
 :::
 
 ::: {custom-style="MDPI_4.1_table_caption"}
@@ -511,13 +516,9 @@ figure_count$increment("rsd_intensity")
 
 ::: {custom-style="MDPI_3.1_text"}
 The 97lipid filtersd RSD distribution (as well as others) is bi-modal.
-`r figure_count$label_text("rsd_intensity")` plots each peaks RSD as a function of the mean intensity across scans, for every peak present in at least three scans (top), or the peaks present in at least 80% of the scans (bottom).
+`r figure_count$label_text("rsd_intensity")` plots each peak RSD as a function of the mean intensity across scans, for every peak present in at least three scans (top), or the peaks present in at least 80% of the scans (bottom).
 At least part of the bi-modality in the RSD distribution appears to be related to this dependence of RSD on intensity, as well as truncation as peaks appear in fewer scans.
 This is supported by part of the distribution disappearing when we require that peaks be in at least 80% of the available scans (difference between `r figure_count$label_text("rsd_intensity")` top and bottom).
-
-We can remove a majority of the bi-modality by only examining those peaks with a Log10(mean) intensity ≥ 5.
-`r supp_figure_count$label_text("rsd_method")` and `r supp_table_count$label_text("rsd_method")` show how the RSD distributions change for each sample when only the peaks with Log10(mean) intensity ≥ 5 are used.
-The distributions are all shifted to lower RSD, however, the overall trends in RSD are the same.
 :::
 
 ::: {custom-style="MDPI_5.2_figure"}
@@ -561,6 +562,10 @@ RSD as a function of the log-mean peak intensity for the filtersd method peaks f
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
+We can remove a majority of the bi-modality by only examining those peaks with a Log10(mean) intensity ≥ 5.
+`r supp_figure_count$label_text("rsd_method")` and `r supp_table_count$label_text("rsd_method")` show how the RSD distributions change for each sample when only the peaks with Log10(mean) intensity ≥ 5 are used.
+The distributions are all shifted to lower RSD; however, the overall trends in RSD are the same.
+
 `r figure_count$label_text("rsd_intensity")` also provides information about the sources of variance or error in the FT-MS measurements.
 These trends or RSD with intensity (and SD with intensity, see `r supp_figure_count$label_text("peak_variance")`) imply both a constant, baseline additive error component that is independent of intensity, and a proportional error component where the variance increases with intensity.
 When the intensity is log-transformed, this additive component becomes a dispersive variance component.
@@ -576,11 +581,11 @@ figure_count$increment("nap_intensity")
 ```
 
 ::: {custom-style="MDPI_3.1_text"}
-As an alternative to RSD, we can also compare the fit of relative intensities after assignment using SMIRFE [@mitchellSmallMoleculeIsotope2019] to the theoretical relative natural abundances (relNAP) of the assigned isotopic molecular formula's (IMFs) within the assigned elemental molecular formula's (EMFs).
+As an alternative to RSD, we can also compare the fit of relative intensities after assignment using SMIRFE [@mitchellSmallMoleculeIsotope2019] to the theoretical relative natural abundances (relNAP) of the assigned isotopic molecular formulas (IMFs) within the assigned elemental molecular formulas (EMFs).
 Theoretically, we expect lower quality data to have both lower numbers of assignments, and for those things that are assigned, the fit between relative intensity and relNAP to be worse.
 To compare relative NAP to relative abundances, we only examined the assignments from the two samples containing ECF derivatized amino-acids, as we can limit the assignments to those that match expected derivatizations of the known amino-acids (see Supplemental for the expected EMFs, and expected relative NAPs for the individual IMFs).
 
-`r figure_count$label_text("nap_intensity")` compares the peak-peak isotopic natural abundance probability and height log-ratio differences (Equation `r equation_count$label_text("napintensity")` in Methods) generated using heights from Xcalibur and from our scan-centric peak characterization.
+`r figure_count$label_text("nap_intensity")` compares the peak-to-peak isotopic natural abundance probability and height log-ratio differences (Equation `r equation_count$label_text("napintensity")` in Methods) generated using heights from Xcalibur and from our scan-centric peak characterization.
 From this figure, it is clear that inconsistency in peak presence across scans leads to larger deviations between measured peak heights from aggregate spectra and expected relNAP.
 :::
 
@@ -629,9 +634,9 @@ out_plot
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
 **`r figure_count$label_text("nap_intensity")`.**
-**A**. The peak-peak NAP - intensity log differences from scan-centric peak heights (red) and Xcalibur peak heights (blue) from the ECF derivatized threonine amino acid assignments with Na adduct, with point size reflecting how many peaks were missing across scans.
-**B**. The difference of Xcalibur to scan-centric ratios plotted directly as a function of the number of scans the peak was not found in.
-**C**. The differences of Xcalibur to scan-centric ratios for all of the amino acid assignments in EMFs with more than a single peak in both ECF samples.
+**A**. The peak-to-peak NAP - intensity log differences from scan-centric peak heights (red) and Xcalibur peak heights (blue) from the ECF derivatized threonine amino acid assignments with Na adduct, with point size reflecting how many peaks were missing across scans.
+**B**. The difference in Xcalibur to scan-centric ratios plotted directly as a function of the number of scans the peak was not found in.
+**C**. The differences in Xcalibur to scan-centric ratios for all of the amino acid assignments in EMFs with more than a single peak in both ECF samples.
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
@@ -656,28 +661,28 @@ tar_load(ass_peaks_97lipid)
 ```
 
 ::: {custom-style="MDPI_3.1_text"}
-Each set of peaks generated may or may not be specific to the particular method used to generate centroided peak m/z and intensities.
+Each set of peaks generated may or may not be specific to the particular method used to generate centroided peak *m/z* and intensities.
 This is true for the different scan-centric combinations, as well as the peaks from Xcalibur and MSnbase.
 Here we examine the overlap of the unassigned (`r figure_count$label_text("unassigned_upset")`) and assigned peaks from the full scan-centric processing with Xcalibur and MSnbase.
 These same counts are also summarized in `r table_count$label_text("unassigned_1ecf")` and `r table_count$label_text("unassigned_97lipid")`.
 In these two examples, there are some striking differences.
 The 1ecf sample has all of the scan-centric peaks shared with either Xcalibur or MSnbase peaks, whereas the 97lipid sample has 2/3 of the peaks specific to scan-centric characterization and not matched to either of the other methods.
-Notably, for both samples, the scan-centric characterization produces similar numbers of peaks, even though the upper mass limit in 1ecf is 1000 m/z compared to 1600 m/z for the 97lipid sample.
-Whereas the number of peaks from MSnbase and Xcalibur are three-fold and 40-fold higher in the 1ecf sample compared to the 97lipid sample.
+Notably, for both samples, the scan-centric characterization produces similar numbers of peaks, even though the upper mass limit in 1ecf is 1000 *m/z* compared to 1600 *m/z* for the 97lipid sample, whereas the number of peaks from MSnbase and Xcalibur are three-fold and 40-fold higher in the 1ecf sample compared to the 97lipid sample.
 
-`r figure_count$label_text("assigned_mz_diff")` shows the distribution of differences between the observed and expected m/z of assigned peaks in the 1ecf and 97lipid spectra.
+`r figure_count$label_text("assigned_mz_diff")` shows the distribution of differences between the observed and expected *m/z* of assigned peaks in the 1ecf and 97lipid spectra.
 For the 1ecf-specific histograms, it is clear that these differences have a narrower unimodal distribution from the scan-centric peak characterization, especially in comparison to MSnbase.
-Also, the MSnbase distribution has far fewer peaks that match a scan-level assigned peak.
-Given the large number of MSnbase-characterized peaks present in the spectrum, many peaks may be outside the matching tolerance of 2ppm. 
+In addition, the MSnbase distribution has far fewer peaks that match a scan-level assigned peak.
+Given the large number of MSnbase-characterized peaks present in the spectrum, many peaks may be outside the matching tolerance of 2 ppm. 
 This strongly implies that the peak center error is far higher in the MSnbase-characterized peaks than what the histogram directly shows.
 For the 97lipid-specific histograms, again the difference distribution for the scan-centric peak characterization is narrower, but the improvement is not as pronounced, likely due to the distribution being bi-modal.
-Also, far fewer Xcalibur and MSnbase characterized peaks matched assigned scan-centric peaks.
+Moreover, far fewer Xcalibur and MSnbase characterized peaks matched assigned scan-centric peaks.
 Again, this strongly implies that their peak centers have far higher error.
 When we matched assigned peaks across the NSCLC samples for examination of changes in p-values (see **Changes in P-Values On a Large Dataset**), the standard deviation of the peak locations in frequency space was 0.5 (results not shown).
 :::
 
 ```{r unassigned_upset, dn_id = figure_count, fig.width = 16, fig.height = 8}
 set_order = c("scancentric", "msnbase", "xcalibur")
+
 u1 = grid::grid.grabExpr(draw(UpSet(um_peaks_1ecf$comb_matrix, 
                            set_order = set_order)))
 u2 = grid::grid.grabExpr(draw(UpSet(um_peaks_97lipid$comb_matrix, 
@@ -802,7 +807,7 @@ wrap_plots(ecf_plots, ncol = 1) | wrap_plots(lipid_plots, ncol = 1)
 
 ::: {custom-style="MDPI_5.1_figure_caption"}
 **`r figure_count$label_text("assigned_mz_diff")`.**
-Histograms of the differences between observed and expected m/z values for assigned peaks in the 1ecf (**left**) and 97lipid (**right**) spectra, measured in parts-per-million (ppm) respectively.
+Histograms of the differences between observed and expected *m/z* values for assigned peaks in the 1ecf (**left**) and 97lipid (**right**) spectra, measured in parts-per-million (ppm) respectively.
 Inset plots are scaled to the maximum counts observed for the particular method.
 :::
 
@@ -827,7 +832,7 @@ figure_count$increment("p_value_comparison")
 For large datasets, we expect that more correct peak intensities will result in better agreement between sample normalized peak intensities within a sample class.
 One way to test this is to compare p-values generated from the different intensities.
 `r figure_count$label_text("p_value_comparison")` compares the -1 * Log10(p-values) from `r nrow(compare_split$Corrected)` (corrected and Xcalibur) or `r nrow(compare_split$MSnbase)` (MSnbase) isotope resolved molecular formulas (IMFs) assigned by SMIRFE for the scan-centric peaks and then peaks matched and intensities extracted from the other methods.
-Although all of the p-vaues are somewhat (and statistically) different from those reported by the raw intensities, there are some interesting patterns of differences.
+Although all of the p-values are somewhat (and statistically) different from those reported by the raw intensities, there are some interesting patterns of differences.
 MSnbase generated p-values show the widest distribution of differences, as well as the smallest number of peaks that are present in 50% of both the cancer and non-cancer samples.
 This echoes the patterns of low overlapping assigned peaks observed in both ECF samples, where many of the scan-centric amino-acid peaks only found one match from the MSnbase peaks.
 Surprisingly, the truncated log-normal distribution corrected intensities generated very different p-values compared to the raw intensities, and Xcalibur showed the most agreement with the raw p-values.
@@ -845,10 +850,11 @@ compare_plots = purrr::imap(compare_split, function(in_compare, id){
     geom_abline(slope = 1, color = "red") +
     geom_point(alpha = 0.5) +
     coord_equal() +
-    labs(x = "Log-P-Value Raw",
-         y = paste0("Log-P-Value ", id))
+    labs(x = expression(paste("Log-", italic("P"), "-Value Raw", sep = "")),
+         y = bquote(paste("Log-", italic("P"), "-Value ", .(id), sep = "")))
   out_plot
 })
+
 
 long_ttest = lung_compare_ttest %>%
   dplyr::select(p.adjust, comparison, estimate, conf.low, conf.high) %>%
@@ -859,8 +865,20 @@ long_ttest = lung_compare_ttest %>%
     comparison %in% "msnbase" ~ "MSnbase"
   ))
 
+scientific_10 = function(x) {
+  gsub("e\\+*", " %*% 10^", scales::scientific_format()(x))
+}
+
+scientific_10_label = function(x) {
+  parse(text = gsub("e\\+*", " %*% 10^", scales::scientific_format()(x)))
+}
+
 long_pvalue = long_ttest %>%
-  dplyr::filter(measure %in% "p.adjust")
+  dplyr::filter(measure %in% "p.adjust") %>%
+  dplyr::mutate(text_value = dplyr::case_when(
+    value < 1 ~ scientific_10(value),
+    TRUE ~ "1"
+  ))
 
 long_measure = long_ttest %>%
   dplyr::filter(!(measure %in% "p.adjust"))
@@ -870,8 +888,8 @@ compare_sina = lung_compare %>%
   geom_hline(yintercept = 0, color = "red") +
   geom_sina(alpha = 0.5) +
   geom_point(data = long_measure, aes(x = compare_id, y = value), color = "green") +
-  geom_text(data = long_pvalue, aes(x = compare_id, y = 2, label = format(value, digits = 2))) +
-  labs(x = "", y = "Log-P-Value Difference")
+  geom_text(data = long_pvalue, aes(x = compare_id, y = 2, label = text_value), parse = TRUE) +
+  labs(x = "", y = expression(paste("Log-", italic("P"), "-Value Difference", sep = "")))
 
 lung_plot = (compare_plots$Corrected | compare_plots$MSnbase) / (compare_plots$Xcalibur | compare_sina) +
   plot_annotation(tag_levels = "A")
@@ -886,7 +904,7 @@ lung_plot
 **A - C**: Log-p-values generated by comparing non-cancer and cancer sample IMFs using peak intensities from different methods.
 Red line denotes perfect agreement.
 **D**: Sina plot of differences in the log-p-values generated by different methods compared to the raw scan-centric log-p-values.
-Also shown are the Bonferroni adjusted p-values from a t-test of the log-p-value differences for each method.
+The Bonferroni adjusted p-values from a t-test of the log-p-value differences for each method are also shown.
 Green points denote the high, mean, and low-confidence limits reported from the t-test.
 :::
 
@@ -908,11 +926,11 @@ tar_load(coefficients_qcqa)
 ::: {custom-style="MDPI_3.1_text"}
 Having a scan-centric workflow for generating the peak centroids means that we have opportunities to evaluate the scans as a whole, as well as the peaks across scans.
 For example, we can mark peaks with unusually high frequency standard deviations (FSD) and mitigate the presence of high-peak-density artifacts (see **Mitigation of High Peak Density Artifacts**).
-We also sometimes find that from initial peak region that has been marked as a single region, still results in two peaks being characterized in a single scan.
+We also sometimes find that from the initial peak region that has been marked as a single region, it still results in two peaks being characterized in a single scan.
 This results in that peak being removed from that scan entirely.
 
-The conversion of m/z to frequency also provides opportunities to evaluate each scan and whether it should be kept for further processing.
-Checks that have helped us in the development of the scan-centric peak characterization have included: (a) verifying that the ordering of data points remains identical in m/z and frequency space after conversion to frequency; and (b) examining the R^2^ fit of the predicted frequency points to the original frequency points across scans for outliers.
+The conversion of *m/z* to frequency also provides opportunities to evaluate each scan and whether it should be kept for further processing.
+Checks that have helped us in the development of the scan-centric peak characterization have included: (a) verifying that the ordering of data points remains identical in *m/z* and frequency space after conversion to frequency; and (b) examining the R^2^ fit of the predicted frequency points to the original frequency points across scans for outliers.
 A third quality control step is to examine the coefficients of the square-root term for each scan (see term **y** in Equation `r equation_count$label_text("mzfrequency")`) and look for any outliers, and remove them before continuing the sample processing.
 Across the `r length(coefficients_qcqa$n_coef_out)` NSCLC raw files that completed scan-centric processing, `r sum(coefficients_qcqa$n_coef_out > 0)` had at least one scan removed based on the square-root coefficient.
 `r figure_count$label_text("coefficients_qcqa")`A shows a histogram of the number of scans removed based on being outliers of the overall distribution.
@@ -944,13 +962,13 @@ coef_g2 = coefficients_qcqa$example %>%
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-A final check we implemented in the conversion to frequency was verifying that the range of frequency point-point differences allowed for creating the m/z to frequency model are the same across scans.
+A final check we implemented in the conversion to frequency was verifying that the range of frequency point-point differences allowed for creating the *m/z* to frequency model are the same across scans.
 The initial set of scans we started with included **all** of the MS1 scans, including the precursor scans for the MS2 scans. 
-However, the samples were acquired as a mix of MS1 only scans for the first 7.5 minutes, and then a mix of MS1 precursor scans followed by MS2 scans for the second 7.5 minutes.
+However, the samples were acquired as a mix of MS1 only scans for the first 7.5 min, and then a mix of MS1 precursor scans followed by MS2 scans for the second 7.5 min.
 In 20 samples, the MS1 precursor scans have a different resolution than the MS1 main scans, as shown in `r figure_count$label_text("resolution_qcqa")`.
 This is easy to detect by differences in the square-root coefficients, but due to using a single frequency model for converting all scans actually **manifested** as different modes in the point-point frequency differences.
 Oddly enough, the check for outlier scans discussed previously, does not flag any of the scans as outliers in this case.
-Ultimately, we were able to resolve this anomaly by only using those scans with an injection time before 7.5 minutes.
+Ultimately, we were able to resolve this anomaly by only using those scans with an injection time before 7.5 min.
 In the future, the package will be updated to check that the resolution is the same across the scans, and produce an informative error for the end user before quitting.
 :::
 
@@ -958,13 +976,16 @@ In the future, the package will be updated to check that the resolution is the s
 ```{r resolution_qcqa, dn_id = figure_count}
 tar_load(resolution_qcqa)
 
+resolution_qcqa$sqrt = scientific_10(as.numeric(resolution_qcqa$sqrt))
+
 resolution_qcqa %>%
   ggplot(aes(x = rtime, xend = rtime, y = 0, yend = tic, color = sqrt)) +
   geom_segment() +
   theme(legend.position = c(0.8, 0.8)) +
   labs(x = "Injection Time (s)", y = "TIC", color = "Coefficient") +
   coord_cartesian(ylim = c(NA, 2e7)) +
-  scale_y_continuous(expand = expansion(mult = c(0, .1))) +
+  scale_y_continuous(expand = expansion(mult = c(0, .1)), labels = scientific_10_label) +
+  scale_color_discrete(labels = scales::parse_format()) +
   scale_x_continuous(expand = expansion(mult = c(0, .1)))
 ```
 :::
@@ -985,18 +1006,18 @@ If there are no scans with at least 25 peaks, then the processing of that sample
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-FT-MS direct-injection data provides spectral scans; however, unlike nuclear magnetic resonance, these spectral scans are not identical, due to several instrumentation issues.
+FT-MS direct-injection data provide spectral scans; however, unlike nuclear magnetic resonance, these spectral scans are not identical, due to several instrumentation issues.
 Therefore, simple scan summation or averaging to an aggregate spectrum followed by peak characterization does not provide optimal data.
-Also, this approach prevents the calculation of useful peak-specific statistics, especially variances, both in m/z and intensity.
+Additionally, this approach prevents the calculation of useful peak-specific statistics, especially variances, both in *m/z* and intensity.
 In the results presented, we demonstrate superior performance by scan-centric peak characterization in terms of: (a) improved QC/QA that removes low quality scans; (b) intensity independent noise reduction that pragmatically eliminates HPD sites; (c) improved peak height relative standard deviations; (d) improved peak intensity ratios that better match natural abundance probabilities; and (e) better separation between biological groups.
-These improvements are necessary for downstream derivation of molecular formula by SMIRFE using spectrum-derived tolerances, an efficient m/z search of a large isotope-resolved cache, and filtering by peak ratio matching to NAP.
+These improvements are necessary for downstream derivation of molecular formula by SMIRFE using spectrum-derived tolerances, an efficient *m/z* search of a large isotope-resolved cache, and filtering by peak ratio matching to NAP.
 However, scan-centric peak characterization requires a sophisticated pipeline of QC/QA and processing steps to derive a superior characterization with informative statistics and QC/QA metrics.
 Years of methods development, testing, and optimization have gone into the methods presented here.
-But once implemented, large datasets can be processed in a straight-forward manner that supports full computational reproducibility.
+Nevertheless, once implemented, large datasets can be processed in a straightforward manner that supports full computational reproducibility.
 We also kept all steps that provided a demonstrable improvement, no matter how small that improvement was, but the following steps provided the most improvement: (a) noise removal by non-zero point density, (b) scan normalization using median peak intensity differences, and (c) removal of outlier scans. 
-However, both steps a and c require the m/z to frequency regression model. 
+However, both steps a and c require the *m/z* to frequency regression model. 
 In the end, it is the combination of steps that synergistically provide the presented superior peak characterization results. 
-We note that the non-zero point density based noise removal is particularly useful, as the peak intensities from scan to scan are not identical, which would possibly hamper any kind of intensity based noise removal.
+We note that the non-zero point density based noise removal is particularly useful, as the peak intensities from scan to scan are not identical, which would possibly hamper any kind of intensity-based noise removal.
 
 Not all of the methods presented here provided an improvement.
 We included our negative results with correcting mean and standard deviations for the intensity of peaks not detected in all scans, so that others do not waste effort pursuing this.
@@ -1004,11 +1025,11 @@ We initially expected the data to follow a truncated log-normal distribution, si
 Moreover, `r figure_count$label_text("rsd_intensity")` (and `r supp_figure_count$label_text("peak_variance")`) demonstrates the presence of an additive error component that will become dispersive after log-transformation.
 Thus, we hypothesize that a truncated negative binomial distribution may better represent the intensity of peaks not detected across all scans.
 Fortunately, this distribution has been previously studied [@sampfordTruncatedNegativeBinomial1955a] and we plan to explore this possibility for a future improvement to our methods.
-However, correction may not be straight-forward and it is unclear if it is better to apply the correction to the raw or log-transformed peak height data.
+However, correction may not be straightforward and it is unclear if it is better to apply the correction to the raw or log-transformed peak height data.
 Either way, a dispersive variance component is present and must be accounted for.
 As illustrated in `r figure_count$label_text("rsd_intensity")`, there are low intensity peaks that are observed across the majority of the scans.
 This likely indicates that the loss of peak detection involves other factors that are increased at low intensity.
-We theorize that any factor that increases signal decoherence like ion-cloud repulsion would increase the peak flooring performed by the instrument.
+We theorize that any factor that increases signal decoherence, such as ion-cloud repulsion would increase the peak flooring performed by the instrument.
 Therefore, access to the scan level peak intensity information as provided by the methods presented here facilitates the inference of sources and types of error present in the measurements, which we believe have been previously under-described and is required for future data processing improvements.
 :::
 
@@ -1024,7 +1045,7 @@ Therefore, access to the scan level peak intensity information as provided by th
 Two different sets of samples were used to evaluate the various methods, ethylchloroformate (ECF) derived amino acid samples described in [@mitchellSmallMoleculeIsotope2019] and non-small-cell-lung-carcinoma (NSCLC) lipid-extracted tissue samples described in [@mitchellUntargetedLipidomicsNonSmall2021].
 
 The method for generating the amino-acid samples was adapted from a previously published method for performing ECF amino acid derivatization [@yangChloroformateDerivatizationTracing2017]. 
-Two replicate samples were prepared and spectra were obtained for both samples using a Tribrid Fusion Orbitrap at 500k resolution and a mass range of 150 to 1000m/z.
+Two replicate samples were prepared and spectra were obtained for both samples using a Tribrid Fusion Orbitrap at 500k resolution and a mass range of 150 to 1000*m/z*.
 
 The collection, preparation, and mass spectrometry analysis of the paired cancer and non-cancer samples has been previously described [@sellersPyruvateCarboxylaseCritical2015]. 
 In summary, cancer and nearby non-cancer tissue samples were acquired from eight-six non-diabetic patients with suspected resectable stage I or IIA non-small cell lung cancer. 
@@ -1036,35 +1057,35 @@ The rest were included for the examination of changes in differential analysis p
 
 ::: {custom-style="MDPI_3.5_text_before_list"}
 For each of the two ECF and two lipid samples, the raw data file was converted to profile mzML format.
-Only the MS1 scans were used, and the scan-scan time difference had to be ≥ 4 seconds, and for the lipid samples only scans acquired before 450 seconds (7.5 minutes) were kept.
-The scan-centric data was then processed in the following eight ways:
+Only the MS1 scans were used, and the scan-scan time difference had to be ≥ 4 s, and for the lipid samples only scans acquired before 450 s (7.5 min) were kept.
+The scan-centric data were then processed in the following eight ways:
 :::
 
 ::: {custom-style="MDPI_3.8_bullet"}
-* No noise removal, no normalization (noperc_nonorm)
+* No noise removal, no normalization (noperc_nonorm);
 :::
 ::: {custom-style="MDPI_3.8_bullet"}
-* Noise removal, no normalization (perc99_nonorm)
+* Noise removal, no normalization (perc99_nonorm);
 :::
 ::: {custom-style="MDPI_3.8_bullet"}
-* Noise removal, single-pass normalization with all peaks (singlenorm)
+* Noise removal, single-pass normalization with all peaks (singlenorm);
 :::
 ::: {custom-style="MDPI_3.8_bullet"}
-* Noise removal, single-pass normalization with high ratio peaks (singlenorm_int)
+* Noise removal, single-pass normalization with high ratio peaks (singlenorm_int);
 :::
 ::: {custom-style="MDPI_3.8_bullet"}
-* Noise removal, two-pass normalization (doublenorm)
+* Noise removal, two-pass normalization (doublenorm);
 :::
 ::: {custom-style="MDPI_3.8_bullet"}
-* Noise removal, two-pass normalization (filtersd)
-:::
-
-::: {custom-style="MDPI_3.8_bullet"}
-* Scans merged and then centroids generated by MSnbase (using `combineSpectra` and `pickPeaks`)
+* Noise removal, two-pass normalization (filtersd);
 :::
 
 ::: {custom-style="MDPI_3.8_bullet"}
-* Scans merged and peak-list exported by Xcalibur
+* Scans merged and then centroids generated by MSnbase (using `combineSpectra` and `pickPeaks`);
+:::
+
+::: {custom-style="MDPI_3.8_bullet"}
+* Scans merged and peak-list exported by Xcalibur.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
@@ -1072,7 +1093,7 @@ The scan-centric data was then processed in the following eight ways:
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-To associate the Xcalibur and MSnbase peaks with the scan-centric peaks, a 4 ppm (2ppm low and high) window is calculated for the scan-centric centroid, and if any peaks are found within the window, the one with the smallest m/z difference is kept as the matching peak to the scan-centric one under consideration.
+To associate the Xcalibur and MSnbase peaks with the scan-centric peaks, a 4 ppm (2 ppm low and high) window is calculated for the scan-centric centroid, and if any peaks are found within the window, the one with the smallest *m/z* difference is kept as the matching peak to the scan-centric one under consideration.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
@@ -1081,12 +1102,12 @@ To associate the Xcalibur and MSnbase peaks with the scan-centric peaks, a 4 ppm
 
 
 ::: {custom-style="MDPI_3.1_text"}
-The input data consists of profile mode m/z spectra from multiple scans encoded as m/z and intensity values for each scan.
+The input data consist of profile mode *m/z* spectra from multiple scans encoded as *m/z* and intensity values for each scan.
 No information about the original observed frequency values is available in either the `raw` files or the `mzML` files.
-However, proxy frequency values can be generated by averaging the m/z of adjacent points and dividing them by the m/z difference.
+However, proxy frequency values can be generated by averaging the m/z of adjacent points and dividing them by the *m/z* difference.
 Ideally, the difference between subsequent points in this proxy frequency space is constant, in practice there is a range of differences in frequency space.
-The *actual, constant* difference can be obtained by examining the median of the calculated frequency differences, and then constraining *useful* points (those that can be used for generating a model of frequency to m/z) to be within 2% of the mode value.
-These *useful* points can be used to construct a linear model relating m/z to frequency for individual scans based on the formula:
+The *actual, constant* difference can be obtained by examining the median of the calculated frequency differences, and then constraining *useful* points (those that can be used for generating a model of frequency to *m/z*) to be within 2% of the mode value.
+These *useful* points can be used to construct a linear model relating *m/z* to frequency for individual scans based on the formula:
 :::
 
 ::: {custom-style="MDPI_3.9_equation"}
@@ -1094,13 +1115,13 @@ These *useful* points can be used to construct a linear model relating m/z to fr
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-From the known physical properties of the Orbitrap, only the square root term should be necessary [@ledfordSpaceChargeEffects1984].
-Practically, we have found the combination of no root, square and cube-roots to provide a better fit when processing data from the Thermo-Fisher Fusion instrument, likely due to issues with slight imperfections in the orbitrap geometry, contributions from space charge effects and magnetronic motion, control of the magnetic fields, and the Fourier-like transform conversion used by the spectrometer.
+From the known physical properties of the Orbitrap, only the square-root term should be necessary [@ledfordSpaceChargeEffects1984].
+Practically, we found the combination of no root, square and cube-roots to provide a better fit when processing data from the Thermo-Fisher Fusion instrument, likely due to issues with slight imperfections in the orbitrap geometry, contributions from space charge effects and magnetronic motion, control of the magnetic fields, and the Fourier-like transform conversion used by the spectrometer.
 We do note that when working with Bruker SolariX ICR data, the equation is slightly different, and does not require the cubic square root term (unpublished results, see Supplemental Materials).
-A frequency model is generated for each scan, and then a single model using the scan with the square-root term closest to the median of the square-root terms from all scans.
-We observed that this single model better preserved the relative ordering of the peaks in both m/z and frequency-space compared to the scan specific models (see Results).
+A frequency model was generated for each scan, followed by a single model using the scan with the square-root term closest to the median of the square-root terms from all scans.
+We observed that this single model better preserved the relative ordering of the peaks in both *m/z* and frequency-space compared to the scan specific models (see Results).
 
-To convert m/z back into frequency, we can use a similar model without the roots, as well as an extra simple linear term that does not have an equivalent in the above frequency model.
+To convert *m/z* back into frequency, we can use a similar model without the roots, as well as an extra simple linear term that does not have an equivalent in the above frequency model.
 :::
 
 ::: {custom-style="MDPI_3.9_equation"}
@@ -1112,7 +1133,7 @@ To convert m/z back into frequency, we can use a similar model without the roots
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-Two types of frequency intervals are used, sliding and tiled windows.
+Two types of frequency intervals were used; sliding and tiled windows.
 In this work, the sliding windows are the equivalent of 10 frequency points wide with a stride of one point.
 The tiled windows are one point wide with a stride of one point.
 Each **point** above is the equivalent of the difference between data points in frequency space, which in these samples have a spacing of 0.5.
@@ -1132,9 +1153,9 @@ The sliding and tiled windows are also converted to IRanges objects using this p
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-To find intervals that contain points that represent actual signal and not just random noise, the number of non-zero intensity points in each sliding window are counted.
-Subsequently, we break these counts into fixed width tiles (default width of 1000 in frequency space) and calculate the cumulative 99^th^ percentile of non-zero points for each tile.
-The rounded up median value x 1.5 of these 99^th^ percentile values from the fixed width tiles is used as the cutoff value to determine which of the initial sliding regions should be kept as regions containing potential signal.
+To find intervals that contain points that represent actual signal and not just random noise, the number of non-zero intensity points in each sliding window were counted.
+Subsequently, we broke these counts into fixed width tiles (default width of 1000 in frequency space) and calculated the cumulative 99^th^ percentile of non-zero points for each tile.
+The rounded up median value x 1.5 of these 99^th^ percentile values from the fixed width tiles were used as the cutoff value to determine which of the initial sliding regions should be kept as regions containing potential signal.
 Any sliding window with a non-zero count less than or equal to the cutoff value is removed, and the remaining sliding windows are kept and overlapping sliding windows are merged to create the initial peak regions.
 The presence of zero intensity points in these Thermo-Fisher Orbitrap spectra are primarily due to flooring implemented by the spectrometer when local spectral quality falls below a certain threshold.
 When this flooring is unstable and incomplete, a partial ringing phenomenon is observed [@mitchellNewMethodsIdentify2018].
@@ -1150,7 +1171,7 @@ These interval regions should contain a single **real** peak that was detected i
 
 ::: {custom-style="MDPI_3.1_text"}
 On a single scan level, possible peaks are detected by simple bump-hunting for two increasing points followed by two decreasing points using the `find_peaks` function in the pracma package [@borchersPracmaPracticalNumerical2021].
-These possible peaks are then characterized using a weighted parabolic fit of log-intensity to position (where position is either m/z or frequency), and the weights for each point are the relative log-intensity compared to the maximum log-intensity for the peak.
+These possible peaks are then characterized using a weighted parabolic fit of log-intensity to position (where position is either *m/z* or frequency), and the weights for each point are the relative log-intensity compared to the maximum log-intensity for the peak.
 :::
 
 ::: {custom-style="MDPI_3.9_equation"}
@@ -1171,11 +1192,11 @@ Any regions that subsequently contain zero peaks are removed.
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-Scans are normalized to a single *reference* scan based on the log-intensity differences of a subset of peaks present in at least the same number of scans as the 95th percentile of scan counts for the peaks.
+Scans are normalized to a single *reference* scan based on the log-intensity differences in a subset of peaks present in at least the same number of scans as the 95th percentile of scan counts for the peaks.
 In addition, only those peaks with an intensity greater than 0.7 times the highest intensity peak in the scan are used.
-Pairwise scan-to-scan distances are calculated by taking the cartesian distances between log peak intensities present in both scans, and then the cartesian distance is summed across the scan-to-scan distance to provide an overall difference of each scan to all other scans.
+Pairwise scan-to-scan distances are calculated by taking the cartesian distances between log peak intensities present in both scans, and then the cartesian distance is summed across the scan-to-scan distance to provide an overall difference in each scan to all other scans.
 The scan with the lowest summed overall distance is chosen as the *reference* scan ($scan_{ref}$), and normalization factors for each scan are calculated as the median log peak intensity differences in $scan_i$ compared to the $scan_{ref}$.
-This normalization is done twice, once using all possible peaks, after which the correlation of peak intensity with scan order is checked, and those peaks with correlation of greater than 0.5 with scan order are removed, and the normalization factors are calculated again, and then applied to both the centroided peak height and the raw point intensities.
+This normalization was carried out twice, once using all possible peaks, after which the correlation of peak intensity with scan order was checked, and those peaks with correlation of greater than 0.5 with scan order were removed, and the normalization factors were calculated again, and then applied to both the centroided peak height and the raw point intensities.
 Peaks correlated to scan order represent an artifact that we speculate results from a gradient in the sample well and are marked in the final output.
 :::
 
@@ -1188,7 +1209,7 @@ The full set of raw data points for each peak in each scan within a region is kn
 Therefore, the non-zero intensity, normalized raw data points across scans can be combined, and then characterized again using the weighted parabolic fit method previously described.
 In addition to the data from the full set of raw points, the means and the standard deviations of the peak height and location can be derived from the scan-level peak characteristics previously calculated.
 
-In addition to these values, the frequency point-to-point median difference is calculated across all of the raw data points for those points that could be used for modeling frequency to m/z, and this difference of a single point from the peak center is calculated in frequency space, and converted to m/z space to provide an "offset" value that is potentially useful to define the search space around the peak for any assignment algorithm.
+In addition to these values, the frequency point-to-point median difference was calculated across all of the raw data points for those points that could be used for modeling frequency to *m/z*, and this difference of a single point from the peak center is calculated in frequency space, and converted to *m/z* space to provide an "offset" value that is potentially useful to define the search space around the peak for any assignment algorithm.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
@@ -1200,8 +1221,8 @@ Ideally, each peak would be observed in every scan.
 However, some peaks are not observed in some scans due to the number of ions falling below the detection threshold, or being excluded after filling the trap.
 This should result in a left-censored log-normal distribution of peak intensities across equivalent scans, which is expected for analytical measurements with detection limits [@flightInformationContentInformedKendalltauCorrelation2022].
 To correct these, either a correction based on a model of the truncated normal distribution can be used on log-transformed data, or the differences can be simulated by sampling from data that is present in most of the scans.
-To simulate the effect of peaks missing from some scans on the standard deviations, the peaks present in all scans are used.
-For each peak, a sample of the heights across scans are taken (ranging from 5% to 95% of scans), and a new standard deviation calculated for that fraction, and a ratio of the fractional standard deviation to the "true" standard deviation calculated.
+To simulate the effect of peaks missing from some scans on the standard deviations, the peaks present in all scans were used.
+For each peak, a sample of the heights across scans was obtained (ranging from 5% to 95% of scans), and a new standard deviation was calculated for that fraction, and a ratio of the fractional standard deviation to the "true" standard deviation was calculated.
 The ratio standard deviation across peaks can then be fitted to a cubic model of the fraction used, and a correction factor predicted for those peaks that are present in fewer scans.
 Our correction uses log-transformed peak heights, and differences instead of raw heights and ratios directly to make some of the calculations easier.
 The corrected standard deviations can then be used to correct the mean height assuming that it is the result of a left-censored normal distribution [@TruncatedNormalDistribution2022; @burkardtTruncatedNormalDistribution].
@@ -1214,8 +1235,8 @@ The corrected standard deviations can then be used to correct the mean height as
 ::: {custom-style="MDPI_3.1_text"}
 High-peak-density (HPD) artifacts [@mitchellNewMethodsIdentify2018] present as groups of singular peaks with higher than expected frequency standard deviations (FSDs) calculated from the scan-to-scan frequency peak locations.
 Outliers are detected by calculating the interquartile range (IQR) of the distribution of FSDs across the entire spectrum, and peaks with FSDs greater than the median plus 1.5 times the IQR (as implemented in boxplot.stats) are marked.
-The HPD detection algorithm from Mitchell et al. was re-implemented in R for this work to allow comparisons between it and the use of the FSD.
-For HPD detection, the peaks in excel output from Xcalibur were used after converting the m/z peak centers into frequency space.
+The HPD detection algorithm from Mitchell et al. [@mitchellNewMethodsIdentify2018] was re-implemented in R for this work to allow comparisons between it and the use of the FSD.
+For HPD detection, the peaks in excel output from Xcalibur were used after converting the *m/z* peak centers into frequency space.
 Sliding windows that are 1000 frequency points wide with a stride of 100 points were used for the density calculations.
 :::
 
@@ -1229,9 +1250,9 @@ Relative standard deviation (RSD) was calculated as standard deviation divided b
 The number of scans a peak was present in was also noted, as well as the percentage of total scans.
 Only peaks present in at least three scans were kept for analysis of the RSD.
 
-Modes of the RSD are calculated starting from a density approximation of the distribution using default settings in the density function of the R stats package.
-Peaks from the density approximation are determined with the find_peaks function in the pracma package.
-Up to two modes are reported from low to high RSD along the distribution: i) the most intense peak; ii) the next most intense peak if it is ≥ 0.2X the most intense peak.
+Modes of the RSD were calculated starting from a density approximation of the distribution using default settings in the density function of the R stats package.
+Peaks from the density approximation were determined with the find_peaks function in the pracma package.
+Up to two modes are reported from low to high RSD along the distribution: (i) the most intense peak; (ii) the next most intense peak if it is ≥ 0.2X the most intense peak.
 :::
 
 ::: {custom-style="MDPI_2.2_heading2"}
@@ -1240,10 +1261,10 @@ Up to two modes are reported from low to high RSD along the distribution: i) the
 
 ::: {custom-style="MDPI_3.1_text"}
 Our previously described SMIRFE algorithm [@mitchellSmallMoleculeIsotope2019] was used to assign molecular formulas to scan-centric characterized peaks in an untargeted manner. 
-For the lipid samples, an initial EMF database was generated using an m/z limit of 1605 m/z, and maximum numbers for each element were set to C: 130, N: 7, O: 28, P: 3, H: 230. 
+For the lipid samples, an initial EMF database was generated using an *m/z* limit of 1605 *m/z*, and maximum numbers for each element were set to C: 130, N: 7, O: 28, P: 3, H: 230. 
 Assigned formulas were allowed to have K^+^, Na^+^, H^+^, and NH4^+^ adducts (only positive mode samples were assigned). 
 Assigned molecular formulas were then classified into one or more lipid categories using our lipid classifier tool [@mitchellDerivingLipidClassification2020].
-For the ECF derivatized amino-acid samples, the EMF database was generated using an m/z limit of 1005 m/z, and maximum numbers for each element were set to C: 100, N: 7, O: 40, H: 230, P: 3, S: 3.
+For the ECF derivatized amino-acid samples, the EMF database was generated using an *m/z* limit of 1005 *m/z*, and maximum numbers for each element were set to C: 100, N: 7, O: 40, H: 230, P: 3, S: 3.
 ^15^N labeling was included in the database generation.
 Assigned formulas were allowed to have H^+^ and Na^+^ adducts.
 
@@ -1256,18 +1277,18 @@ We attempted to create peaks that could be assigned by SMIRFE from the MSnbase a
 
 ::: {custom-style="MDPI_3.1_text"}
 Our SMIRFE assignment method assigns isotope-resolved molecular formulas (IMFs) to characterized peaks in each spectrum. 
-Each IMF represents an isotopologue of a given elemental molecular formula (EMF) (e.g., 13C112C51H1216O6 is an IMF representing the m+13C1 isotopologue of EMF C6H12O6). Consistently assigned (i.e., corresponded peaks) are identified using an in-house method we have named EMF voting.
+Each IMF represents an isotopologue of a given elemental molecular formula (EMF) (e.g., 13C112C51H1216O6 is an IMF representing the m+13C1 isotopologue of EMF C6H12O6). Consistently assigned formulas (i.e., corresponded peaks) were identified using an in-house method we have named EMF voting.
 
 Elemental molecular formula (EMF) voting was used to match peaks across samples and determine the most likely assignments from SMIRFE. 
-First, for each sample, the assignments are extracted, filtered, and scored. Any assignments that contain only peaks that were marked as being questionable (high FSD or correlated with scan number) removed. 
+First, for each sample, the assignments were extracted, filtered, and scored. Any assignments that contained only peaks that were marked as being questionable (high FSD or correlated with scan number) were removed. 
 Scores are calculated as 1 – E-value, and for the lipids, EMFs that were classified as lipids had their score multiplied by 2.
 
-For each sample, peaks were grouped to a sample specific EMF by determining the list of shared EMFs across a group of peaks (grouped_EMF). 
-Scores for each formula in the grouped_EMF in the sample were taken as the best score for that formula from available scores in the group. 
+For each sample, peaks were grouped to a sample-specific EMF by determining the list of shared EMFs across a group of peaks (grouped_EMF). 
+Scores for each formula in the grouped_EMF in the sample were obtained as the best score for that formula from available scores in the group. 
 After all sample grouped_EMFs are generated, additional scores for a formula are considered in actual voting by looking for the same unadducted base EMF with different adducts and adding these scores into the final total score. 
 
 The pseudo_EMFs are collections of grouped_EMFs across samples. 
-They are generated across samples by iteratively merging grouped_EMFs with shared formulas, creating a new list of formulas in an EMF, and merging any pseudo_EMFs that have shared formulas again.
+They were generated across samples by iteratively merging grouped_EMFs with shared formulas, creating a new list of formulas in an EMF, and merging any pseudo_EMFs that have shared formulas again.
 
 For each pseudo_EMFs, the most likely formulas are determined by voting. 
 Voting uses the sum of EMF scores across samples, including those from the same formula with a different adduct. 
@@ -1275,16 +1296,16 @@ Those formulas with a total score in the top 90% of all total scores were consid
 Any peaks that did not originally have a "voted formula" were then checked to see if the peak location was within previously defined tolerance, and if the ordered peak intensities for the set of peaks from a sample are in the same order as the natural abundance probabilities of IMFs for the voted EMF. 
 If so, then the peaks are kept as having the "voted formula" set.
 
-After voting, all of the peaks are checked to make sure that the peak locations are within previously defined m/z specific cutoffs. 
-Any peak outside of its specific cutoff is removed.
+After voting, all of the peaks were checked to make sure that the peak locations are within previously defined *m/z* specific cutoffs. 
+Any peak outside of its specific cutoff were removed.
 
 Finally, those pseudo_EMFs that share greater than 50% of their peaks are merged together, and voting on the EMFs is performed again.
 
-Peak locations from our custom data processing pipeline are reported both in m/z and frequency, which are derived from the m/z values. 
+Peak locations from our custom data processing pipeline are reported both in *m/z* and frequency, which are derived from the *m/z* values. 
 The frequency values are more reliable (i.e., more consistent with less variance), but differ between instruments. 
-Therefore, for each set of samples from a particular instrument, we use high confidence assignments (e-value <= 0.1, m/z <= 600) to derive a frequency cutoff using the mode of the distribution of frequency standard deviations across both groups of samples. 
+Therefore, for each set of samples from a particular instrument, we use high confidence assignments (e-value <= 0.1, *m/z* <= 600) to derive a frequency cutoff using the mode of the distribution of frequency standard deviations across both groups of samples. 
 This frequency cutoff is used to do EMF voting within an instrument. 
-The m/z standard deviations of the voted peaks are then fit to m/z using a generalized additive model, and the standard deviation of the predicted m/z values are multiplied by 2 to derive an m/z cutoff so that voting can be performed across the instruments.
+The *m/z* standard deviations of the voted peaks are then fit to *m/z* using a generalized additive model, and the standard deviation of the predicted *m/z* values are multiplied by 2 to derive an *m/z* cutoff so that voting can be performed across the instruments.
 
 ```{r load_lipid_full_data}
 tar_load(scancentric_imfs_raw)
@@ -1308,8 +1329,8 @@ Theoretically, the log-ratios of two peaks NAPs are approximately equal to the l
 :::
 
 ::: {custom-style="MDPI_3.1_text"}
-SMIRFE assignments include the NAP for each of the isotopologue molecular formulas (IMFs) in the particular labelled and adducted EMF.
-For each peak pair in the peak group for a particular EMF, we calculate the log-ratio for the NAPs and the log-ratio for the intensities, and their absolute differences.
+SMIRFE assignments include the NAP for each of the isotopologue molecular formulas (IMFs) in the particular labeled and adducted EMF.
+For each peak pair in the peak group for a particular EMF, we calculated the log-ratio for the NAPs and the log-ratio for the intensities, and their absolute differences.
 This calculation is done for the final characterized intensity, as well as the intensities at the scan level, and for both the *raw* intensity and *corrected* intensity, and for matched Xcalibur peak intensities, and matched MSnbase peak intensities if there were two or more matching peaks in the labeled, adducted EMF.
 :::
 
@@ -1338,7 +1359,7 @@ Not knowing which sample run was most appropriate to use, we removed all of the 
 Using information-content-informed Kendall-tau correlation (ICI-Kt) [@flightInformationContentInformedKendalltauCorrelation2022], we compared the median correlations of each sample to all others in the same disease class for outliers, and removed `r n_out_vector["cancer"]` cancer and `r n_out_vector["non-cancer"]` non-cancer samples.
 The median ICI-Kt correlations are shown in `r supp_figure_count$label_text("icikt_outlier")`.
 
-Each samples intensities were normalized by dividing by the median intensities from that sample and intensity method.
+Each sample intensity was normalized by dividing by the median intensities from that sample and intensity method.
 Only those peaks present in 50% of both the non-cancer and cancer samples were kept for differential analysis.
 This resulted in `r nrow(compare_split$Corrected)` IMF peaks for differential analysis.
 Differential analysis used the logged intensity values, with p-values calculated using `rowttests` function from the `genefilter` Bioconductor package (v1.76.0) [@gentlemanGenefilterMethodsFiltering2021], removing any missing values before calculation.
@@ -1356,7 +1377,7 @@ The reference peak p-value is the raw scan-centric p-values.
 Thermo-Fisher Xcalibur was used to export peak lists from all samples used.
 SMIRFE v 1.0 [@mitchellSmallMoleculeIsotope2019] running under Python 3.8 [@vanrossumPython3] was used for assignments.
 Lipid classifications were generated by LipidClassifier v 1.0 [@mitchellDerivingLipidClassification2020].
-All other calculations were performed in R v 4.1.0 [@rcoreteam_rlanguage_2020].
+All other calculations were performed in R v 4.1.0 [@rcoreteamLanguageEnvironmentStatistical2021a].
 The targets package v 0.10.0 was used to control processing and aggregation of results [@landauTargetsPackageDynamic2021], and renv v 0.15.3 [@usheyRenvProjectEnvironments2022] to create a reproducible R package environment.
 Plots were generated using ggplot2 v 3.3.5 [@wickhamGgplot2ElegantGraphics2016], patchwork v 1.1.1 [@pedersenPatchworkComposerPlots2020], ComplexHeatmap v 2.10.0 [@guComplexHeatmapsReveal2016a], ggridges v 0.5.3 [@wilkeGgridgesRidgelinePlots2021], and ggforce v 0.3.3 [@pedersenGgforceAcceleratingGgplot22021].
 MSnbase v 2.20.4 [@gattoMSnbaseEfficientElegant2020; @gattoMSnbaseBioconductorPackage2012] provided facilities for reading in scan-level data, merging scans and calculating centroided peaks.
@@ -1376,7 +1397,7 @@ Conceptualization, R.M.F, and H.N.B.M; Methodology, R.M.F and H.N.B.M.; Software
  
 **Funding**: The work was supported in part by grants NSF 1419282 (PI Moseley), NSF 2020026 (PI Moseley), NIH 1P01CA163223-01A1 (PD Lane), 1U24DK097215-01A1 (PD Higashi), and P30 CA177558 (B.M. Evers, PI) via the Markey Cancer Center Biostatistics and Bioinformatics Shared Resource Facility (MCC BB-SRF).
 
-**Data Availability Statement**: The code used in the reporting of results is available on GitHub at https://github.com/MoseleyBioinformaticsLab/manuscript.peakCharacterization, and archived on Zenodo [@flightMoseleyBioinformaticsLabManuscriptPeakCharacterization2022].
+**Data Availability Statement**: The code used in the reporting of results is available on GitHub at https://github.com/MoseleyBioinformaticsLab/manuscript.peakCharacterization (accessed 2022-06-01), and archived on Zenodo [@flightMoseleyBioinformaticsLabManuscriptPeakCharacterization2022].
 The scan-centric peak-characterization is available as an R package at https://github.com/MoseleyBioinformaticsLab/FTMS.peakCharacterization, and the specific version used in this work is archived on Zenodo [@flightMoseleyBioinformaticsLabFTMSPeakCharacterization2022].
 
 **Conflicts of Interest**: The authors declare no conflict of interest. 
