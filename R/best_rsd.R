@@ -23,8 +23,8 @@ find_best_rsd = function(rsd_values){
   rsd_ft = rsd_values2 %>%
     flextable() %>%
     hline(i = filtersd_rsd[2:(length(filtersd_rsd))] - 1) %>%
-    colformat_double(digits = 2) %>%
-    bold(i = c(other_loc, filtersd_rsd), j = seq(3, 6), part = "body")
+    colformat_double(digits = 2) #%>%
+    #bold(i = c(other_loc, filtersd_rsd), j = seq(3, 6), part = "body")
   rsd_ft
 
 }

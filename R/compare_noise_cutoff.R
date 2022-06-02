@@ -141,6 +141,7 @@ plot_example_sliding_counts = function(peak_data){
     geom_point(alpha = 0.5) +
     coord_cartesian(xlim = xlim, ylim = c(2, NA)) +
     labs(y = "Log10(Intensity)", x = "Frequency") +
+    scale_x_continuous(labels = scales::comma) +
     theme(axis.title.y = element_text(size = y_title_size))
 
 
@@ -195,13 +196,13 @@ plot_sliding_window_density = function(peak_data){
   single_plot = ggplot(single_chunk, aes(x = use_counts)) +
     geom_histogram(bins = 100) +
     geom_vline(xintercept = single_99, color = "blue") +
-    scale_y_log10(expand = c(0, 0), limits = c(1, NA)) +
+    scale_y_log10(expand = c(0, 0), limits = c(1, NA), labels = scales::comma) +
     labs(x = "Number of Non-Zero Points",
          y = "Log10(Counts)")
   all_plot = ggplot(all_99, aes(x = perc_99)) +
     geom_histogram(bins = 100) +
     geom_vline(xintercept = all_cut, color = "red") +
-    scale_y_continuous(expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0), labels = scales::comma) +
     labs(y = "# Tiled Regions",
          x = "99th Percentiles of Tiled Regions")
   all_plot
@@ -215,6 +216,7 @@ create_noise_plot = function(noise_combine){
     geom_point() +
     geom_line() +
     theme(legend.position = c(0.1, 0.5)) +
+    scale_y_continuous(labels = scales::comma) +
     labs(y = "# of Initial Peak Regions", x = "Percentile Cutoff")
 
   lipid_plot = noise_combine %>%
@@ -223,6 +225,7 @@ create_noise_plot = function(noise_combine){
     geom_point() +
     geom_line() +
     theme(legend.position = c(0.1, 0.5)) +
+    scale_y_continuous(labels = scales::comma) +
     labs(y = "# of Initial Peak Regions", x = "Percentile Cutoff")
 
   (ecf_plot | lipid_plot)

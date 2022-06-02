@@ -139,7 +139,7 @@ Coefficients for each term in the models after fitting of the calculated frequen
 ```{r coefficient_table}
 ecf_coef_table = all_models[[1]]$model_data %>%
   flextable() %>%
-  colformat_double(digits = 0) %>%
+  colformat_double(digits = 0, big.mark = ",") %>%
   autofit()
 ecf_coef_table
 ```
@@ -184,6 +184,15 @@ figure_count$increment("peak_variance")
 ```
 
 ```{r peak_variance, dn_id = figure_count, fig.width = 8, fig.height=9}
+scientific_10 = function(x) {
+  gsub("e\\+*", " %*% 10^", scales::scientific_format()(x))
+}
+
+scientific_10_label = function(x) {
+  parse(text = gsub("e\\+*", " %*% 10^", scales::scientific_format()(x)))
+}
+
+
 filtersd_only = rsd_combine %>%
   dplyr::filter(processed %in% "filtersd", n_perc >= 0.9)
 
@@ -193,7 +202,8 @@ sd_by_sample = purrr::map(filtersd_by_sample, function(in_sample){
   mean_sd = in_sample %>%
     ggplot(aes(x = log10(mean), y = sd)) +
     geom_point(alpha = 0.5) +
-    labs(subtitle = in_sample$sample[1])
+    labs(subtitle = in_sample$sample[1]) +
+    scale_y_continuous(labels = scientific_10_label)
   mean_rsd = in_sample %>%
     ggplot(aes(x = log10(mean), y = rsd)) +
     geom_point(alpha = 0.5)
@@ -288,16 +298,16 @@ compare_sina = lung_compare_corrected %>%
   geom_hline(yintercept = 0, color = "red") +
   geom_sina(alpha = 0.5) +
   geom_point(data = long_measure, aes(x = compare_id, y = value), color = "green") +
-  geom_text(data = long_pvalue, aes(x = compare_id, y = -1, label = format(value, digits = 2))) +
-  labs(x = "", y = "Log-P-Value Difference")
+  geom_text(data = long_pvalue, aes(x = compare_id, y = -1, label = scientific_10(value)), parse = TRUE) +
+  labs(x = "", y = expression(paste("Log-", italic("P"), "-Value Difference", sep = "")))
 
 compare_pair = lung_compare_corrected %>%
   ggplot(aes(x = log_p.ref, y = log_p.test)) +
   geom_abline(slope = 1, color = "red") +
   geom_point(alpha = 0.5) +
-  labs(x = "Log-P-Value Raw",
-         y = "Log-P-Value Corrected")
-compare_pair | compare_sina + plot_annotation(tag_levels = "A")
+  labs(x = expression(paste("Log-", italic("P"), "-Value Raw", sep = "")),
+         y = expression(paste("Log-", italic("P"), "-Value Corrected", sep = "")))
+(compare_pair | compare_sina) + plot_annotation(tag_levels = "A")
 ```
 
 `r figure_count$label_text("p_value")`.

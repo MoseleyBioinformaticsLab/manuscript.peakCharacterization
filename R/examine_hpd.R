@@ -212,6 +212,8 @@ plot_hpds = function(hpd_res){
       geom_segment() +
       coord_cartesian(xlim = plot_range,
                       ylim = c(NA, mode_height)) +
+      scale_x_continuous(labels = scales::comma) +
+      scale_y_continuous(labels = scales::comma) +
       labs(y = "Intensity", subtitle = in_type$source[1])
     base_plot
   })

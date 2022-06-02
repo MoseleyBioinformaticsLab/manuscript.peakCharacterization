@@ -531,7 +531,7 @@ motivating_plot = function(nap_height_1ecf, aa_id = "Threonine", formula_id = "C
              size = font_size) +
     annotate("text", x = 243.75, y = 4.2, label = peak_data$complete_IMF[4],
              size = font_size) +
-    labs(x = "m/z", y = "Log10(Intensity)") +
+    labs(x = expression(~italic("m/z")), y = "Log10(Intensity)") +
     scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
   nap_int_plot = peak_data %>%
     ggplot(aes(x = log10intNAP, y = log10intensity)) +

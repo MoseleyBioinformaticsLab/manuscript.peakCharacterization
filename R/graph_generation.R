@@ -88,24 +88,26 @@ plot_frequency_conversion = function(char_obj){
   example_data[1, "pair_mz"] = NA
   mz_point_plot = ggplot(example_data, aes(x = mz, y = log10(intensity+1))) + geom_point() +
     geom_segment(aes(x = mz_group_xstart, xend = mz_group_xend, y = level1_intensity, yend = level1_intensity), color = "red") +
-    geom_point(aes(x = pair_mz, y = level1_intensity), color = "red") + labs(y = "Log10(Intensity)", x = "M/Z")
+    geom_point(aes(x = pair_mz, y = level1_intensity), color = "red") + labs(y = "Log10(Intensity)", x = expression(~italic("m/z")))
 
   frequency_point_plot = ggplot(example_data, aes(x = pair_frequency, y = log10(intensity+1))) + geom_point() +
+    scale_x_continuous(labels = scales::comma) +
     labs(y = "Log10(Intensity)", x = "Frequency") + geom_segment(aes(x = frequency_group_xstart, xend = frequency_group_xend, y = level1_intensity, yend = level1_intensity), color = "red")
 
   point_difference_plot = ggplot(example_data, aes(x = pair_frequency, y = pair_frequency_offset)) + geom_point() +
-    labs(x = "Frequency", y = "Frequency Differences")
+    labs(x = "Frequency", y = "Frequency Differences") +
+    scale_x_continuous(labels = scales::comma)
 
   all_frequency_difference_hist = ggplot(raw_points, aes(x = log10(abs(mean_freq_diff)))) +
     geom_histogram(bins = 100) +
     geom_vline(xintercept = log10(0.5), color = "red") +
-    scale_y_log10(expand = expansion(mult = c(0, .01))) +
+    scale_y_log10(expand = expansion(mult = c(0, .01)), labels = scales::comma) +
     labs(x = "Log10(Frequency Differences)",
          y = "Number of Points")
 
   y_title_size = 12
   all_frequency_difference_plot = ggplot(raw_points, aes(x = mz, y = log10(abs(mean_freq_diff)))) + geom_point(alpha = 0.5) +
-    geom_point(data = dplyr::filter(raw_points, org_convertable), color = "red") + labs(x = "M/Z", y = "Log10(Frequency Differences)") +
+    geom_point(data = dplyr::filter(raw_points, org_convertable), color = "red") + labs(x = expression(~italic("m/z")), y = "Log10(Frequency Differences)") +
     theme(axis.title.y = element_text(size = y_title_size))
 
   convertable_raw2 = dplyr::filter(raw_points, org_convertable)
@@ -113,7 +115,8 @@ plot_frequency_conversion = function(char_obj){
   convertable_raw2$predict_frequency = FTMS.peakCharacterization:::predict_exponentials(convertable_raw2$mean_mz, raw2_model$coefficients, c(0, -1/2, -1/3))
   mz_frequency_plot = ggplot(convertable_raw2, aes(x = mean_mz, y = mean_frequency)) + geom_point(size = 4) +
     geom_line(aes(y = predict_frequency), color = "red", size = 2) +
-    labs(x = "M/Z", y = "Frequency")
+    scale_y_continuous(labels = scales::comma) +
+    labs(x = expression(~italic("m/z")), y = "Frequency")
 
 
 
@@ -123,7 +126,7 @@ plot_frequency_conversion = function(char_obj){
   convertable_raw2$predict_square = sqrt_pred
   sqrt_frequency_plot = ggplot(convertable_raw2, aes(x = mean_mz, y = mean_frequency)) + geom_point(size = 4) +
     geom_line(aes(y = predict_square), color = "red", size = 2) +
-    labs(x = "M/Z", y = "Frequency")
+    labs(x = expression(~italic("m/z")), y = "Frequency")
   residual_data = rbind(data.frame(mz = convertable_raw2$mean_mz, frequency = convertable_raw2$mean_frequency,
                                    predicted = convertable_raw2$predict_frequency,
                                    type = "cube", stringsAsFactors = FALSE),
@@ -173,7 +176,7 @@ plot_peak_ordering = function(data_obj){
 
   peak_ordering_plot = ggplot(by_scan, aes(x = mz_order, y = order, color = ordering)) + geom_point(size = 3) +
     theme(legend.position = c(0.75, 0.9)) +
-    labs(x = "m/z Order", y = "Predicted Frequency Order",
+    labs(x = expression(paste(italic("m/z"), " Order", sep = "")), y = "Predicted Frequency Order",
          color = "Frequency Source")
   peak_ordering_plot
 }
@@ -454,12 +457,15 @@ plot_peak_fitting = function(processed_obj){
     geom_line(aes(x = frequency, y = log_fit), color = "red", size = 2) +
     geom_point(size = 3) +
     geom_point(data = fitted_info, aes(x = ObservedCenter, y = log(Height)), color = "blue", size = 3) +
+    scale_x_continuous(labels = scales::comma) +
     labs(x = "Frequency", y = "Log(Intensity)")
 
   norm_plot = ggplot(peak_points, aes(x = frequency, y = intensity)) +
     geom_line(aes(x = frequency, y = exp(log_fit)), color = "red", size = 2) +
     geom_point(size = 3) +
     geom_point(data = fitted_info, aes(x = ObservedCenter, y = Height), color = "blue", size = 3) +
+    scale_x_continuous(labels = scales::comma) +
+    scale_y_continuous(labels = scales::comma) +
     labs(x = "Frequency", y = "Intensity")
 
   (log_plot | norm_plot) + plot_annotation(tag_levels = "A")
@@ -501,16 +507,21 @@ plot_region_splitting = function(region_list){
 
   p1 = ggplot(original_points, aes(x = frequency, y = intensity, group = scan)) +
     geom_point() + geom_line() + coord_cartesian(xlim = c(xmin, xmax)) +
-    labs(x = NULL)
+    labs(x = NULL) +
+    scale_y_continuous(labels = scales::comma) +
+    scale_x_continuous(labels = scales::comma)
 
   p2 = ggplot(reduced_peaks, aes(x = ObservedCenter.frequency, y = Height.frequency)) +
     geom_point() + geom_segment(data = tiled_regions, aes(x = start_freq + 5e-2, xend = end_freq - 5e-2, y = intensity, yend = intensity), color = "red") +
     coord_cartesian(xlim = c(xmin, xmax)) +
+    scale_x_continuous(labels = scales::comma) +
+    scale_y_continuous(labels = scales::comma) +
     labs(x = NULL, y = "intensity")
 
   p3 = ggplot(tiled_regions, aes(x = mid_point, y = counts)) + geom_col() +
     coord_cartesian(xlim = c(xmin, xmax)) +
-    labs(x = "frequency", y = "no. of peaks")
+    scale_x_continuous(labels = scales::comma) +
+    labs(x = "Frequency", y = "no. of peaks")
 
   (p1 / p2 / p3) + plot_annotation(tag_level = "A")
 }
