@@ -6,7 +6,7 @@ Scan-Centric, Frequency-Based Method for Characterizing Peaks from Direct Inject
 
 Robert M Flight, Joshua M Mitchell, Hunter N.B. Moseley
 
-doi: https://doi.org/10.1101/2022.04.14.488423 (V1 on bioRxiv)
+doi: https://doi.org/10.3390/metabo12060515 (final published version)
 
 ## Copies of Manuscript
 
